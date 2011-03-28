@@ -13,4 +13,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once("galassa_menu.php");
 $galassa_menu = new GalassaMenu("Galassa");
 
+require_once("galassa_body_filter.php");
+$galassa_body_filter = new GalassaBodyFilter();
+
 ?>
