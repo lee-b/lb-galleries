@@ -6,6 +6,8 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
+require_once "galassa_gallery.php";
+
 class GalassaShortcode {
 	function GalassaShortcode() {
 		add_shortcode('kintassa_gallery', array(&$this, 'render_shortcode'));
@@ -25,9 +27,10 @@ class GalassaShortcode {
 		$parsed_atts = shortcode_atts(&$known_attribs, $atts);
 		$id = $parsed_atts['id'];
 
-		$shortcode_body = "<div class=\"kintassa_gallery\">( GALLERY NUMBER " . $id . " )</div>";
-
-		return $shortcode_body;
+		$gal = new GalassaGallery($id);
+		$rendered_gallery = $gal->render();
+		
+		return $rendered_gallery;
 	}
 }
 
