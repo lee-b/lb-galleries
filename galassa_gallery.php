@@ -21,10 +21,20 @@ class GalassaGallery extends KintassaMicroORMObject {
 		// TODO: Not implemented
 	}
 
-	function render() {
+	function render($width = null, $height = null) {
 		if (!$this->is_loaded()) {
 			$this->load();
-			return "<div class=\"kintassa_gallery\">GALLERY NUMBER {$this->id}</div>";
+
+			$gallery_code = "<div class=\"kintassa_gallery\"";
+
+			$style_code = "";
+			if ($width) { $style_code .= "width: {$width};"; }
+			if ($height) { $style_code .= "height: {$height};"; }
+			if (strlen($style_code) > 0) { $gallery_code .= " style=\"{$style_code}\""; }
+			
+			$gallery_code .= ">GALLERY NUMBER {$this->id}</div>";
+			
+			return $gallery_code;
 		}
 	}
 }
