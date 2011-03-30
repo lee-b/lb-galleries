@@ -6,7 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once "gallery.php";
+require_once "kgallery.php";
 
 class KGalleryShortcode {
 	function Shortcode() {

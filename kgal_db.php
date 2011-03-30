@@ -6,19 +6,23 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-namespace kintassa\wp_gallery;
-
 require_once("micro_orm.php");
+
+global $wpdb;
 
 $gallery_tbl_name = $wpdb->prefix . "kintassa_gallery";
 $images_tbl_name = $wpdb->prefix . "kintassa_gal_img";
 
-private function table_exists($tablename) {
-	return ($wpdb->get_var("show tables like '$wp_track_members_table'") != $tablename);
+function kgallery_table_exists($tablename) {
+	global $wpdb;
+
+	return ($wpdb->get_var("show tables like '{$tablename}'") != $tablename);
 }
 
-private function create_tables() {
+function kgallery_create_tables() {
 	global $wpdb;
+	global $gallery_tbl_name;
+	global $images_tbl_name;
 
 	$gallery_tbl_sql = <<<SQL
 		CREATE  TABLE {$gallery_tbl_name} (
@@ -54,18 +58,18 @@ SQL;
 		COLLATE = utf8_unicode_ci;
 SQL;
 	
-	if (!table_exists($gallery_tbl_name)) {
+	if (!kgallery_table_exists($gallery_tbl_name)) {
 		$wpdb->query($gallery_tbl_sql);
 	}
 
-	if (!table_exists($images_tbl_name)) {
+	if (!kgallery_table_exists($images_tbl_name)) {
 		$wpdb->query($images_tbl_sql);
 	}
 }
 
-function setup_db() {
-	wp_set_option("kintassa_gallery_dbver", "1.0");
-	create_tables();
+function kgallery_setup_db() {
+	add_option("kintassa_gallery_dbver", "1.0");
+	kgallery_create_tables();
 }
 
 ?>

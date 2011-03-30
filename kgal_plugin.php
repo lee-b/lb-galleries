@@ -10,12 +10,12 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once("menu.php");
-require_once("shortcode.php");
-require_once("db.php");
+require_once("kgal_menu.php");
+require_once("kgal_shortcode.php");
+require_once("kgal_db.php");
 
-$menu = new KGalleryMenu("Galassa");
-$shortcode = new KGalleryShortcode();
+$kgallery_menu = new KGalleryMenu();
+$kgallery_shortcode = new KGalleryShortcode();
 
 register_activation_hook(__FILE__,'kgallery_install');
 register_deactivation_hook(__FILE__, 'kgallery_remove');
@@ -24,6 +24,7 @@ function kgallery_install() {
 	kgallery_setup_db();
 }
 
-function kgallery_remove() {}
+function kgallery_remove() {
+}
 
 ?>

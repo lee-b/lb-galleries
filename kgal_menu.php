@@ -6,11 +6,8 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-namespace kintassa\wp_gallery;
-
-class Menu {
-	function Menu($menu_name) {
-		$this->menu_title = $menu_name;
+class KGalleryMenu {
+	function KGalleryMenu() {
 		add_action('admin_menu', array(&$this, 'add_menus'));
 	}
 
@@ -24,7 +21,7 @@ class Menu {
 	}
 	
 	function add_menus() {
-		$this->add_page($this->menu_title, 'administrator', 'mainpage');
+		$this->add_page("Kintassa Gallery", 'administrator', 'mainpage');
 	}
 	
 	function mainpage() {
