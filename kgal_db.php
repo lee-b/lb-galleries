@@ -35,20 +35,14 @@ function kgallery_create_tables() {
 SQL;
 	
 	$images_tbl_sql = <<<SQL
-		CREATE  TABLE ${images_tbl_name} (
+		CREATE  TABLE `${images_tbl_name}` (
 		  `id` INT NOT NULL AUTO_INCREMENT ,
 		  `sort_pri` INT NULL DEFAULT 0 ,
 		  `filepath` VARCHAR(4096) NULL ,
 		  `title` VARCHAR(255) NULL ,
 		  `description` VARCHAR(255) NULL ,
 		  `gallery_id` INT NOT NULL,
-		  PRIMARY KEY (`id`) ,
-		  INDEX `gallery_id` () ,
-		  CONSTRAINT `gallery_id`
-		    FOREIGN KEY ()
-		    REFERENCES {$gallery_tbl_name} ()
-		    ON DELETE NO ACTION
-		    ON UPDATE NO ACTION
+		  PRIMARY KEY (`id`)
 		)
 		ENGINE = InnoDB
 		DEFAULT CHARACTER SET = utf8
