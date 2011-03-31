@@ -10,7 +10,11 @@ abstract class KintassaMicroORMObject {
 	var $loaded = false;
 	var $saved = false;
 
-	function KintassaMicroORMObject() {}
+	function KintassaMicroORMObject($id = null) {
+		if ($id) {
+			$this->load($id);
+		}
+	}
 
 	function is_saved() {
 		return $this->saved;

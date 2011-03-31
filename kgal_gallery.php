@@ -6,13 +6,9 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once('k_micro_orm.php');
+require_once('kin_micro_orm.php');
 
 class KintassaGallery extends KintassaMicroORMObject {
-	function KintassaGallery($id = null) {
-		$this->id = $id;
-	}
-
 	function save() {
 		// TODO: Not implemented
 	}

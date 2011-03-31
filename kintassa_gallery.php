@@ -10,22 +10,40 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa for licensing.
 */
 
+require_once("kin_wp_plugin.php");
 require_once("kgal_db.php");
-require_once("kgal_menu.php");
-require_once("kgal_shortcode.php");
+
+class KintassaGalleryPlugin extends KintassaWPPlugin {
+	function KintassaGalleryPlugin() {
+		parent::KintassaWPPlugin(__FILE__);
+
+		$this->log("registering menu entries");
+		require_once("kgal_menu.php");
+		$kgallery_menu = new KGalleryMenu();
+		$this->log("menu entries complete");
+
+		$this->log("registering shortcodes");
+		require_once("kgal_shortcode.php");
+		$kgallery_shortcode = new KGalleryShortcode();
+		$this->log("shortcodes complete");
+	}
+
+	function install() {
+		$this->log("configuring db");
+		require_once("kgal_db.php");
+		kgallery_setup_db();
+		$this->log("db config complete");
+	}
+	
+	function remove() {}
+}
+
+// instanciate the plugin
+global $kPlugin;
+$kPlugin = new KintassaGalleryPlugin();
+
+// register template tags into the global namespace
 require_once("kgal_tags.php");
 
-register_activation_hook(__FILE__,'kgallery_install');
-register_deactivation_hook(__FILE__, 'kgallery_remove');
-
-function kgallery_install() {
-	kgallery_setup_db();
-}
-
-function kgallery_remove() {
-}
-
-$kgallery_menu = new KGalleryMenu();
-$kgallery_shortcode = new KGalleryShortcode();
 
 ?>
