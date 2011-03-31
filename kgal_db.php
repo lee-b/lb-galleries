@@ -6,7 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once("micro_orm.php");
+require_once("k_micro_orm.php");
 
 global $wpdb;
 

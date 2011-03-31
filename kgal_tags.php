@@ -6,7 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once("gallery.php");
+require_once("kgal_gallery.php");
 
 /***
  * publically callable function for rendering galleries in templates
