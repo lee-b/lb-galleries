@@ -39,8 +39,7 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 }
 
 // instanciate the plugin
-global $kPlugin;
-$kPlugin = new KintassaGalleryPlugin();
+$kGalleryPlugin = new KintassaGalleryPlugin();
 
 // register template tags into the global namespace
 require_once("kgal_tags.php");

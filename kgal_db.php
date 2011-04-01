@@ -6,21 +6,14 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once("kin_micro_orm.php");
+require_once("kgal_gallery.php");
+require_once("kgal_image.php");
 
-function kgallery_table_exists($tablename) {
-	global $wpdb;
-	return ($wpdb->get_var("show tables like '{$tablename}'") == $tablename);
-}
+global $wpdb;
 
 function kgallery_create_tables() {
 	global $wpdb;
 
-	$gallery_tbl_name = $wpdb->prefix . "kintassa_gallery";
-	$images_tbl_name = $wpdb->prefix . "kintassa_gal_img";
-	
-	global $kPlugin;
-	
 	$gallery_tbl_sql = <<<SQL
 		CREATE  TABLE {$gallery_tbl_name} (
 			`id` INT NOT NULL AUTO_INCREMENT ,
@@ -49,15 +42,11 @@ SQL;
 		COLLATE = utf8_unicode_ci;
 SQL;
 	
-	$kPlugin->log("Checking if {$gallery_tbl_name} exists");
 	if (!kgallery_table_exists($gallery_tbl_name)) {
-		$kPlugin->log("Creating {$gallery_tbl_name}");
 		$wpdb->query($gallery_tbl_sql);
 	}
 
-	$kPlugin->log("Checking if {$images_tbl_name} exists");
 	if (!kgallery_table_exists($images_tbl_name)) {
-		$kPlugin->log("Creating {$images_tbl_name}");
 		$wpdb->query($images_tbl_sql);
 	}
 }

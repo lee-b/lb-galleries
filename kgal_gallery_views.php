@@ -7,18 +7,24 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once("kin_wp_form.php");
+require_once("kgal_gallery.php");
+require_once("kin_wp_tableform.php");
 
-class KGalleryListForm extends KintassaForm {
+class KGalleryTableForm extends KintassaWPTableForm {
+}
+
+class KGalleryListForm extends KintassaWPForm {
 	function KGalleryListForm() {
-		parent::KintassaForm("gallery_list");
+		parent::KintassaWPForm("gallery_list");
 	}
 	
 	function generate_form() {
 		$form_uri = $this->form_uri();
 		$form_name = $this->form_name();
 		
-		echo '<p>This is the options page</p>';
-
+		$gal_table_form = new KGalleryTableForm('KintassaGallery');
+		$gal_table_form->render($this->form_name());
+		
 		echo "<form method=\"post\" action=\"{$form_uri}\">";
 		echo "    <input type=\"submit\" name=\"{$form_name}\" value=\"submit\">";
 		echo "</form>";

@@ -7,15 +7,44 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 abstract class KintassaMicroORMObject {
-	var $loaded = false;
-	var $saved = false;
-
 	function KintassaMicroORMObject($id = null) {
+		$this->id = null;
+
+		$this->loaded = false;
+		$this->saved = false;
+
 		if ($id) {
 			$this->load($id);
 		}
 	}
 
+	static function table_exists($table_name) {
+		global $wpdb;
+		return ($wpdb->get_var("show tables like '{$tablename}'") == $tablename);
+	}
+
+	static function get_rows($tbl, $fields = null, $filter = null) {
+		global $wpdb;
+
+		$qry = "SELECT ";
+
+		if ($fields != null) {
+			$qry .= implode(",", $fields);
+		} else {
+			$qry .= "*";
+		}
+
+		$qry .= " FROM `" . $tbl . "`";
+
+		if ($filter != null) {
+			$qry .= " WHERE " . $filter;
+		}
+
+		$res = $wpdb->query($qry);
+
+		return $res;
+	}
+	
 	function is_saved() {
 		return $this->saved;
 	}
@@ -25,7 +54,7 @@ abstract class KintassaMicroORMObject {
 	}
 
 	abstract protected function save();
-	abstract protected function load();
+	abstract protected function load($id);
 }
 
 ?>
