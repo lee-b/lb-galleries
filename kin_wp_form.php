@@ -2,7 +2,7 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
@@ -10,6 +10,10 @@ abstract class KintassaWPForm {
 	function KintassaWPForm($name) {
 		$this->name = $name;
 		$this->serial = "";
+	}
+
+	function horiz_spacer() {
+		echo("&nbsp;");
 	}
 
 	function begin_form() {
@@ -21,26 +25,79 @@ abstract class KintassaWPForm {
 	function end_form() {
 		echo "</form>";
 	}
-	
+
 	function form_name() {
 		return "kin_frm_{$this->name}_{$this->serial}";
 	}
 
-	function button_name($btn) {
-		return $this->form_name() . "_" . $btn . "_btn";
+	function field_name($field) {
+		return $this->form_name() . "_" . $field;
 	}
 
-	function render_button($name, $label) {
-		$btn_name = $this->button_name($name);
-		echo("<input type=\"submit\" value=\"{$label}\" name=\"{$btn_name}\">");
+	function choose_name($label, $provided_name) {
+		if ($provided_name != null) {
+			$name = $provided_name;
+		} else {
+			$name = strtolower($label);
+			$name = str_replace(" ", "_", $name);
+		}
+		return $name;
 	}
-	
+
+	function add_button($label, $name=null) {
+		$btn_name = $this->field_name($this->choose_name($label, $name));
+		echo("<div>");
+		echo("<input type=\"submit\" value=\"{$label}\" name=\"{$btn_name}\">");
+		echo("</div>");
+	}
+
+	function add_text_field($label, $name=null) {
+		$name = $this->field_name($this->choose_name($label, $name));
+		echo("<div>");
+		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
+		echo("</div>");
+	}
+
+	function add_number_field($label, $name=null) {
+		$name = $this->field_name($this->choose_name($label, $name));
+		echo("<div>");
+		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
+		echo("</div>");
+	}
+
+	function add_checkbox_field($label, $name=null) {
+		$name = $this->field_name($this->choose_name($label, $name));
+		echo("<div>");
+		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<input type=\"checkbox\" name=\"{$name}\" value=\"\">");
+		echo("</div>");
+	}
+
+	function begin_radio_field($label) {
+		$f = null;
+
+		// TODO: not implemented
+
+		return $f;
+	}
+
+	function add_radio_option($rf, $label, $name=null) {
+		$name = $this->field_name($this->choose_name($label, $name));
+		// TODO: not implemented
+	}
+
+	function end_radio_field($rf) {
+		// TODO: not implemented
+	}
+
 	function have_submission($btn) {
-		$real_btn_name = $this->button_name($btn);
+		$real_btn_name = $this->field_name($btn);
 		$set = isset($_POST[$real_btn_name]);
 		return $set;
 	}
-	
+
 	function form_uri() {
 		return esc_url($_SERVER['REQUEST_URI']);
 	}
@@ -55,9 +112,9 @@ abstract class KintassaWPForm {
 abstract class KintassaWPSimpleForm {
 	abstract function generate_form();
 	abstract function process_results();
-	
+
 	abstract function render_form_contents();
-	
+
 	function render_form() {
 		$this->begin_form();
 		$this->render_form_contents();
@@ -68,7 +125,7 @@ abstract class KintassaWPSimpleForm {
 		$this->render_button("Submit", _e("Submit"));
 		parent::end_form();
 	}
-	
+
 	function execute() {
 		if ($this->have_submission('Submit')) {
 			$this->process_results();

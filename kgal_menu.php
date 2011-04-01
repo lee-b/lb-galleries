@@ -2,15 +2,16 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once("kgal_gallery_views.php");
+require_once("kgal_gallery_tablepage.php");
+require_once("kgal_gallery_addform.php");
 
 class KGalleryMenu {
 	function KGalleryMenu() {
-		$this->menu_title = "Kintassa Gallery";
+		$this->menu_title = "Kintassa Galleries";
 		add_action('admin_menu', array(&$this, 'add_menus'));
 	}
 
@@ -27,7 +28,7 @@ class KGalleryMenu {
 		$full_slug = $cls . "_" .  $slug;
 		return $full_slug;
 	}
-	
+
 	function add_subpage($parent, $label, $perms, $method_name) {
 		$page_title = $label;
 		$menu_title = $label;
@@ -35,7 +36,7 @@ class KGalleryMenu {
 		$func = array(&$this, $method_name);
 		add_submenu_page($this->classify_slug($parent), $page_title, $menu_title, $capability, $this->classify_slug($method_name), &$func);
 	}
-	
+
 	function add_menus() {
 		$mainpage = 'mainpage';
 		$this->add_page($this->menu_title, 'administrator', $mainpage);
@@ -48,16 +49,17 @@ class KGalleryMenu {
 
 		echo '<h2>' . $this->menu_title . '</h2>';
 
-		$frm = new KGalleryTableForm("GalleryTable", 'KintassaGallery');
-		$frm->execute();
+		$pg = new KGalleryTablePage("GalleryTable", 'KintassaGallery');
+		$pg->execute();
 	}
-	
+
 	function add_gallery() {
 		echo '<h2>' . $this->menu_title . '</h2>';
 
-		// TODO: not implemented
+		$addForm = new KGalleryAddForm();
+		$addForm->execute();
 	}
-	
+
 	function about() {
 		echo '<h2>' . $this->menu_title . '</h2>';
 

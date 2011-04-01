@@ -2,7 +2,7 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
@@ -14,8 +14,10 @@ global $wpdb;
 function kgallery_create_tables() {
 	global $wpdb;
 
+	$gallery_tbl_name = KintassaGallery::table_name();
+
 	$gallery_tbl_sql = <<<SQL
-		CREATE  TABLE {$gallery_tbl_name} (
+		CREATE TABLE {$gallery_tbl_name} (
 			`id` INT NOT NULL AUTO_INCREMENT ,
 			`name` VARCHAR(128) NULL ,
 			`width` INT NULL ,
@@ -26,9 +28,11 @@ function kgallery_create_tables() {
 		DEFAULT CHARACTER SET = utf8
 		COLLATE = utf8_unicode_ci;
 SQL;
-	
+
+	$images_tbl_name = KintassaGalleryImage::table_name();
+
 	$images_tbl_sql = <<<SQL
-		CREATE  TABLE `${images_tbl_name}` (
+		CREATE  TABLE `{$images_tbl_name}` (
 		  `id` INT NOT NULL AUTO_INCREMENT ,
 		  `sort_pri` INT NULL DEFAULT 0 ,
 		  `filepath` VARCHAR(4096) NULL ,
@@ -41,12 +45,12 @@ SQL;
 		DEFAULT CHARACTER SET = utf8
 		COLLATE = utf8_unicode_ci;
 SQL;
-	
-	if (!kgallery_table_exists($gallery_tbl_name)) {
+
+	if (!KintassaMicroORMObject::table_exists($gallery_tbl_name)) {
 		$wpdb->query($gallery_tbl_sql);
 	}
 
-	if (!kgallery_table_exists($images_tbl_name)) {
+	if (!KintassaMicroORMObject::table_exists($images_tbl_name)) {
 		$wpdb->query($images_tbl_sql);
 	}
 }
