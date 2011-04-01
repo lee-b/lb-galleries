@@ -10,22 +10,16 @@ abstract class KintassaWPPlugin {
 	function KintassaWPPlugin($filepath) {
 		global $wpdb;
 		
-		$this->log("KintassaWPPlugin: enabling debugging");
-		if (defined('WP_DEBUG') and WP_DEBUG == true) {
-			error_reporting(E_ALL);
-			$wpdb->show_errors();
-		}
-		
-		$this->log("KintassaWPPlugin: ctor starting");
 		register_activation_hook($filepath, array(&$this, 'install'));
 		register_deactivation_hook($filepath, array(&$this, 'remove'));
-		$this->log("KintassaWPPlugin: ctor ending");
 	}
 
 	function log($msg) {
-		print_r($msg . "\n");
+		if (defined(WP_DEBUG) && WP_DEBUG==true) {
+			print_r($msg);
+		}
 	}
-
+	
 	abstract function install();
 	abstract function remove();
 }

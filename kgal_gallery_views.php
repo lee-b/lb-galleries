@@ -11,27 +11,14 @@ require_once("kgal_gallery.php");
 require_once("kin_wp_tableform.php");
 
 class KGalleryTableForm extends KintassaWPTableForm {
-}
+	function render_add_new_form() {
+		// TODO: not implemented
+		echo "(Adding new entry)";
+	}
 
-class KGalleryListForm extends KintassaWPForm {
-	function KGalleryListForm() {
-		parent::KintassaWPForm("gallery_list");
-	}
-	
-	function generate_form() {
-		$form_uri = $this->form_uri();
-		$form_name = $this->form_name();
-		
-		$gal_table_form = new KGalleryTableForm('KintassaGallery');
-		$gal_table_form->render($this->form_name());
-		
-		echo "<form method=\"post\" action=\"{$form_uri}\">";
-		echo "    <input type=\"submit\" name=\"{$form_name}\" value=\"submit\">";
-		echo "</form>";
-	}
-	
-	function process_results() {
-		echo "<p>Got it, thanks!</p>";
+	function render_add_new_results() {
+		// TODO: not implemented
+		echo "(Entry added)";
 	}
 }
 
