@@ -10,7 +10,7 @@ require_once("kgal_gallery_views.php");
 
 class KGalleryMenu {
 	function KGalleryMenu() {
-		$this->menu_title = "Kintassa Gallery";
+		$this->menu_title = "Kintassa Galleries";
 		add_action('admin_menu', array(&$this, 'add_menus'));
 	}
 
@@ -48,8 +48,8 @@ class KGalleryMenu {
 
 		echo '<h2>' . $this->menu_title . '</h2>';
 
-		$frm = new KGalleryTableForm("GalleryTable", 'KintassaGallery');
-		$frm->execute();
+		$pg = new KGalleryTablePage("GalleryTable", 'KintassaGallery');
+		$pg->execute();
 	}
 	
 	function add_gallery() {

@@ -40,7 +40,7 @@ abstract class KintassaMicroORMObject {
 			$qry .= " WHERE " . $filter;
 		}
 
-		$res = $wpdb->query($qry);
+		$res = $wpdb->get_results($qry);
 
 		return $res;
 	}

@@ -12,6 +12,10 @@ abstract class KintassaWPForm {
 		$this->serial = "";
 	}
 
+	function horiz_spacer() {
+		echo("&nbsp;");
+	}
+
 	function begin_form() {
 		$form_uri = $this->form_uri();
 		$form_name = $this->form_name();
@@ -30,7 +34,11 @@ abstract class KintassaWPForm {
 		return $this->form_name() . "_" . $btn . "_btn";
 	}
 
-	function render_button($name, $label) {
+	function render_button($label, $name=null) {
+		if ($name == null) {
+			$name = strtolower($label);
+			$name = str_replace(" ", "_", $name);
+		}
 		$btn_name = $this->button_name($name);
 		echo("<input type=\"submit\" value=\"{$label}\" name=\"{$btn_name}\">");
 	}

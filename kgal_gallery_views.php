@@ -8,17 +8,34 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 
 require_once("kin_wp_form.php");
 require_once("kgal_gallery.php");
-require_once("kin_wp_tableform.php");
+require_once("kin_wp_tablepage.php");
 
-class KGalleryTableForm extends KintassaWPTableForm {
-	function render_add_new_form() {
-		// TODO: not implemented
-		echo "(Adding new entry)";
+class KGalleryTableRowOptions extends KintassaWPTableRowOptions {
+	function KGalleryTableRowOptions($opt_flags) {
+		parent::KintassaWPTableRowOptions($opt_flags);
 	}
 
-	function render_add_new_results() {
-		// TODO: not implemented
-		echo "(Entry added)";
+	function do_up($id) {
+		echo "<p>Moving ${id} up.</p>";
+	}
+
+	function do_down($id) {
+		echo "<p>Moving ${id} down.</p>";
+	}
+
+	function do_edit($id) {
+		echo "<p>Editing ${id}.</p>";
+	}
+
+	function do_del($id) {
+		echo "<p>Deleting ${id}.</p>";
+	}
+}
+
+class KGalleryTablePage extends KintassaWPTablePage {
+	function KGalleryTablePage($opt_flags = KintassaWPTableRowOptions::All) {
+		$form_opts = new KGalleryTableRowOptions($opt_flags);
+		parent::KintassaWPTablePage('KintassaGallery', $form_opts);
 	}
 }
 
