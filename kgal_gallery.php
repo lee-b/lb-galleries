@@ -2,7 +2,7 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
@@ -11,7 +11,7 @@ require_once('kin_micro_orm.php');
 class KintassaGallery extends KintassaMicroORMObject {
 	function KintassaGallery($id = null) {
 		parent::KintassaMicroORMObject($id);
-		
+
 		if (!$this->is_loaded()) {
 			$this->name = "";
 			$this->width = 320;
@@ -23,10 +23,10 @@ class KintassaGallery extends KintassaMicroORMObject {
 		global $wpdb;
 		return $wpdb->prefix . "kintassa_gallery";
 	}
-	
+
 	function save() {
 		global $wpdb;
-		
+
 		if (!ISSET($this->id)) {
 			// saving for the first time, so we need to insert a record
 			$dat = array("name" => $this->name, "width" => $this->width, "height" => $this->height);
@@ -40,13 +40,13 @@ class KintassaGallery extends KintassaMicroORMObject {
 			$res = $wpdb->update($this->table_name, &$dat, &$where, &$dat_fmt);
 		}
 	}
-	
+
 	function load($id) {
 		global $wpdb;
-		
-		assert ($this->id != null);
-		$row = $wpdb->get_row("SELECT * FROM `{$this->table_name}` WHERE id={$this->id}");
-		
+
+		assert ($id != null);
+		$row = $wpdb->get_row("SELECT * FROM `{$this->table_name()}` WHERE id={$id}");
+
 		$this->name = $row->name;
 		$this->width = $row->width;
 		$this->height = $row->height;
@@ -54,20 +54,22 @@ class KintassaGallery extends KintassaMicroORMObject {
 	}
 
 	function render($width = null, $height = null) {
+		assert($this->id != null);
+
 		if (!$this->is_loaded()) {
-			$this->load();
-
-			$gallery_code = "<div class=\"kintassa_gallery\"";
-
-			$style_code = "";
-			if ($width) { $style_code .= "width: {$width};"; }
-			if ($height) { $style_code .= "height: {$height};"; }
-			if (strlen($style_code) > 0) { $gallery_code .= " style=\"{$style_code}\""; }
-			
-			$gallery_code .= ">GALLERY NUMBER {$this->id}</div>";
-			
-			return $gallery_code;
+			$this->load($this->id);
 		}
+
+		$gallery_code = "<div class=\"kintassa_gallery\"";
+
+		$style_code = "";
+		if ($width) { $style_code .= "width: {$width};"; }
+		if ($height) { $style_code .= "height: {$height};"; }
+		if (strlen($style_code) > 0) { $gallery_code .= " style=\"{$style_code}\""; }
+
+		$gallery_code .= ">GALLERY NUMBER {$this->id}</div>";
+
+		return $gallery_code;
 	}
 }
 

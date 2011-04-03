@@ -2,14 +2,14 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
 require_once("kgal_gallery.php");
 
 class KGalleryShortcode {
-	function Shortcode() {
+	function KGalleryShortcode() {
 		add_shortcode('kintassa_gallery', array(&$this, 'render_shortcode'));
 		$this->register_stylesheets();
 	}
@@ -37,7 +37,7 @@ class KGalleryShortcode {
 
 		$gal = new KintassaGallery($id);
 		$rendered_gallery = $gal->render($width, $height);
-		
+
 		return $rendered_gallery;
 	}
 }

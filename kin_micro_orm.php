@@ -13,7 +13,7 @@ abstract class KintassaMicroORMObject {
 		$this->loaded = false;
 		$this->saved = false;
 
-		if ($id) {
+		if ($id != null) {
 			$this->load($id);
 		}
 	}

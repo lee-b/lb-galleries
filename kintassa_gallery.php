@@ -6,7 +6,7 @@ Description: A flexible image gallery
 Version: 1.0
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa for licensing.
 */
 
@@ -28,7 +28,7 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 		require_once("kgal_db.php");
 		kgallery_setup_db();
 	}
-	
+
 	function remove() {}
 }
 
