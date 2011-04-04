@@ -71,6 +71,22 @@ class KintassaGallery extends KintassaMicroORMObject {
 
 		return $gallery_code;
 	}
+
+	function images() {
+		global $wpdb;
+
+		require_once("kgal_image.php");
+
+		$rows = $wpdb->get_results("SELECT id,sort_pri FROM `{KintassaGalleryImage::table_name()}` WHERE gallery_id={$this->id} ORDER BY sort_pri,title");
+
+		$images = array();
+		foreach ($rows as $row) {
+			$img = new KintassaGalleryImage($row->id);
+			$images.add($img);
+		}
+
+		return $images;
+	}
 }
 
 ?>
