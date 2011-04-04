@@ -35,9 +35,8 @@ abstract class KintassaFormElement {
 		}
 
 		// if we get here, there is no parent defined for the form
-		// field, so we SHOULD fail.
-		$p = null;
-		assert ($p == null);
+		// field, which violates the Kintassa Form API, so we SHOULD fail.
+		exit("KintassaFormElement::parent_form(): orphan element detected.");
 	}
 
 	/***
