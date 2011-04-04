@@ -12,29 +12,25 @@ require_once("kgal_gallery.php");
 class KGalleryAddForm extends KintassaWPForm {
 	function KGalleryAddForm() {
 		parent::KintassaWPForm('KGalleryAddForm');
+
+		$this->add_child(new KintassaTextField("Name"));
+		$this->add_child(new KintassaIntegerField("Width"), $default=320);
+		$this->add_child(new KintassaIntegerField("Height"), $default=200);
+
+		$displayMethodField = new KintassaRadioGroup("Display method");
+		$displayMethodField->add_child(new KintassaRadioButton("Slideshow"));
+		$displayMethodField->add_child(new KintassaRadioButton("Manual Slideshow"));
+		$this->add_child($displayMethodField);
+
+		$this->add_child(new KintassaCheckbox("Show navbar"));
+		$this->add_child(new KintassaButton("Confirm"));
 	}
 
-	function execute() {
+	function render() {
 		if ($this->have_submission('Add')) {
 			echo "(Add results here)";
 		} else {
-			$this->begin_form();
-
-			$this->add_text_field("Name");
-
-			$this->add_number_field("Width");
-			$this->add_number_field("Height");
-
-			$radio = $this->begin_radio_field("Display method");
-			$this->add_radio_option($radio, "Slideshow");
-			$this->add_radio_option($radio, "Manual Slideshow");
-			$this->end_radio_field($radio);
-
-			$this->add_checkbox_field("Show navbar");
-
-			$this->add_button("Confirm");
-
-			$this->end_form();
+			parent::render();
 		}
 	}
 }

@@ -9,22 +9,32 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 abstract class KintassaFormElement {
 	const max_depth = 10;
 
-	function KintassaField() {
-		$this->parent = null;
+	function KintassaFormElement() {
+		$this->_parent = null;
 	}
 
 	function _set_parent($p) {
-		$this->parent = $p;
+		$this->_parent = $p;
+	}
+
+	function parent() {
+		return $this->_parent;
 	}
 
 	function parent_form() {
 		$count = 0;
-		$p = $this->parent;
+		$p = $this->parent();
 
-		while ($count < $max_depth) {
-			if (($p != null) && is_a($p, KintassaForm)) {
+		while ($count < KintassaFormElement::max_depth) {
+			print_r("Looking for parent form at");
+			print_r($p);
+
+			if (($p != null) && is_a($p, 'KintassaForm')) {
 				return $p;
 			}
+
+			$p = $p->parent();
+			$count += 1;
 		}
 
 		// if we get here, there is no parent defined for the form
@@ -47,18 +57,20 @@ abstract class KintassaFormElement {
 
 abstract class KintassaNamedFormElement extends KintassaFormElement {
 	function KintassaNamedFormElement($label, $name = null) {
+		parent::KintassaFormElement();
+
 		$this->label = $label;
 
 		if ($name != null) {
 			$this->name = $this->name;
 		} else {
-			$label_as_name = KintassaNamedFormElement::label_to_name($label);
+			$this->name = KintassaNamedFormElement::label_to_name($label);
 		}
 	}
 
 	function name() {
-		$form_name = $this->form()->name();
-		return KintassaNamedFormElement::build_element_name($form_name, $this->name);
+		$form_name = $this->parent_form()->name();
+		return KintassaNamedFormElement::build_name($form_name, $this->name);
 	}
 
 	static function build_name($form_name, $el_name) {
@@ -98,12 +110,13 @@ class KintassaWPNonceField extends KintassaField {
 }
 
 abstract class KintassaFieldContainer extends KintassaNamedFormElement {
-	function KintassaFieldContainer() {
+	function KintassaFieldContainer($label, $name = null) {
+		parent::KintassaNamedFormElement($label, $name = $name);
 		$this->children = array();
 	}
 
 	function add_child($ch) {
-		$this->children.add($ch);
+		$this->children[] = $ch;
 		$ch->_set_parent($this);
 	}
 
@@ -132,7 +145,7 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 	abstract function end_container();
 }
 
-class KintasssaTextField {
+class KintassaTextField extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
@@ -142,7 +155,7 @@ class KintasssaTextField {
 	}
 }
 
-class KintassaButton {
+class KintassaButton extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
@@ -151,7 +164,7 @@ class KintassaButton {
 	}
 }
 
-class KintassaNumberfield {
+class KintassaNumberField extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
@@ -161,16 +174,25 @@ class KintassaNumberfield {
 	}
 
 	function is_valid($post_vars, $file_vars) {
-		$name = $this->
+		$name = $this->name();
 		$val = $post_vars[$name];
 		return is_numeric($val);
 	}
 }
 
-class KintassaIntegerField {
+class KintassaIntegerField extends KintassaNumberField {
+	function isInteger($val) {
+		return (preg_match('@^[-]?[0-9]+$@',$val) === 1);
+	}
+
+	function is_valid($post_vars, $file_vars) {
+		$name = $this->name();
+		$val = $post_vars[$name];
+		return $this->isInteger($val);
+	}
 }
 
-class KintassaCheckbox {
+class KintassaCheckbox extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
@@ -217,6 +239,17 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 abstract class KintassaForm {
 	function KintassaForm($name) {
 		$this->name = $name;
+		$this->children = array();
+	}
+
+	function parent() {
+		// TODO: need logic here if supporting subforms
+		return null;
+	}
+
+	function add_child($ch) {
+		$this->children[] = $ch;
+		$ch->_set_parent($this);
 	}
 
 	function begin_form() {
@@ -234,7 +267,6 @@ abstract class KintassaForm {
 	}
 
 	function field_name($fieldname) {
-		// TODO: check this matches the code in KintassaNamedFormElement.
 		return KintassaNamedFormElement::build_name($this->name(), $fieldname);
 	}
 

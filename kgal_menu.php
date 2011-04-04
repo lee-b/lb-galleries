@@ -57,7 +57,7 @@ class KGalleryMenu {
 		echo '<h2>' . $this->menu_title . '</h2>';
 
 		$addForm = new KGalleryAddForm();
-		$addForm->execute();
+		$addForm->render();
 	}
 
 	function about() {
