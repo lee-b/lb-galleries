@@ -26,9 +26,6 @@ abstract class KintassaFormElement {
 		$p = $this->parent();
 
 		while ($count < KintassaFormElement::max_depth) {
-			print_r("Looking for parent form at");
-			print_r($p);
-
 			if (($p != null) && is_a($p, 'KintassaForm')) {
 				return $p;
 			}
@@ -141,15 +138,21 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		return true;
 	}
 
-	abstract function begin_container();
-	abstract function end_container();
+	function begin_container() {
+		$name = $this->name();
+		echo("<div id=\"{$name}\">");
+	}
+
+	function end_container() {
+		echo("</div>");
+	}
 }
 
 class KintassaTextField extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
-		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
 		echo("</div>");
 	}
@@ -159,7 +162,7 @@ class KintassaButton extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
-		echo("<input type=\"submit\" value=\"{$label}\" name=\"{$btn_name}\">");
+		echo("<input type=\"submit\" value=\"{$this->label}\" name=\"{$name}\">");
 		echo("</div>");
 	}
 }
@@ -168,7 +171,7 @@ class KintassaNumberField extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
-		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
 		echo("</div>");
 	}
@@ -196,17 +199,9 @@ class KintassaCheckbox extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
-		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"checkbox\" name=\"{$name}\" value=\"\">");
 		echo("</div>");
-	}
-}
-
-class KintassaRadioButton extends KintassaField {
-	function render() {
-		$name = $this->name();
-		// TODO: not implemented
-		assert (null);
 	}
 }
 
@@ -214,7 +209,7 @@ class KintassaFileField extends KintassaField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
-		echo("<label for=\"{$name}\">{$label}</label>");
+		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"file\" name=\"{$name}\" value=\"\">");
 		echo("</div>");
 	}
@@ -226,13 +221,27 @@ class KintassaFileField extends KintassaField {
 
 class KintassaRadioGroup extends KintassaFieldContainer {
 	function begin_container() {
-		// TODO: not implemented
-		assert(null);
+		$name = $this->name();
+		echo("<div name=\"{$name}\" id=\"{$name}\" class=\"\">");
 	}
 
 	function end_container() {
-		// TODO: not implemented
-		assert (null);
+		echo("</div>");
+	}
+}
+
+class KintassaRadioButton extends KintassaField {
+	function render() {
+		$parent = $this->parent();
+		assert(is_a($parent, "KintassaRadioGroup"));
+
+		$radio_group_name = $this->parent()->name();
+		$name = $this->name();
+
+		echo("<div class=\"KintassaRadioButton\">");
+		echo("<input type=\"radio\" name=\"{$radio_group_name}\" value=\"{$name}\">");
+		echo("<label for=\"{$name}\">{$this->label}</label>");
+		echo("</div>");
 	}
 }
 
