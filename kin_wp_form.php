@@ -57,7 +57,12 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 	}
 
 	function name() {
-		return $this->form()->name() . "_" . $this->name;
+		$form_name = $this->form()->name();
+		return KintassaNamedFormElement::build_element_name($form_name, $this->name);
+	}
+
+	static function build_name($form_name, $el_name) {
+		return $form_name . "_" . $el_name;
 	}
 
 	static function label_to_name($label) {
@@ -226,6 +231,11 @@ abstract class KintassaForm {
 
 	function name() {
 		return "kin_frm_{$this->name}";
+	}
+
+	function field_name($fieldname) {
+		// TODO: check this matches the code in KintassaNamedFormElement.
+		return KintassaNamedFormElement::build_name($this->name(), $fieldname);
 	}
 
 	/***
