@@ -10,68 +10,13 @@ require_once("kin_micro_orm.php");
 require_once("kin_wp_form.php");
 require_once("kin_wp_page.php");
 
-abstract class KintassaWPTableRowOptions {
-	const RowAdd = 1;
-	const RowDel = 2;
-	const RowEdit = 4;
-	const RowSort = 8;
-	const All = 15;
+abstract class KintassaTableRowForm extends KintassaForm {
+	function set_row($id) {
+		$this->remove_child_by_name("row_id");
 
-	function KintassaWPTableRowOptions($form_name, $flags = KintassaWPTableRowOptions::All) {
-		$this->flags = $flags;
-		$this->form_name = $form_name;
-	}
-
-	function form_id() {
-		return $this->form_name . "_wp_tablerowopts";
-	}
-
-	/***
-	 * returns true if a matching form has been submitted.  Applies to all row instances,
-	 * allowing to act on commands before rendering each row.
-	 */
-	function have_submission() {
-		$form_id = $this->form_id();
-		return (isset($_POST['kintassa_form_id']) && $_POST['kintassa_form_id'] == $form_id);
-	}
-
-	function begin_form($id) {
-		// TODO: proper form action uri
-		$form_id = $this->form_id();
-		$this_uri = esc_url($_SERVER['REQUEST_URI']);
-		echo "<form method=\"POST\" name=\"{$form_id}\" action=\"{$this_uri}\">";
-		echo "<input type=\"hidden\" name=\"kintassa_form_id\" value=\"${form_id}\">";
-	}
-
-	function end_form() {
-		echo "</form>";
-	}
-
-	function render_button($label, $name=null) {
-		if ($name == null) {
-			$name = str_replace(' ', '_', strtolower($label));
-		}
-		echo "<input type=\"submit\" name=\"{$name}\" value=\"${label}\">";
-	}
-
-	function render_form($row) {
-		$id = $row->id;
-		$this->begin_form($id);
-
-		if ($this->flags & KintassaWPTableRowOptions::RowSort) {
-			$this->render_button("up");
-		}
-		if ($this->flags & KintassaWPTableRowOptions::RowSort) {
-			$this->render_button("down");
-		}
-		if ($this->flags & KintassaWPTableRowOptions::RowEdit) {
-			$this->render_button("edit");
-		}
-		if ($this->flags & KintassaWPTableRowOptions::RowDel) {
-			$this->render_button("del");
-		}
-
-		$this->end_form();
+		$row_id_field = new KintassaHiddenField("row_id");
+		$row_id_field->set_value($id);
+		$this->add_child($row_id_field);
 	}
 
 	function submitted_row_id() {
@@ -84,10 +29,30 @@ abstract class KintassaWPTableRowOptions {
 		return 'edit';
 	}
 
-	abstract function do_up($id);
-	abstract function do_down($id);
-	abstract function do_edit($id);
-	abstract function do_del($id);
+	abstract function handle_submitted_form();
+}
+
+abstract class KintassaTableRowOptions extends KintassaTableRowForm {
+	const RowDel = 1;
+	const RowEdit = 2;
+	const RowSort = 4;
+	const All = 7;
+
+	function KintassaTableRowForm($form_name, $flags = KintassaTableRowForm::All) {
+		$this->flags = $flags;
+		$this->form_name = $form_name;
+
+		if ($flags & KintassaTableRowForm::RowSort) {
+			$this->add_child(new KintassaButton("Up"));
+			$this->add_child(new KintassaButton("Down"));
+		}
+		if ($flags & KintassaTableRowForm::RowEdit) {
+			$this->add_child(new KintassaButton("Edit"));
+		}
+		if ($flags & KintassaTableRowForm::RowDel) {
+			$this->add_child(new KintassaButton("Del"));
+		}
+	}
 
 	function handle_submitted_form() {
 		$id = $this->submitted_row_id();
@@ -96,10 +61,10 @@ abstract class KintassaWPTableRowOptions {
 		echo "Action: {$action}";
 
 		$allowed_actions = array(
-			'up'		=> KintassaWPTableRowOptions::RowSort,
-			'down'		=> KintassaWPTableRowOptions::RowSort,
-			'edit'		=> KintassaWPTableRowOptions::RowEdit,
-			'delete'	=> KintassaWPTableRowOptions::RowDel
+			'up'		=> KintassaTableRowForm::RowSort,
+			'down'		=> KintassaTableRowForm::RowSort,
+			'edit'		=> KintassaTableRowForm::RowEdit,
+			'delete'	=> KintassaTableRowForm::RowDel
 		);
 
 		if (array_key_exists($action, $allowed_actions)) {
@@ -115,15 +80,10 @@ abstract class KintassaWPTableRowOptions {
 		}
 	}
 
-	function execute($row) {
-		// look for a submitted row userdata field, and dispatch to the appropriate
-		// handler function based on submitted form button value
-		if ($this->have_submission()) {
-			$this->handle_submitted_form();
-		}
-
-		$this->render_form($row);
-	}
+	abstract function do_up($id);
+	abstract function do_down($id);
+	abstract function do_edit($id);
+	abstract function do_del($id);
 }
 
 abstract class KintassaWPTablePage extends KintassaWPPage {

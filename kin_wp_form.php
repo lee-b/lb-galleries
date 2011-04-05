@@ -83,6 +83,17 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 abstract class KintassaField extends KintassaNamedFormElement {
 }
 
+abstract class KintassaEditableField extends KintassaField {
+	function KintassaField($label, $name=null, $default_val=null) {
+		parent::KintassaNamedFormElement($label, $name=$name);
+		$this->default_val = $default_val;
+	}
+
+	function default_value() {
+		return $this->default_val;
+	}
+}
+
 class KintassaWPNonceField extends KintassaField {
 	function render() {
 		$action = -1;
@@ -147,7 +158,7 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 	}
 }
 
-class KintassaTextField extends KintassaField {
+class KintassaTextField extends KintassaEditableField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
@@ -155,6 +166,10 @@ class KintassaTextField extends KintassaField {
 		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
 		echo("</div>");
 	}
+}
+
+class KintassaHiddenField extends KintassaTextField {
+	function render() {}
 }
 
 class KintassaButton extends KintassaField {
@@ -166,7 +181,7 @@ class KintassaButton extends KintassaField {
 	}
 }
 
-class KintassaNumberField extends KintassaField {
+class KintassaNumberField extends KintassaTextField {
 	function render() {
 		$name = $this->name();
 		echo("<div>");
@@ -298,6 +313,15 @@ abstract class KintassaForm {
 			$ch->render();
 		}
 		$this->end_form();
+	}
+
+	function is_valid() {
+		foreach ($this->children as $ch) {
+			if (!$ch->is_valid($post_vars, $file_vars)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }
 

@@ -2,7 +2,7 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
@@ -10,8 +10,8 @@ require_once("kin_wp_form.php");
 require_once("kgal_gallery.php");
 require_once("kin_wp_tablepage.php");
 
-class KGalleryTableRowOptions extends KintassaWPTableRowOptions {
-	function KGalleryTableRowOptions($opt_flags) {
+class KGalleryTableRowOptions extends KintassaTableRowOptions {
+	function KGalleryTableRowOptions ($opt_flags) {
 		parent::KintassaWPTableRowOptions($opt_flags);
 	}
 

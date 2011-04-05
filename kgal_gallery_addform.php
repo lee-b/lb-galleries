@@ -27,8 +27,8 @@ class KGalleryAddForm extends KintassaWPForm {
 	}
 
 	function render() {
-		if ($this->have_submission('Add')) {
-			echo "(Add results here)";
+		if ($this->have_submission('Confirm')) {
+			echo("(Add results here)");
 		} else {
 			parent::render();
 		}
