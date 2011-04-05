@@ -7,6 +7,38 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once('kin_micro_orm.php');
+require_once('kin_applet.php');
+
+abstract class KintassaGalleryApp extends KintassaApplet {
+	function KintassaGalleryApp($gallery) {
+		parent::KintassaApplet();
+		$this->gallery = $gallery;
+	}
+}
+
+class KintassaAutomatedSlideshowGalleryApp extends KintassaGalleryApp {
+	function render() {
+		$gallery = $this->gallery;
+		$gallery_code = "<div class=\"kintassa_gallery\"";
+
+		$style_code = "";
+		if ($gallery->width) {
+			$style_code .= "width: {$gallery->width};";
+		}
+
+		if ($gallery->height) {
+			$style_code .= "height: {$gallery->height};";
+		}
+
+		if (strlen($style_code) > 0) {
+			$gallery_code .= " style=\"{$style_code}\"";
+		}
+
+		$gallery_code .= ">GALLERY NUMBER {$gallery->id}</div>";
+
+		echo($gallery_code);
+	}
+}
 
 class KintassaGallery extends KintassaMicroORMObject {
 	function KintassaGallery($id = null) {
@@ -56,20 +88,8 @@ class KintassaGallery extends KintassaMicroORMObject {
 	function render($width = null, $height = null) {
 		assert($this->id != null);
 
-		if (!$this->is_loaded()) {
-			$this->load($this->id);
-		}
-
-		$gallery_code = "<div class=\"kintassa_gallery\"";
-
-		$style_code = "";
-		if ($width) { $style_code .= "width: {$width};"; }
-		if ($height) { $style_code .= "height: {$height};"; }
-		if (strlen($style_code) > 0) { $gallery_code .= " style=\"{$style_code}\""; }
-
-		$gallery_code .= ">GALLERY NUMBER {$this->id}</div>";
-
-		return $gallery_code;
+		$app = new KintassaAutomatedSlideshowGalleryApp($this);
+		$app->render();
 	}
 
 	function images() {
