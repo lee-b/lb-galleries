@@ -34,6 +34,8 @@ abstract class KintassaTableForm extends KintassaForm {
 		} else {
 			$this->title = $title;
 		}
+
+		$this->row = null;
 	}
 
 	function render() {
@@ -46,12 +48,12 @@ abstract class KintassaTableForm extends KintassaForm {
 		$this->end_footer();
 
 		foreach ($this->visible_rows() as $row) {
-			$this->begin_row($row_id);
-			foreach ($this->cols as $col) {
-				$this->begin_col($col_id);
-				$this->end_col($col_id);
+			$this->begin_row($row);
+			foreach ($this->col_map as $col) {
+				$this->begin_col($col);
+				$this->end_col($col);
 			}
-			$this->end_row($row_id);
+			$this->end_row($row);
 		}
 
 		$this->end_table();
@@ -86,26 +88,27 @@ abstract class KintassaTableForm extends KintassaForm {
 		echo("</tfoot>");
 	}
 
-	function begin_row($row_id) {
-		$this->row_id = $row_id;
+	function begin_row($row) {
+		$this->row = $row;
 		echo("<tr>");
 	}
 
-	function end_row($row_id) {
-		$this->row_id = null;
+	function end_row($row) {
+		$this->row = null;
 		echo("</tr>");
 	}
 
-	function begin_col($col_id) {
+	function begin_col($col) {
 		echo("<td>");
 	}
 
-	function end_col($col_id) {
+	function end_col($col) {
 		echo("</td>");
 	}
 
 	function visible_rows() {
-		return $this->pager->items_on_page();
+		$keys = $this->pager->items_on_page();
+		return $keys;
 	}
 }
 
@@ -114,8 +117,8 @@ abstract class KintassaRowFormFactory {
 	abstract function instanciate($table_form, $row_id);
 }
 
-abstract class KintassaRowOptionsTableForm extends KintassaTableForm {
-	function KintassaRowOptionsTableForm($table_name, $col_map, $pager, $row_form_factory) {
+abstract class KintassaOptionsTableForm extends KintassaTableForm {
+	function KintassaOptionsTableForm($table_name, $col_map, $pager, $row_form_factory) {
 		parent::KintassaTableForm($table_name, $col_map, $pager);
 
 		$this->row_form_factory = $row_form_factory;
@@ -137,31 +140,47 @@ abstract class KintassaRowOptionsTableForm extends KintassaTableForm {
 	}
 
 	function generate_row_forms() {
-		$rows = $this->pager->items_on_page();
 		$row_forms = array();
 
+		$rows = $this->pager->items_on_page();
 		foreach ($rows as $row) {
-			$row_forms[$row] = $this->row_form_factory->instanciate($this, $row);
+			$rf = $this->row_form_factory->instanciate($this, $row);
+			assert($rf != null);
+			$row_forms[$row->id] = $rf;
 		}
 
 		return $row_forms;
 	}
 
-	function begin_col($col_id) {
-		parent::begin_col($col_id);
-		$row_forms[$this->row_id]->render();
+	function begin_col($col) {
+		parent::begin_col($col);
+
+		if ($col == 'Options') {
+			$o = $this->row_forms[$this->row->id];
+			$o->render();
+		} else if ($col == 'Display Mode') {
+			// display mode; ignore it for now
+		} else {
+			$field_name = str_replace(" ", "_", strtolower($col));
+			echo($this->row->$field_name);
+		}
 	}
 
-	function handle_submissions() {
-		foreach ($this->row_forms as $form) {
-			if ($form->have_submission()) {
-				$row_id = $form->get_var('row_id');
-				$act = $form->submitted_action();
-				$action_handler = 'do_row_action_' . $act;
-				$this->$action_handler($row_id);
-				$got_submission = true;
+	/***
+	 * returns the button submitted and the form it was submitted on
+	 */
+	function buttons_submitted($btns) {
+		$parent_has = parent::buttons_submitted($btns);
+		if ($parent_has) return $parent_has;
+
+		foreach ($this->row_forms as $subform) {
+			$sub_has = $subform->buttons_submitted($btns);
+			if ($sub_has) {
+				return $sub_has;
 			}
 		}
+
+		return null;
 	}
 }
 

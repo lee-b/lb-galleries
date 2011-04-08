@@ -46,7 +46,7 @@ abstract class KintassaFormElement {
 	 * defaults to True.  MUST be overridden when further checks are
 	 * required.
 	 */
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		return true;
 	}
 
@@ -72,8 +72,8 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 		return KintassaNamedFormElement::build_name($form_name, $this->name);
 	}
 
-	function is_present($post_vars, $file_vars) {
-		return isset($post_vars[$this->name()]);
+	function is_present() {
+		return isset($_POST[$this->name()]);
 	}
 
 	static function build_name($form_name, $el_name) {
@@ -104,7 +104,7 @@ class KintassaWPNonceField extends KintassaField {
 		echo ($html);
 	}
 
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		$name = $this->name();
 
 		if (wp_is_admin()) {
@@ -149,9 +149,9 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		}
 	}
 
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		foreach ($this->children as $ch) {
-			if (!$ch->is_valid($post_vars, $file_vars)) {
+			if (!$ch->is_valid()) {
 				return false;
 			}
 		}
@@ -185,27 +185,25 @@ class KintassaHiddenField extends KintassaTextField {
 class KintassaButton extends KintassaField {
 	function render() {
 		$name = $this->name();
-		echo("<div>");
 		echo("<input type=\"submit\" value=\"{$this->label}\" name=\"{$name}\">");
-		echo("</div>");
 	}
 }
 
 class KintassaNumberField extends KintassaTextField {
 	function render() {
 		$name = $this->name();
-		echo("<div>");
+		echo("<span>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
-		echo("</div>");
+		echo("</span>");
 	}
 
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		$name = $this->name();
 
-		if  (!$this->is_present($post_vars, $file_vars)) return false;
+		if  (!$this->is_present()) return false;
 
-		$form_val = $post_vars[$name];
+		$form_val = $_POST[$name];
 		return is_numeric($form_val);
 	}
 }
@@ -215,10 +213,10 @@ class KintassaIntegerField extends KintassaNumberField {
 		return (preg_match('@^[-]?[0-9]+$@',$val) === 1);
 	}
 
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		$name = $this->name();
-		if  (!$this->is_present($post_vars, $file_vars)) return false;
-		$val = $post_vars[$name];
+		if  (!$this->is_present()) return false;
+		$val = $_POST[$name];
 		return $this->isInteger($val);
 	}
 }
@@ -226,23 +224,23 @@ class KintassaIntegerField extends KintassaNumberField {
 class KintassaCheckbox extends KintassaField {
 	function render() {
 		$name = $this->name();
-		echo("<div>");
+		echo("<span>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"checkbox\" name=\"{$name}\" value=\"\">");
-		echo("</div>");
+		echo("</span>");
 	}
 }
 
 class KintassaFileField extends KintassaField {
 	function render() {
 		$name = $this->name();
-		echo("<div>");
+		echo("<span>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"file\" name=\"{$name}\" value=\"\">");
-		echo("</div>");
+		echo("</span>");
 	}
 
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		return ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
 	}
 }
@@ -266,10 +264,10 @@ class KintassaRadioButton extends KintassaField {
 		$radio_group_name = $this->parent()->name();
 		$name = $this->name();
 
-		echo("<div class=\"KintassaRadioButton\">");
+		echo("<span class=\"KintassaRadioButton\">");
 		echo("<input type=\"radio\" name=\"{$radio_group_name}\" value=\"{$name}\">");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
-		echo("</div>");
+		echo("</span>");
 	}
 }
 
@@ -309,7 +307,7 @@ abstract class KintassaForm {
 	}
 
 	function name() {
-		return "kin_frm_{$this->name}";
+		return $this->name;
 	}
 
 	function field_name($fieldname) {
@@ -318,21 +316,28 @@ abstract class KintassaForm {
 	}
 
 	/***
-	 * shortcut to test if a certain button has been submitted, without
-	 * building the entire form. NOTE: this bypasses any class-local
-	 * is_present method, so isn't necessarily valid in all use cases
+	 * checks every button on the form to see if it was submitted, and matches
+	 * a given button name.  Also checks subforms by calling their own
+	 * button_submitted method in sequence.
 	*/
-	function have_submission($btn) {
-		assert($btn == strtolower($btn));
+	function buttons_submitted($btns) {
+		foreach ($btns as $btn) {
+			$real_btn_name = $this->field_name($btn);
 
-		$real_btn_name = $this->field_name($btn);
+			if (isset($_POST[$real_btn_name])) {
+				return array($btn, $this);
+			}
 
-		echo("Looking for button named '{$real_btn_name}'");
-		$set = isset($_POST[$real_btn_name]);
-
-		if ($set) {
-			return $real_btn_name;
+			foreach ($this->children as $ch) {
+				if (is_a($ch, 'KintassaForm')) {
+					if ($ch->buttons_submitted($btn)) {
+						return array($btn, $ch);
+					}
+				}
+			}
 		}
+
+		return null;
 	}
 
 	function uri() {
@@ -347,14 +352,24 @@ abstract class KintassaForm {
 		$this->end_form();
 	}
 
-	function is_valid(&$post_vars, &$file_vars) {
+	function is_valid() {
 		foreach ($this->children as $ch) {
-			if (!$ch->is_valid($post_vars, $file_vars)) {
+			if (!$ch->is_valid()) {
 				return false;
 			}
 		}
 		return true;
 	}
+
+	function execute() {
+		if ($this->is_valid()) {
+			$this->handle_submissions();
+		}
+
+		$this->render();
+	}
+
+	abstract function handle_submissions();
 }
 
 ?>

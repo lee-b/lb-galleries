@@ -28,22 +28,13 @@ class KGalleryAddForm extends KintassaForm {
 		$this->add_child($this->confirm);
 	}
 
-	function render() {
-		$post_vars =& $_POST;
-		$file_vars =& $_FILE;
-
-		if ($this->is_valid($post_vars, $file_vars)) {
-			if ($this->have_submission('confirm')) {
-//			if ($this->confirm->submitted($post_vars, $file_vars)) {
-				echo("(Add results here)");
-			} else {
-				echo ("(No button detected)");
-				parent::render();
-			}
-		} else {
-			echo("(Form not valid)");
-			parent::render();
+	function handle_submissions() {
+		if ($this->have_submission('confirm')) {
+			echo("Form submitted");
+			return true;
 		}
+
+		return false;
 	}
 }
 
