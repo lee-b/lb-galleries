@@ -6,6 +6,8 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
+require_once("kin_platform.php");
+
 abstract class KintassaFormElement {
 	const max_depth = 10;
 
@@ -44,7 +46,7 @@ abstract class KintassaFormElement {
 	 * defaults to True.  MUST be overridden when further checks are
 	 * required.
 	 */
-	function is_valid($post_vars, $file_vars) {
+	function is_valid(&$post_vars, &$file_vars) {
 		return true;
 	}
 
@@ -58,7 +60,8 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 		$this->label = $label;
 
 		if ($name != null) {
-			$this->name = $this->name;
+			assert($name == strtolower($name));
+			$this->name = $name;
 		} else {
 			$this->name = KintassaNamedFormElement::label_to_name($label);
 		}
@@ -69,29 +72,25 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 		return KintassaNamedFormElement::build_name($form_name, $this->name);
 	}
 
+	function is_present($post_vars, $file_vars) {
+		return isset($post_vars[$this->name()]);
+	}
+
 	static function build_name($form_name, $el_name) {
+		assert($form_name == strtolower($form_name));
+		assert($el_name == strtolower($el_name));
+
 		return $form_name . "_" . $el_name;
 	}
 
 	static function label_to_name($label) {
-		$name = strtolower($label);
-		$name = str_replace(" ", "_", $name);
+		$lower_label = strtolower($label);
+		$name = str_replace(" ", "_", $lower_label);
 		return $name;
 	}
 }
 
 abstract class KintassaField extends KintassaNamedFormElement {
-}
-
-abstract class KintassaEditableField extends KintassaField {
-	function KintassaField($label, $name=null, $default_val=null) {
-		parent::KintassaNamedFormElement($label, $name=$name);
-		$this->default_val = $default_val;
-	}
-
-	function default_value() {
-		return $this->default_val;
-	}
 }
 
 class KintassaWPNonceField extends KintassaField {
@@ -105,7 +104,7 @@ class KintassaWPNonceField extends KintassaField {
 		echo ($html);
 	}
 
-	function is_valid($post_vars, $file_vars) {
+	function is_valid(&$post_vars, &$file_vars) {
 		$name = $this->name();
 
 		if (wp_is_admin()) {
@@ -113,6 +112,17 @@ class KintassaWPNonceField extends KintassaField {
 		} else {
 			return wp_verify_nonce($name);
 		}
+	}
+}
+
+abstract class KintassaEditableField extends KintassaField {
+	function KintassaField($label, $name=null, $default_val=null) {
+		parent::KintassaField($label, $name=$name);
+		$this->default_val = $default_val;
+	}
+
+	function default_value() {
+		return $this->default_val;
 	}
 }
 
@@ -139,7 +149,7 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		}
 	}
 
-	function is_valid($post_vars, $file_vars) {
+	function is_valid(&$post_vars, &$file_vars) {
 		foreach ($this->children as $ch) {
 			if (!$ch->is_valid($post_vars, $file_vars)) {
 				return false;
@@ -190,10 +200,13 @@ class KintassaNumberField extends KintassaTextField {
 		echo("</div>");
 	}
 
-	function is_valid($post_vars, $file_vars) {
+	function is_valid(&$post_vars, &$file_vars) {
 		$name = $this->name();
-		$val = $post_vars[$name];
-		return is_numeric($val);
+
+		if  (!$this->is_present($post_vars, $file_vars)) return false;
+
+		$form_val = $post_vars[$name];
+		return is_numeric($form_val);
 	}
 }
 
@@ -202,8 +215,9 @@ class KintassaIntegerField extends KintassaNumberField {
 		return (preg_match('@^[-]?[0-9]+$@',$val) === 1);
 	}
 
-	function is_valid($post_vars, $file_vars) {
+	function is_valid(&$post_vars, &$file_vars) {
 		$name = $this->name();
+		if  (!$this->is_present($post_vars, $file_vars)) return false;
 		$val = $post_vars[$name];
 		return $this->isInteger($val);
 	}
@@ -228,7 +242,7 @@ class KintassaFileField extends KintassaField {
 		echo("</div>");
 	}
 
-	function is_valid($post_vars, $file_vars) {
+	function is_valid(&$post_vars, &$file_vars) {
 		return ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
 	}
 }
@@ -261,8 +275,17 @@ class KintassaRadioButton extends KintassaField {
 
 abstract class KintassaForm {
 	function KintassaForm($name) {
+		assert($name == strtolower($name));
+
 		$this->name = $name;
 		$this->children = array();
+
+		/* if running under wordpress, use its nonce facilities
+		   for added security */
+		if (KintassaPlatform::is_wordpress()) {
+			$this->nonce = new KintassaWPNonceField();
+			$this->add_child($this->nonce);
+		}
 	}
 
 	function parent() {
@@ -290,17 +313,26 @@ abstract class KintassaForm {
 	}
 
 	function field_name($fieldname) {
+		assert($fieldname == strtolower($fieldname));
 		return KintassaNamedFormElement::build_name($this->name(), $fieldname);
 	}
 
 	/***
 	 * shortcut to test if a certain button has been submitted, without
-	 * building the entire form.
+	 * building the entire form. NOTE: this bypasses any class-local
+	 * is_present method, so isn't necessarily valid in all use cases
 	*/
 	function have_submission($btn) {
+		assert($btn == strtolower($btn));
+
 		$real_btn_name = $this->field_name($btn);
+
+		echo("Looking for button named '{$real_btn_name}'");
 		$set = isset($_POST[$real_btn_name]);
-		return $set;
+
+		if ($set) {
+			return $real_btn_name;
+		}
 	}
 
 	function uri() {
@@ -315,7 +347,7 @@ abstract class KintassaForm {
 		$this->end_form();
 	}
 
-	function is_valid() {
+	function is_valid(&$post_vars, &$file_vars) {
 		foreach ($this->children as $ch) {
 			if (!$ch->is_valid($post_vars, $file_vars)) {
 				return false;
@@ -323,13 +355,6 @@ abstract class KintassaForm {
 		}
 		return true;
 	}
-}
-
-/***
- * Represents a very simple, complete-and-submit style single-option form,
- * where the only submit button is simply called 'submit'.
- */
-abstract class KintassaWPForm extends KintassaForm {
 }
 
 ?>

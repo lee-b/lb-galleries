@@ -49,7 +49,7 @@ class KGalleryMenu {
 
 		echo '<h2>' . $this->menu_title . '</h2>';
 
-		$pg = new KGalleryTablePage("GalleryTable", 'KintassaGallery');
+		$pg = new KGalleryTablePage("kgallery_table");
 		$pg->execute();
 	}
 
