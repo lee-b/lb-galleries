@@ -7,7 +7,9 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once("kgal_gallery_tablepage.php");
+//require_once("kgal_galimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
+require_once("kgal_about_page.php");
 
 class KGalleryMenu {
 	function KGalleryMenu() {
@@ -47,25 +49,20 @@ class KGalleryMenu {
 	function mainpage() {
 		require_once("kgal_gallery.php");
 
-		echo '<h2>' . $this->menu_title . '</h2>';
-
-		$pg = new KGalleryTablePage("kgallery_table");
+		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
 		$pg->execute();
 	}
 
 	function add_gallery() {
+		// TODO: convert to KGalleryAddPage()
 		echo '<h2>' . $this->menu_title . '</h2>';
-
 		$addForm = new KGalleryAddForm();
-		$addForm->render();
+		$addForm->execute();
 	}
 
 	function about() {
-		echo '<h2>' . $this->menu_title . '</h2>';
-
-		echo "Copyright &copy; 2011 by Kintassa.  All rights reserved.";
-
-		// TODO: not implemented
+		$about_page = new KGalAboutPage();
+		$about_page->execute();
 	}
 }
 

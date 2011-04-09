@@ -129,9 +129,8 @@ class KintassaDBResultsPager extends KintassaPager {
 
 class KGalleryTablePage extends KintassaPage {
 	function KGalleryTablePage($name) {
-		parent::KintassaPage('KintassaGallery');
+		parent::KintassaPage($name);
 
-		$form_name = $name;
 		$col_map = array(
 			"Name",
 			"Width",
@@ -146,7 +145,7 @@ class KGalleryTablePage extends KintassaPage {
 		$this->table_form = new KGalleryTableForm($name, $col_map, $pager, $row_form_fac);
 	}
 
-	function execute() {
+	function content() {
 		$this->table_form->execute();
 	}
 }

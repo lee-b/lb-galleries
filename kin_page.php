@@ -7,9 +7,24 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 abstract class KintassaPage {
-	function KintassaPage() {}
+	function KintassaPage($title) {
+		$this->title = $title;
+	}
 
-	abstract function execute();
+	function begin_page() {
+		echo("<h2 class=\"title\">{$this->title}</h2>");
+	}
+
+	function end_page() {
+	}
+
+	abstract function content();
+
+	function execute() {
+		$this->begin_page();
+		$this->content();
+		$this->end_page();
+	}
 }
 
 ?>
