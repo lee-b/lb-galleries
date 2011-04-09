@@ -158,8 +158,6 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 		if ($col == 'Options') {
 			$o = $this->row_forms[$this->row->id];
 			$o->render();
-		} else if ($col == 'Display Mode') {
-			// display mode; ignore it for now
 		} else {
 			$field_name = str_replace(" ", "_", strtolower($col));
 			echo($this->row->$field_name);
