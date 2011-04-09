@@ -33,8 +33,6 @@ abstract class KGalleryForm extends KintassaForm {
 		}
 		$this->add_child($this->display_mode_field);
 
-		$this->add_child(new KintassaCheckbox("Show navbar"));
-
 		$button_bar = new KintassaFieldBand("button_bar");
 		$confirm_button = new KintassaButton("Confirm", $name="confirm", $primary = true);
 		$button_bar->add_child($confirm_button);
@@ -88,12 +86,7 @@ abstract class KGalleryForm extends KintassaForm {
 	}
 
 	function handle_submissions() {
-		if ($this->is_valid()) {
-			$this->update_record();
-			return true;
-		} else {
-			return false;
-		}
+		$this->update_record();
 	}
 }
 

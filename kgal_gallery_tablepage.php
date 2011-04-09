@@ -78,6 +78,8 @@ class KGalleryRowOptionsFactory extends KintassaRowFormFactory {
 
 class KintassaDBResultsPager extends KintassaPager {
 	function __construct($table_name, $page_size = 10) {
+		parent::__construct();
+
 		assert ($page_size > 0);
 
 		$this->table_name =  $table_name;
@@ -85,46 +87,80 @@ class KintassaDBResultsPager extends KintassaPager {
 		$this->results = null;
 	}
 
-	function num_pages() {
-		assert ($this->results);
-		$pg = $this->current_page();
-		$num_results = count($this->results);
-		$num_pages = $num_results / $this->page_size;
-		if ($num_results % $num_pages) {
-			$num_pages += 1;
+	function num_results() {
+		global $wpdb;
+		$qry = $this->build_count_query();
+		$res = $wpdb->get_var($qry);
+		return $res;
+	}
+
+	function page_size() {
+		return $this->page_size;
+	}
+
+	function current_page() {
+		if (isset($_GET['pagenum'])) {
+			$pg = (int) $_GET['pagenum'];
+			$num_pages = $this->num_pages();
+
+			if ($pg < 1) {
+				$pg = 1;
+			} else if ($pg > $num_pages) {
+				$pg = $num_pages;
+			}
+		} else {
+			$pg = 1;
 		}
-		return $num_pages;
+
+		return $pg;
+	}
+
+	function items_on_page() {
+		$db_results = $this->get_db_results();
+
+		$res = array();
+		foreach ($db_results as $row) {
+			$res[] = $row;
+		}
+		return $res;
+	}
+
+	function page_link($page_num) {
+		return "/wp-admin/admin.php?page=KGalleryMenu_mainpage&pagenum={$page_num}";
 	}
 
 	function render_page_nav() {
-		$num_records = count($this->results);
+		$num_records = $this->num_results();
 		$pages = $this->num_pages();
 		$current_page = $this->current_page();
 
 		echo("<div class=\"page-nav\">{$num_records} entries found; {$pages} pages, {$this->page_size} entries per page. Go to page: ");
 
 		foreach (range(1, $pages, 1) as $pg) {
+			$page_link = $this->page_link($pg);
 			if ($pg == $current_page) {
-				echo(" <a href=\"#\" class=\"link-button\"><strong>{$pg}</strong></a> ");
+				echo(" <strong>{$pg}</strong> ");
 			} else {
-				echo (" <a href=\"#\" class=\"link-button\">{$pg}</a> ");
+				echo (" <a href=\"{$page_link}\" class=\"link-button\">{$pg}</a> ");
 			}
 		}
 
 		echo ("</div>");
 	}
 
-	function build_query($page_num) {
-		assert($page_num >= 1);
+	function build_count_query() {
+		$qry = "SELECT COUNT(*) FROM {$this->table_name}";
+		return $qry;
+	}
 
-		// start at index 0
-		$page_num = $page_num - 1;
-		$start_item = $page_num * $this->page_size;
-		if ($start_item < 1) {
-			$start_item = 1;
-		}
+	function build_page_query() {
+		$page_size = $this->page_size();
 
-		$qry = "SELECT * FROM {$this->table_name} ORDER BY `name` ASC LIMIT {$start_item},{$this->page_size}";
+		$page_num = $this->current_page();
+		$page_num -= 1; // count from zero
+
+		$start_item = $page_size * $page_num;
+		$qry = "SELECT * FROM {$this->table_name} ORDER BY `name` ASC LIMIT {$start_item},{$page_size}";
 
 		return $qry;
 	}
@@ -136,26 +172,11 @@ class KintassaDBResultsPager extends KintassaPager {
 		global $wpdb;
 
 		if ($this->results == null) {
-			$page_num = 1;
-			$qry = $this->build_query($page_num);
+			$qry = $this->build_page_query();
 			$this->results = $wpdb->get_results($qry);
 		}
 
 		return $this->results;
-	}
-
-	function current_page() {
-		return $_GET['page'];
-	}
-
-	function items_on_page() {
-		$db_results = $this->get_db_results();
-
-		$res = array();
-		foreach ($db_results as $row) {
-			$res[] = $row;
-		}
-		return $res;
 	}
 }
 

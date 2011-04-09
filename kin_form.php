@@ -15,10 +15,17 @@ abstract class KintassaPageElement {
 	function __construct() {
 		$this->_parent = null;
 		$this->validation_errors = array();
-		$this->validation_error("test message");
+		$this->extra_classes = array();
+	}
+
+	function add_class($cls) {
+		if (!in_array($cls, $this->extra_classes)) {
+			$this->extra_classes[] = $cls;
+		}
 	}
 
 	function validation_error($err_msg) {
+		$this->add_class("form-invalid");
 		$this->validation_errors[] = $err_msg;
 	}
 
@@ -37,7 +44,8 @@ abstract class KintassaPageElement {
 	}
 
 	function classes() {
-		return array("kintassa_form_el");
+		$cl = array_merge(array("kintassa_form_el"), $this->extra_classes);
+		return $cl;
 	}
 
 	function class_attrib_str() {
@@ -61,8 +69,31 @@ abstract class KintassaPageElement {
 		return null;
 	}
 
-	function render() {
+	function block_layout() {
+		return false;
+	}
+
+	function begin_render() {
+		$cl = $this->class_attrib_str();
+
+		$tag = $this->block_layout() ? "div" : "span";
+		echo("<{$tag} {$cl}>");
+
 		$this->render_validation_errors();
+	}
+
+	function render_content() {
+	}
+
+	function end_render() {
+		$tag = $this->block_layout() ? "div" : "span";
+		echo("</{$tag}>");
+	}
+
+	function render() {
+		$this->begin_render();
+		$this->render_content();
+		$this->end_render();
 	}
 }
 
@@ -82,11 +113,14 @@ abstract class KintassaFormElement extends KintassaPageElement {
 		return true;
 	}
 
+	/***
+	 * returns raw field names from children, suitable for radiogroups
+	 */
 	function child_field_names($recurse = True) {
 		$child_names = array();
 		foreach ($this->children as $ch) {
 			if (is_a($ch, 'KintassaField')) {
-				$child_names[] = $ch->name();
+				$child_names[] = $ch->name;
 			} else if ($recurse) {
 				$tmp_names = $ch->child_field_names();
 				$new_child_names = array_merge($child_names, $tmp_names);
@@ -138,7 +172,9 @@ abstract class KintassaField extends KintassaNamedFormElement {
 }
 
 class KintassaWPNonceField extends KintassaField {
-	function render() {
+	function render_content() {
+		parent::render_content();
+
 		$action = -1;
 		$name = $this->name();
 		$referer = true;
@@ -183,13 +219,7 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		$ch->_set_parent($this);
 	}
 
-	function render() {
-		$this->begin_container();
-		$this->render_children();
-		$this->end_container();
-	}
-
-	function render_children() {
+	function render_content() {
 		foreach ($this->children as $ch) {
 			$ch->render();
 		}
@@ -203,28 +233,21 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		}
 		return true;
 	}
-
-	function begin_container() {}
-	function end_container() {}
 }
 
 /***
  * Provides a horizontal band to layout/divide form elements
  */
 class KintassaFieldBand extends KintassaFieldContainer {
-	function begin_container() {
-		parent::begin_container();
-		$name = $this->name();
-		echo("<div class=\"kintassa_field,kintassa_field_band\" id=\"{$name}\">");
-	}
-
-	function end_container() {
-		echo("</div>");
+	function block_layout() {
+		return true;
 	}
 }
 
 class KintassaTextField extends KintassaEditableField {
-	function render() {
+	function render_content() {
+		parent::render_content();
+
 		$name = $this->name();
 		$def_val = $this->default_value();
 
@@ -233,9 +256,6 @@ class KintassaTextField extends KintassaEditableField {
 			$val = $def_val;
 		}
 
-		$cl = $this->class_attrib_str();
-
-		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"{$val}\">");
 		echo("</span>");
@@ -260,7 +280,13 @@ class KintassaHiddenField extends KintassaEditableField {
 	}
 
 	function render() {
+		$def_val = $this->default_value();
+
 		$val = $this->value();
+		if ($val == null) {
+			$val = $def_val;
+		}
+
 		echo("<input type=\"hidden\" name=\"{$this->name}\" value=\"{$val}\"");
 	}
 }
@@ -296,9 +322,10 @@ class KintassaNumberField extends KintassaTextField {
 	function render() {
 		$name = $this->name();
 		$cl = $this->classes();
+
 		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
-		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
+		echo("<input type=\"text\" id=\"{name}\" name=\"{$name}\" value=\"\">");
 		echo("</span>");
 	}
 
@@ -362,14 +389,8 @@ class KintassaFileField extends KintassaField {
 }
 
 class KintassaRadioGroup extends KintassaFieldContainer {
-	function begin_container() {
-		$name = $this->name();
-		$cl = $this->class_attrib_str();
-		echo("<div name=\"{$name}\" id=\"{$name}\" {$cl}");
-	}
-
-	function end_container() {
-		echo("</div>");
+	function block_layout() {
+		return true;
 	}
 
 	function is_valid() {
@@ -380,7 +401,14 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 
 		$post_val = $_POST[$this->name()];
 		$child_fields = $this->child_field_names();
-		return in_array($post_val, $child_fields);
+		$present = in_array($post_val, $child_fields);
+
+		if (!$present) {
+			$allowed_opts = implode(",", $child_fields);
+			$this->validation_error($post_val . " isn't a recognised option for this radio group [allowed: " . $allowed_opts . "]");
+		}
+
+		return $present;
 	}
 
 	function value() {
@@ -391,7 +419,7 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 }
 
 class KintassaRadioButton extends KintassaField {
-	function render() {
+	function render_content() {
 		$parent = $this->parent();
 		assert(is_a($parent, "KintassaRadioGroup"));
 
@@ -402,10 +430,12 @@ class KintassaRadioButton extends KintassaField {
 		$val = $this->name;
 
 		$cl = $this->class_attrib_str();
-		echo("<span {$cl}>");
 		echo("<input type=\"radio\" id=\"{$id}\" name=\"{$radio_group_name}\" value=\"{$val}\">");
 		echo("<label for=\"{$id}\">{$label}</label>");
-		echo("</span>");
+	}
+
+	function block_layout() {
+		return true;
 	}
 
 	function classes() {
@@ -417,6 +447,8 @@ class KintassaRadioButton extends KintassaField {
 
 abstract class KintassaForm extends KintassaPageElement {
 	function __construct($name) {
+		parent::__construct();
+
 		assert($name == strtolower($name));
 
 		$this->name = $name;

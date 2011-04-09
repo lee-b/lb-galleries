@@ -10,9 +10,25 @@ require_once("kin_form.php");
 require_once("kin_page.php");
 
 abstract class KintassaPager {
+	function __construct() {}
+
+	function num_pages() {
+		$num_results = $this->num_results();
+
+		$num_pages = (int) ($num_results / $this->page_size());
+
+		if ($num_results % $num_pages) {
+			$num_pages += 1;
+		}
+
+		return $num_pages;
+	}
+
 	abstract function current_page();
-	abstract function num_pages();
+	abstract function num_results();
+	abstract function page_size();
 	abstract function items_on_page();
+	abstract function render_page_nav();
 }
 
 abstract class KintassaTableForm extends KintassaForm {
