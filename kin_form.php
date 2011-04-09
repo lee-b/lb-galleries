@@ -9,10 +9,10 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once("kin_platform.php");
 require_once("kin_utils.php");
 
-abstract class KintassaFormElement {
+abstract class KintassaPageElement {
 	const max_depth = 10;
 
-	function KintassaFormElement() {
+	function KintassaPageElement() {
 		$this->_parent = null;
 	}
 
@@ -33,12 +33,12 @@ abstract class KintassaFormElement {
 		return "class=\"" . implode(" ", $cl) . "\"";
 	}
 
-	function parent_form() {
+	function parent_of_type($typename) {
 		$count = 0;
 		$p = $this->parent();
 
 		while ($count < KintassaFormElement::max_depth) {
-			if (($p != null) && is_a($p, 'KintassaForm')) {
+			if (($p != null) && is_a($p, $typename)) {
 				return $p;
 			}
 
@@ -46,9 +46,15 @@ abstract class KintassaFormElement {
 			$count += 1;
 		}
 
-		// if we get here, there is no parent defined for the form
-		// field, which violates the Kintassa Form API, so we SHOULD fail.
-		exit("KintassaFormElement::parent_form(): orphan element detected.");
+		return null;
+	}
+}
+
+abstract class KintassaFormElement extends KintassaPageElement {
+	function parent_form() {
+		$parent_form = $this->parent_of_type('KintassaForm');
+		assert ($parent_form != null); // form elements need to be in a form
+		return $parent_form;
 	}
 
 	/***
@@ -367,11 +373,12 @@ class KintassaRadioButton extends KintassaField {
 	}
 }
 
-abstract class KintassaForm {
+abstract class KintassaForm extends KintassaPageElement {
 	function KintassaForm($name) {
 		assert($name == strtolower($name));
 
 		$this->name = $name;
+
 		$this->children = array();
 
 		/* if running under wordpress, use its nonce facilities

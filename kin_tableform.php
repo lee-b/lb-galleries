@@ -59,8 +59,16 @@ abstract class KintassaTableForm extends KintassaForm {
 		$this->end_table();
 	}
 
+	function classes() {
+		$cl = parent::classes();
+		$cl[] = "widefat";
+		return $cl;
+	}
+
 	function begin_table() {
-		echo("<table>");
+		$name = $this->name;
+		$cl = $this->class_attrib_str();
+		echo("<table id=\"{$name}\" {$cl}>");
 	}
 
 	function end_table() {
