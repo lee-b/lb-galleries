@@ -128,8 +128,10 @@ class KintassaDBResultsPager extends KintassaPager {
 }
 
 class KGalleryTablePage extends KintassaPage {
-	function KGalleryTablePage($name) {
-		parent::KintassaPage($name);
+	function KGalleryTablePage($name, $title) {
+		parent::KintassaPage($title);
+
+		$form_name = $name;
 
 		$col_map = array(
 			"Name",
@@ -142,7 +144,7 @@ class KGalleryTablePage extends KintassaPage {
 		$pager = new KintassaDBResultsPager($table_name);
 
 		$row_form_fac = new KGalleryRowOptionsFactory($table_name);
-		$this->table_form = new KGalleryTableForm($name, $col_map, $pager, $row_form_fac);
+		$this->table_form = new KGalleryTableForm($form_name, $col_map, $pager, $row_form_fac);
 	}
 
 	function content() {

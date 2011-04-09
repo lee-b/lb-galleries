@@ -22,6 +22,7 @@ function kgallery_create_tables() {
 			`name` VARCHAR(128) NULL ,
 			`width` INT NULL ,
 			`height` INT NULL ,
+			`display_mode` VARCHAR(16),
 			PRIMARY KEY (`id`)
 		)
 		ENGINE = InnoDB

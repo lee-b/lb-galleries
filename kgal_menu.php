@@ -9,7 +9,9 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once("kgal_gallery_tablepage.php");
 //require_once("kgal_galimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
+//require_once("kgal_gallery_editform.php");
 require_once("kgal_about_page.php");
+require_once("kin_utils.php");
 
 class KGalleryMenu {
 	function KGalleryMenu() {
@@ -42,6 +44,7 @@ class KGalleryMenu {
 	function add_menus() {
 		$mainpage = 'mainpage';
 		$this->add_page($this->menu_title, 'administrator', $mainpage);
+/*		$this->add_subpage($mainpage, 'Edit Gallery', 'administrator', 'edit_gallery');*/
 		$this->add_subpage($mainpage, 'Add Gallery', 'administrator', 'add_gallery');
 		$this->add_subpage($mainpage, 'About', 'administrator', 'about');
 	}
@@ -56,12 +59,21 @@ class KGalleryMenu {
 	function add_gallery() {
 		// TODO: convert to KGalleryAddPage()
 		echo '<h2>' . $this->menu_title . '</h2>';
-		$addForm = new KGalleryAddForm();
+		$addForm = new KGalleryAddForm("kgallery_add");
 		$addForm->execute();
 	}
 
+/*
+	function edit_gallery() {
+		gallery_id = $_GET['gallery_id'];
+		assert (KintassaUtils::isInteger($gallery_id));
+
+		$editForm = new KGalleryEditForm($gallery_id);
+		$editForm->execute();
+	}
+*/
 	function about() {
-		$about_page = new KGalAboutPage();
+		$about_page = new KGalleryAboutPage("About {$this->menu_title}");
 		$about_page->execute();
 	}
 }
