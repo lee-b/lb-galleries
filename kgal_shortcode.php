@@ -9,7 +9,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once("kgal_gallery.php");
 
 class KGalleryShortcode {
-	function KGalleryShortcode() {
+	function __construct() {
 		add_shortcode('kintassa_gallery', array(&$this, 'render_shortcode'));
 		$this->register_stylesheets();
 	}

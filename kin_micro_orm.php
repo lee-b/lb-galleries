@@ -7,7 +7,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 abstract class KintassaMicroORMObject {
-	function KintassaMicroORMObject($id = null) {
+	function __construct($id = null) {
 		$this->id = null;
 
 		$this->loaded = false;

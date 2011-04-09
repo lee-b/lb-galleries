@@ -14,8 +14,8 @@ require_once("kin_wp_plugin.php");
 require_once("kgal_db.php");
 
 class KintassaGalleryPlugin extends KintassaWPPlugin {
-	function KintassaGalleryPlugin() {
-		parent::KintassaWPPlugin(__FILE__);
+	function __construct() {
+		parent::__construct(__FILE__);
 
 		require_once("kgal_menu.php");
 		$kgallery_menu = new KGalleryMenu();

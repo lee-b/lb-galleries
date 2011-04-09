@@ -10,8 +10,8 @@ require_once("kin_form.php");
 require_once("kgal_gallery.php");
 
 abstract class KGalleryForm extends KintassaForm {
-	function KGalleryForm($name) {
-		parent::KintassaForm($name);
+	function __construct($name) {
+		parent::__construct($name);
 
 		$this->name_field = new KintassaTextField("Name");
 		$this->add_child($this->name_field);
@@ -78,14 +78,22 @@ abstract class KGalleryForm extends KintassaForm {
 	/// update the record in the database, based on the form details
 	abstract function update_record();
 
+	function is_valid() {
+		$valid = parent::is_valid();
+		if (!$valid) {
+			return $valid;
+		} else {
+			return $this->buttons_submitted(array('confirm')) != null;
+		}
+	}
+
 	function handle_submissions() {
-		$action_form = $this->buttons_submitted(array('confirm'));
-		if ($action_form != null) {
+		if ($this->is_valid()) {
 			$this->update_record();
 			return true;
+		} else {
+			return false;
 		}
-
-		return false;
 	}
 }
 
@@ -103,8 +111,8 @@ class KGalleryAddForm extends KGalleryForm {
 }
 
 class KGalleryEditForm extends KGalleryForm {
-	function KGalleryEditForm($name, $gallery_id) {
-		parent::KGalleryForm($name);
+	function __construct($name, $gallery_id) {
+		parent::__construct($name);
 
 		$this->id_field = new KintassaHiddenField('id', $default_value = $gallery_id);
 		$this->add_child($this->id_field);

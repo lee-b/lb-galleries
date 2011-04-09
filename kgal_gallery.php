@@ -10,8 +10,8 @@ require_once('kin_micro_orm.php');
 require_once('kin_applet.php');
 
 abstract class KintassaGalleryApp extends KintassaApplet {
-	function KintassaGalleryApp($gallery) {
-		parent::KintassaApplet();
+	function __construct($gallery) {
+		parent::__construct();
 		$this->gallery = $gallery;
 	}
 }
@@ -69,8 +69,8 @@ class KintassaManualSlideshowGalleryApp extends KintassaGalleryApp {
 }
 
 class KintassaGallery extends KintassaMicroORMObject {
-	function KintassaGallery($id = null) {
-		parent::KintassaMicroORMObject($id);
+	function __construct($id = null) {
+		parent::__construct($id);
 
 		if (!$this->is_loaded()) {
 			$this->load($id);

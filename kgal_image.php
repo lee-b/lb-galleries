@@ -9,8 +9,8 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once('kin_micro_orm.php');
 
 class KintassaGalleryImage extends KintassaMicroORMObject {
-	function KintassaGalleryImage($id = null) {
-		parent::KintassaMicroORMObject(KintassaGalleryImage::table_name, $id);
+	function __construct($id = null) {
+		parent::__construct(KintassaGalleryImage::table_name, $id);
 
 		if (!$this->is_loaded()) {
 			// TODO: Not implemented

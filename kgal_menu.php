@@ -14,7 +14,7 @@ require_once("kgal_about_page.php");
 require_once("kin_utils.php");
 
 class KGalleryMenu {
-	function KGalleryMenu() {
+	function __construct() {
 		$this->menu_title = "Kintassa Galleries";
 		add_action('admin_menu', array(&$this, 'add_menus'));
 	}

@@ -7,7 +7,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 abstract class KintassaPage {
-	function KintassaPage($title) {
+	function __construct($title) {
 		$this->title = $title;
 	}
 

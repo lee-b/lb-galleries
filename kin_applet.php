@@ -10,7 +10,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
  * An HTML applet which is displayed on a webpage
  */
 abstract class KintassaApplet {
-	function KintassaApplet () {
+	function __construct() {
 	}
 
 	function add_stylesheet($rel_path) {

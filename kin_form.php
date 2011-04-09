@@ -12,8 +12,20 @@ require_once("kin_utils.php");
 abstract class KintassaPageElement {
 	const max_depth = 10;
 
-	function KintassaPageElement() {
+	function __construct() {
 		$this->_parent = null;
+		$this->validation_errors = array();
+		$this->validation_error("test message");
+	}
+
+	function validation_error($err_msg) {
+		$this->validation_errors[] = $err_msg;
+	}
+
+	function render_validation_errors() {
+		foreach ($this->validation_errors as $err_msg) {
+			echo ("<div class=\"warning\">{$err_msg}</div>");
+		}
 	}
 
 	function _set_parent($p) {
@@ -48,6 +60,10 @@ abstract class KintassaPageElement {
 
 		return null;
 	}
+
+	function render() {
+		$this->render_validation_errors();
+	}
 }
 
 abstract class KintassaFormElement extends KintassaPageElement {
@@ -79,13 +95,11 @@ abstract class KintassaFormElement extends KintassaPageElement {
 		}
 		return $child_names;
 	}
-
-	abstract function render();
 }
 
 abstract class KintassaNamedFormElement extends KintassaFormElement {
-	function KintassaNamedFormElement($label, $name = null) {
-		parent::KintassaFormElement();
+	function __construct($label, $name = null) {
+		parent::__construct();
 
 		$this->label = $label;
 
@@ -146,8 +160,8 @@ class KintassaWPNonceField extends KintassaField {
 }
 
 abstract class KintassaEditableField extends KintassaField {
-	function KintassaEditableField($label, $name=null, $default_val=null) {
-		parent::KintassaField($label, $name=$name);
+	function __construct($label, $name=null, $default_val=null) {
+		parent::__construct($label, $name=$name);
 		$this->default_val = $default_val;
 	}
 
@@ -159,8 +173,8 @@ abstract class KintassaEditableField extends KintassaField {
 }
 
 abstract class KintassaFieldContainer extends KintassaNamedFormElement {
-	function KintassaFieldContainer($label, $name = null) {
-		parent::KintassaNamedFormElement($label, $name = $name);
+	function __construct($label, $name = null) {
+		parent::__construct($label, $name = $name);
 		$this->children = array();
 	}
 
@@ -252,8 +266,8 @@ class KintassaHiddenField extends KintassaEditableField {
 }
 
 class KintassaButton extends KintassaField {
-	function KintassaButton($label, $name=null, $primary=false) {
-		parent::KintassaField($label, $name=$name);
+	function __construct($label, $name=null, $primary=false) {
+		parent::__construct($label, $name=$name);
 		$this->primary = $primary;
 	}
 
@@ -291,7 +305,10 @@ class KintassaNumberField extends KintassaTextField {
 	function is_valid() {
 		$name = $this->name();
 
-		if  (!$this->is_present()) return false;
+		if  (!$this->is_present()) {
+			$this->validation_error("Not provided");
+			return false;
+		}
 
 		$form_val = $_POST[$name];
 		return is_numeric($form_val);
@@ -301,16 +318,24 @@ class KintassaNumberField extends KintassaTextField {
 class KintassaIntegerField extends KintassaNumberField {
 	function is_valid() {
 		$name = $this->name();
-		if  (!$this->is_present()) return false;
+		if  (!$this->is_present()) {
+			$this->validation_error("Not provided");
+			return false;
+		}
 		$val = $_POST[$name];
-		return KintassaUtils::isInteger($val);
+		$is_int = KintassaUtils::isInteger($val);
+		if (!$is_int) {
+			$this->validation_error("Not an integer");
+		}
+		return $is_int;
 	}
 }
 
 class KintassaCheckbox extends KintassaField {
 	function render() {
 		$name = $this->name();
-		echo("<span>");
+		$cl = $this->class_attrib_str();
+		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"checkbox\" name=\"{$name}\" value=\"\">");
 		echo("</span>");
@@ -320,21 +345,27 @@ class KintassaCheckbox extends KintassaField {
 class KintassaFileField extends KintassaField {
 	function render() {
 		$name = $this->name();
-		echo("<span>");
+		$cl = $this->class_attrib_str();
+		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"file\" name=\"{$name}\" value=\"\">");
 		echo("</span>");
 	}
 
 	function is_valid() {
-		return ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
+		$ok = ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
+		if (!$ok) {
+			$this->validation_error("Upload failed; please retry");
+		}
+		return $ok;
 	}
 }
 
 class KintassaRadioGroup extends KintassaFieldContainer {
 	function begin_container() {
 		$name = $this->name();
-		echo("<div name=\"{$name}\" id=\"{$name}\" class=\"\">");
+		$cl = $this->class_attrib_str();
+		echo("<div name=\"{$name}\" id=\"{$name}\" {$cl}");
 	}
 
 	function end_container() {
@@ -342,8 +373,12 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 	}
 
 	function is_valid() {
-		$post_val = $_POST[$this->name()];
+		if (!isset($_POST[$this->name()])) {
+			$this->validation_error($this->name() . " not posted");
+			return false;
+		}
 
+		$post_val = $_POST[$this->name()];
 		$child_fields = $this->child_field_names();
 		return in_array($post_val, $child_fields);
 	}
@@ -366,15 +401,22 @@ class KintassaRadioButton extends KintassaField {
 		$label = $this->label;
 		$val = $this->name;
 
-		echo("<span class=\"KintassaRadioButton\">");
+		$cl = $this->class_attrib_str();
+		echo("<span {$cl}>");
 		echo("<input type=\"radio\" id=\"{$id}\" name=\"{$radio_group_name}\" value=\"{$val}\">");
 		echo("<label for=\"{$id}\">{$label}</label>");
 		echo("</span>");
 	}
+
+	function classes() {
+		$cl = parent::classes();
+		$cl[] = "KintassaRadioButton";
+		return $cl;
+	}
 }
 
 abstract class KintassaForm extends KintassaPageElement {
-	function KintassaForm($name) {
+	function __construct($name) {
 		assert($name == strtolower($name));
 
 		$this->name = $name;
@@ -402,7 +444,8 @@ abstract class KintassaForm extends KintassaPageElement {
 	function begin_form() {
 		$form_uri = $this->uri();
 		$form_name = $this->name();
-		echo "<form method=\"post\" action=\"{$form_uri}\" name=\"{$form_name}\" enctype=\"multipart/form-data\">";
+		$cl = $this->class_attrib_str();
+		echo "<form {$cl} method=\"post\" action=\"{$form_uri}\" name=\"{$form_name}\" enctype=\"multipart/form-data\">";
 	}
 
 	function end_form() {

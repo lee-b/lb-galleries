@@ -32,6 +32,11 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 			return true;
 		}
 	}
+
+	function end_table() {
+		parent::end_table();
+		$this->pager->render_page_nav();
+	}
 }
 
 class KGalleryRowOptionsForm extends KintassaForm {
@@ -40,9 +45,9 @@ class KGalleryRowOptionsForm extends KintassaForm {
 	const Delete = 4;
 	const All = 7;
 
-	function KGalleryRowOptionsForm($table_form, $row, $opts = KGalleryRowOptionsForm::All) {
+	function __construct($table_form, $row, $opts = KGalleryRowOptionsForm::All) {
 		$form_name = $table_form->name() . "_row_" . $row->id;
-		parent::KintassaForm($form_name);
+		parent::__construct($form_name);
 		$this->row = $row;
 
 		if ($opts & KGalleryRowOptionsForm::Sort) {
@@ -72,10 +77,41 @@ class KGalleryRowOptionsFactory extends KintassaRowFormFactory {
 }
 
 class KintassaDBResultsPager extends KintassaPager {
-	function KintassaDBResultsPager($table_name, $page_size = 10) {
+	function __construct($table_name, $page_size = 10) {
+		assert ($page_size > 0);
+
 		$this->table_name =  $table_name;
 		$this->page_size = $page_size;
 		$this->results = null;
+	}
+
+	function num_pages() {
+		assert ($this->results);
+		$pg = $this->current_page();
+		$num_results = count($this->results);
+		$num_pages = $num_results / $this->page_size;
+		if ($num_results % $num_pages) {
+			$num_pages += 1;
+		}
+		return $num_pages;
+	}
+
+	function render_page_nav() {
+		$num_records = count($this->results);
+		$pages = $this->num_pages();
+		$current_page = $this->current_page();
+
+		echo("<div class=\"page-nav\">{$num_records} entries found; {$pages} pages, {$this->page_size} entries per page. Go to page: ");
+
+		foreach (range(1, $pages, 1) as $pg) {
+			if ($pg == $current_page) {
+				echo(" <a href=\"#\" class=\"link-button\"><strong>{$pg}</strong></a> ");
+			} else {
+				echo (" <a href=\"#\" class=\"link-button\">{$pg}</a> ");
+			}
+		}
+
+		echo ("</div>");
 	}
 
 	function build_query($page_num) {
@@ -109,11 +145,7 @@ class KintassaDBResultsPager extends KintassaPager {
 	}
 
 	function current_page() {
-		return $this->current_page;
-	}
-
-	function num_pages() {
-		return $this->results->count();
+		return $_GET['page'];
 	}
 
 	function items_on_page() {
@@ -128,8 +160,8 @@ class KintassaDBResultsPager extends KintassaPager {
 }
 
 class KGalleryTablePage extends KintassaPage {
-	function KGalleryTablePage($name, $title) {
-		parent::KintassaPage($title);
+	function __construct($name, $title) {
+		parent::__construct($title);
 
 		$form_name = $name;
 

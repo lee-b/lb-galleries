@@ -23,8 +23,8 @@ abstract class KintassaTableForm extends KintassaForm {
 	 * @param $col_map		dictionary of column names and flags
 	 * @param $pager		a KintassaPager instance
 	 */
-	function KintassaTableForm($form_name, $col_map, $pager, $title = null) {
-		parent::KintassaForm($form_name);
+	function __construct($form_name, $col_map, $pager, $title = null) {
+		parent::__construct($form_name);
 
 		$this->col_map = $col_map;
 		$this->pager = $pager;
@@ -121,13 +121,13 @@ abstract class KintassaTableForm extends KintassaForm {
 }
 
 abstract class KintassaRowFormFactory {
-	function KintassaRowFormFactory() {}
+	function __construct() {}
 	abstract function instanciate($table_form, $row_id);
 }
 
 abstract class KintassaOptionsTableForm extends KintassaTableForm {
-	function KintassaOptionsTableForm($table_name, $col_map, $pager, $row_form_factory) {
-		parent::KintassaTableForm($table_name, $col_map, $pager);
+	function __construct($table_name, $col_map, $pager, $row_form_factory) {
+		parent::__construct($table_name, $col_map, $pager);
 
 		$this->row_form_factory = $row_form_factory;
 
