@@ -24,22 +24,27 @@ abstract class KGalleryForm extends KintassaForm {
 		$this->add_child($dimensions_band);
 
 		$this->display_mode_field = new KintassaRadioGroup("Display method");
-		foreach ($this->slideshow_options() as $sshow_opt) {
-			$this->display_mode_field->add_child(new KintassaRadioButton($sshow_opt));
+
+		$sshow_opts = $this->slideshow_options();
+		foreach (array_keys($sshow_opts) as $sshow_opt_name) {
+			$sshow_opt_label = $sshow_opts[$sshow_opt_name];
+			$opt_el = new KintassaRadioButton($sshow_opt_label, $name=$sshow_opt_name);
+			$this->display_mode_field->add_child($opt_el);
 		}
 		$this->add_child($this->display_mode_field);
 
 		$this->add_child(new KintassaCheckbox("Show navbar"));
 
 		$button_bar = new KintassaFieldBand("button_bar");
-		$button_bar->add_child(new KintassaButton("Confirm"));
+		$confirm_button = new KintassaButton("Confirm", $name="confirm", $primary = true);
+		$button_bar->add_child($confirm_button);
 		$this->add_child($button_bar);
 	}
 
 	function slideshow_options() {
 		return array(
-			"Slideshow",
-			"Manual slideshow",
+			"slideshow"				=> "Slideshow",
+			"manual_slideshow"		=> "Manual Slideshow"
 		);
 	}
 
@@ -50,6 +55,13 @@ abstract class KGalleryForm extends KintassaForm {
 			"height"		=> $this->height_field->value(),
 			"display_mode"	=> $this->display_mode_field->value(),
 		);
+
+		// TODO: temporary validation check.  Should be removed, or modified
+		//       to use options registered as KintassaGalleryApp classes.
+		echo("display_mode from form: ");
+		print_r($dat['display_mode']);
+		assert (in_array($dat['display_mode'], array('slideshow', 'manual_slideshow')));
+
 		return $dat;
 	}
 

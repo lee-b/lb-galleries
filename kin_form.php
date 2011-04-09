@@ -24,6 +24,15 @@ abstract class KintassaFormElement {
 		return $this->_parent;
 	}
 
+	function classes() {
+		return array("kintassa_form_el");
+	}
+
+	function class_attrib_str() {
+		$cl = $this->classes();
+		return "class=\"" . implode(" ", $cl) . "\"";
+	}
+
 	function parent_form() {
 		$count = 0;
 		$p = $this->parent();
@@ -186,7 +195,7 @@ class KintassaFieldBand extends KintassaFieldContainer {
 	function begin_container() {
 		parent::begin_container();
 		$name = $this->name();
-		echo("<div id=\"{$name}\">");
+		echo("<div class=\"kintassa_field,kintassa_field_band\" id=\"{$name}\">");
 	}
 
 	function end_container() {
@@ -204,7 +213,9 @@ class KintassaTextField extends KintassaEditableField {
 			$val = $def_val;
 		}
 
-		echo("<span>");
+		$cl = $this->class_attrib_str();
+
+		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"{$val}\">");
 		echo("</span>");
@@ -235,16 +246,37 @@ class KintassaHiddenField extends KintassaEditableField {
 }
 
 class KintassaButton extends KintassaField {
+	function KintassaButton($label, $name=null, $primary=false) {
+		parent::KintassaField($label, $name=$name);
+		$this->primary = $primary;
+	}
+
+	function classes() {
+		$cl = parent::classes();
+
+		if ($this->primary) {
+			$cl[] = "button-primary";
+		} else {
+			$cl[] = "button-secondary";
+		}
+
+		return $cl;
+	}
+
 	function render() {
 		$name = $this->name();
-		echo("<input type=\"submit\" value=\"{$this->label}\" name=\"{$name}\">");
+
+		$cl = $this->class_attrib_str();
+
+		echo("<input type=\"submit\" {$cl} id=\"{$name}\" name=\"{$name}\" value=\"{$this->label}\">");
 	}
 }
 
 class KintassaNumberField extends KintassaTextField {
 	function render() {
 		$name = $this->name();
-		echo("<span>");
+		$cl = $this->classes();
+		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"\">");
 		echo("</span>");
@@ -323,11 +355,14 @@ class KintassaRadioButton extends KintassaField {
 		assert(is_a($parent, "KintassaRadioGroup"));
 
 		$radio_group_name = $this->parent()->name();
-		$name = $this->name();
+
+		$id = $this->name();
+		$label = $this->label;
+		$val = $this->name;
 
 		echo("<span class=\"KintassaRadioButton\">");
-		echo("<input type=\"radio\" name=\"{$radio_group_name}\" value=\"{$name}\">");
-		echo("<label for=\"{$name}\">{$this->label}</label>");
+		echo("<input type=\"radio\" id=\"{$id}\" name=\"{$radio_group_name}\" value=\"{$val}\">");
+		echo("<label for=\"{$id}\">{$label}</label>");
 		echo("</span>");
 	}
 }

@@ -40,14 +40,40 @@ class KintassaAutomatedSlideshowGalleryApp extends KintassaGalleryApp {
 	}
 }
 
+class KintassaManualSlideshowGalleryApp extends KintassaGalleryApp {
+	function render() {
+		$gallery = $this->gallery;
+		$gallery_code = "<div class=\"kintassa_gallery\"";
+
+		$style_code = "";
+		if ($gallery->width) {
+			$style_code .= "width: {$gallery->width};";
+		}
+
+		if ($gallery->height) {
+			$style_code .= "height: {$gallery->height};";
+		}
+
+		if (strlen($style_code) > 0) {
+			$gallery_code .= " style=\"{$style_code}\"";
+		}
+
+		$gallery_code .= ">GALLERY NUMBER {$gallery->id}";
+
+		$gallery_code .= "<div class=\"kintassa_slideshow_navbar\">(navbar)</div>";
+
+		$gallery_code .= "</div>";
+
+		echo($gallery_code);
+	}
+}
+
 class KintassaGallery extends KintassaMicroORMObject {
 	function KintassaGallery($id = null) {
 		parent::KintassaMicroORMObject($id);
 
 		if (!$this->is_loaded()) {
-			$this->name = "";
-			$this->width = 320;
-			$this->height = 200;
+			$this->load($id);
 		}
 	}
 
@@ -82,13 +108,27 @@ class KintassaGallery extends KintassaMicroORMObject {
 		$this->name = $row->name;
 		$this->width = $row->width;
 		$this->height = $row->height;
+		$this->display_mode = $row->display_mode;
 		$this->id = $id;
+	}
+
+	function display_mode_map() {
+		return array(
+			"slideshow" => "KintassaAutomatedSlideshowGalleryApp",
+			"manual_slideshow" => "KintassaManualSlideshowGalleryApp"
+		);
 	}
 
 	function render($width = null, $height = null) {
 		assert($this->id != null);
 
-		$app = new KintassaAutomatedSlideshowGalleryApp($this);
+		$mode_map = $this->display_mode_map();
+
+		assert (array_key_exists($this->display_mode, $mode_map));
+
+		$app_class = $mode_map[$this->display_mode];
+
+		$app = new $app_class($this);
 		$app->render();
 	}
 
