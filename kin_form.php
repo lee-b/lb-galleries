@@ -158,7 +158,16 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		return true;
 	}
 
+	function begin_container() {}
+	function end_container() {}
+}
+
+/***
+ * Provides a horizontal band to layout/divide form elements
+ */
+class KintassaFieldBand extends KintassaFieldContainer {
 	function begin_container() {
+		parent::begin_container();
 		$name = $this->name();
 		echo("<div id=\"{$name}\">");
 	}

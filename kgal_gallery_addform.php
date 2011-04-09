@@ -14,8 +14,11 @@ class KGalleryAddForm extends KintassaForm {
 		parent::KintassaForm('kgalleryaddform');
 
 		$this->add_child(new KintassaTextField("Name"));
-		$this->add_child(new KintassaIntegerField("Width"), $default=320);
-		$this->add_child(new KintassaIntegerField("Height"), $default=200);
+
+		$dimensions_band = new KintassaFieldBand("dimensionsband");
+		$dimensions_band->add_child(new KintassaIntegerField("Width"), $default=320);
+		$dimensions_band->add_child(new KintassaIntegerField("Height"), $default=200);
+		$this->add_child($dimensions_band);
 
 		$displayMethodField = new KintassaRadioGroup("Display method");
 		$displayMethodField->add_child(new KintassaRadioButton("Slideshow"));
@@ -24,8 +27,9 @@ class KGalleryAddForm extends KintassaForm {
 
 		$this->add_child(new KintassaCheckbox("Show navbar"));
 
-		$this->confirm = new KintassaButton("Confirm");
-		$this->add_child($this->confirm);
+		$button_bar = new KintassaFieldBand("button_bar");
+		$button_bar->add_child(new KintassaButton("Confirm"));
+		$this->add_child($button_bar);
 	}
 
 	function handle_submissions() {
