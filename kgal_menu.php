@@ -41,17 +41,11 @@ class KGalleryMenu {
 		add_submenu_page($this->classify_slug($parent), $page_title, $menu_title, $capability, $this->classify_slug($method_name), &$func);
 	}
 
-	function page_path($filepath, $relpath) {
-		return "/wp-content/plugins/kintassa_gallery/admin/" . $relpath;
-	}
-
 	function add_menus() {
 		$mainpage = 'mainpage';
 		$this->add_page($this->menu_title, 'administrator', $mainpage);
 		$this->add_subpage($mainpage, 'Add Gallery', 'administrator', 'add_gallery');
 		$this->add_subpage($mainpage, 'About', 'administrator', 'about');
-
-		$edit_page = KintassaUtils::uri_path("admin/gallery_edit.php");
 	}
 
 	function mainpage() {

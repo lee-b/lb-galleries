@@ -20,13 +20,15 @@ class KGalleryAddForm extends KGalleryForm {
 	}
 
 	function render_success_page() {
-		echo("<h2>Gallery Added</h2>");
-		echo(<<<HTML
-<p>Your gallery has been added.  You might want to
-<a href="/wp-admin/admin.php?page=KGalleryMenu_mainpage&mode=gallery_edit&id={$this->id}">Edit this
-gallery</a> now.
-HTML
-);
+		$page_args = array("mode" => "gallery_edit", "id" => $this->id);
+		$edit_uri = KintassaUtils::admin_path('KGalleryMenu', 'mainpage', $page_args);
+
+		echo("<h2>" . __("Gallery Added") . "</h2>");
+		echo(
+			"<p>"
+			. __("Your gallery has been added.  You might want to <a href=\"{$edit_uri}\">Edit this gallery</a> now.")
+			. "</p>"
+		);
 	}
 
 	function update_record() {

@@ -11,13 +11,15 @@ class KintassaUtils {
 		return (preg_match('@^[-]?[0-9]+$@',$val) === 1);
 	}
 
-	static function plugin_uri() {
-		return WP_PLUGIN_URL.'/'.str_replace(basename( __FILE__),"",plugin_basename(__FILE__));
-	}
+	static function admin_path($plugin, $panel, $panel_args) {
+		$base_uri = admin_url() . "?page={$plugin}_{$panel}";
 
-	static function uri_path($rel_uri) {
-		$full_uri = KintassaUtils::plugin_uri() . $rel_uri;
-		return $full_uri;
+		$args = "";
+		foreach($panel_args as $key => $val) {
+			$args .= "&" . $key . "=" . $val;
+		}
+
+		return $base_uri . $args;
 	}
 }
 

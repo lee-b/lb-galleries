@@ -81,7 +81,8 @@ class KGalleryRowOptionsForm extends KintassaRowForm {
 		}
 
 		if ($opts & KGalleryRowOptionsForm::Edit) {
-			$edit_uri = "/wp-admin/admin.php?page=KGalleryMenu_mainpage&mode=gallery_edit&id=" . $row->id;
+			$edit_args = array("mode" => "gallery_edit", "id" => $row->id);
+			$edit_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $edit_args);
 			$edit_btn = new KintassaLinkButton("Edit", $name="edit", $uri = $edit_uri);
 			$this->add_child($edit_btn);
 		}
@@ -167,7 +168,9 @@ class KintassaDBResultsPager extends KintassaPager {
 	}
 
 	function page_link($page_num) {
-		return "/wp-admin/admin.php?page=KGalleryMenu_mainpage&mode=gallery_list&pagenum={$page_num}";
+		$page_args = array("mode" => "gallery_list", "pagenum" => $page_num);
+		$page_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $page_args);
+		return $page_uri;
 	}
 
 	function render_page_nav() {
