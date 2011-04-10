@@ -163,6 +163,13 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 		return isset($_POST[$this->name()]);
 	}
 
+	function posted_value() {
+		$field_name = $this->name();
+		if (!$this->is_present()) return null;
+		$posted_val = $_POST[$field_name];
+		return $posted_val;
+	}
+
 	static function build_name($form_name, $el_name) {
 		assert($form_name == strtolower($form_name));
 		assert($el_name == strtolower($el_name));
@@ -194,6 +201,7 @@ class KintassaWPNonceField extends KintassaField {
 	}
 
 	function is_valid() {
+		// NOTE: no parent call here, as wordpress does the whole job for us
 		$name = $this->name();
 
 		if (wp_is_admin()) {
@@ -205,16 +213,35 @@ class KintassaWPNonceField extends KintassaField {
 }
 
 abstract class KintassaEditableField extends KintassaField {
-	function __construct($label, $name=null, $default_val=null) {
+	function __construct($label, $name=null, $default_val=null, $required = true) {
 		parent::__construct($label, $name=$name);
 		$this->default_val = $default_val;
+		$this->required = $required;
 	}
 
 	function default_value() {
 		return $this->default_val;
 	}
 
-	abstract function value();
+	function is_valid() {
+		if (!parent::is_valid()) return false;
+
+		if ($this->required) {
+			if ($this->posted_value() == null) {
+				$this->validation_error(__("This field is required"));
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	function value() {
+		$posted_val = $this->posted_value();
+		if (!$posted_val) return $this->default_value();
+
+		return $posted_val;
+	}
 }
 
 abstract class KintassaFieldContainer extends KintassaNamedFormElement {
@@ -256,8 +283,12 @@ class KintassaFieldBand extends KintassaFieldContainer {
 }
 
 class KintassaTextField extends KintassaEditableField {
-	function clean_text_input($s) {
-		return esc_attr($s);
+	function posted_value() {
+		$val = parent::posted_value();
+		if (!$val) return $val;
+
+		// added filtering of parent's return value
+		return esc_attr($val);
 	}
 
 	function begin_render($as_sub_el = false) {
@@ -273,18 +304,6 @@ class KintassaTextField extends KintassaEditableField {
 
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"{$val}\">");
-	}
-
-	function value() {
-		$fn = $this->name();
-
-		if (isset($_POST[$fn])) {
-			$val = $this->clean_text_input($_POST[$fn]);
-		} else {
-			$val = $this->default_value();
-		}
-
-		return $val;
 	}
 }
 
@@ -367,30 +386,26 @@ class KintassaButton extends KintassaField {
 
 class KintassaNumberField extends KintassaTextField {
 	function is_valid() {
-		$name = $this->name();
+		if (!parent::is_valid()) return false;
 
-		if  (!$this->is_present()) {
-			$this->validation_error("Not provided");
-			return false;
-		}
+		$val = $this->posted_value();
 
-		$form_val = $_POST[$name];
-		return is_numeric($form_val);
+		$is_num = is_numeric($val);
+		if (!$is_num) $this->validation_error(__("Please enter a number"));
+
+		return $is_num;
 	}
 }
 
 class KintassaIntegerField extends KintassaNumberField {
 	function is_valid() {
-		$name = $this->name();
-		if  (!$this->is_present()) {
-			$this->validation_error("Not provided");
-			return false;
-		}
-		$val = $_POST[$name];
+		if (!parent::is_valid()) return false;
+
+		$val = $this->posted_value();
+
 		$is_int = KintassaUtils::isInteger($val);
-		if (!$is_int) {
-			$this->validation_error("Not an integer");
-		}
+		if (!$is_int) $this->validation_error(__("Please enter an integer"));
+
 		return $is_int;
 	}
 }
@@ -417,10 +432,11 @@ class KintassaFileField extends KintassaField {
 	}
 
 	function is_valid() {
+		if (!isset($_FILE[$name])) return false;
+
 		$ok = ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
-		if (!$ok) {
-			$this->validation_error("Upload failed; please retry");
-		}
+		if (!$ok) $this->validation_error(__("Upload failed; please retry"));
+
 		return $ok;
 	}
 }
@@ -431,27 +447,18 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 	}
 
 	function is_valid() {
-		if (!isset($_POST[$this->name()])) {
-			$this->validation_error($this->name() . " not posted");
-			return false;
-		}
+		if (!parent::is_valid()) return false;
 
-		$post_val = $_POST[$this->name()];
+		$posted_val = $this->posted_value();
 		$child_fields = $this->child_field_names();
-		$present = in_array($post_val, $child_fields);
+		$present = in_array($posted_val, $child_fields);
 
 		if (!$present) {
 			$allowed_opts = implode(",", $child_fields);
-			$this->validation_error($post_val . " isn't a recognised option for this radio group [allowed: " . $allowed_opts . "]");
+			$this->validation_error(__("Unrecognised option chosen"));
 		}
 
 		return $present;
-	}
-
-	function value() {
-		assert($this->is_valid()); // shouldn't call method if !is_valid()
-		$post_val = $_POST[$this->name()];
-		return $post_val;
 	}
 }
 

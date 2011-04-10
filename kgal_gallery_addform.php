@@ -13,13 +13,13 @@ abstract class KGalleryForm extends KintassaForm {
 	function __construct($name) {
 		parent::__construct($name);
 
-		$this->name_field = new KintassaTextField("Name");
+		$this->name_field = new KintassaTextField("Name", $name="name", $default_value = null, $required=true);
 		$this->add_child($this->name_field);
 
 		$dimensions_band = new KintassaFieldBand("dimensions_band");
-		$this->width_field = new KintassaIntegerField("Width");
+		$this->width_field = new KintassaIntegerField("Width", $name="width", $default_value = null, $required=true);
 		$dimensions_band->add_child($this->width_field, $default=320);
-		$this->height_field = new KintassaIntegerField("Height");
+		$this->height_field = new KintassaIntegerField("Height", $name="height", $default_value = null, $required=true);
 		$dimensions_band->add_child($this->height_field, $default=200);
 		$this->add_child($dimensions_band);
 
@@ -75,8 +75,7 @@ abstract class KGalleryForm extends KintassaForm {
 	abstract function update_record();
 
 	function is_valid() {
-		$valid = parent::is_valid();
-		if (!$valid) return $valid;
+		if (!parent::is_valid()) return false;
 		return $this->buttons_submitted(array('confirm')) != null;
 	}
 
