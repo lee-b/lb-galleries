@@ -193,7 +193,9 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 	 */
 	function buttons_submitted($btns) {
 		$parent_has = parent::buttons_submitted($btns);
-		if ($parent_has) return $parent_has;
+		if ($parent_has) {
+			return $parent_has;
+		}
 
 		foreach ($this->row_forms as $subform) {
 			$sub_has = $subform->buttons_submitted($btns);

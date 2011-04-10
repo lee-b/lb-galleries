@@ -82,9 +82,6 @@ abstract class KintassaPageElement {
 		$this->render_validation_errors();
 	}
 
-	function render_content() {
-	}
-
 	function end_render() {
 		$tag = $this->block_layout() ? "div" : "span";
 		echo("</{$tag}>");
@@ -92,7 +89,6 @@ abstract class KintassaPageElement {
 
 	function render() {
 		$this->begin_render();
-		$this->render_content();
 		$this->end_render();
 	}
 }
@@ -172,8 +168,8 @@ abstract class KintassaField extends KintassaNamedFormElement {
 }
 
 class KintassaWPNonceField extends KintassaField {
-	function render_content() {
-		parent::render_content();
+	function begin_render() {
+		parent::begin_render();
 
 		$action = -1;
 		$name = $this->name();
@@ -219,7 +215,9 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		$ch->_set_parent($this);
 	}
 
-	function render_content() {
+	function begin_render() {
+		parent::begin_render();
+
 		foreach ($this->children as $ch) {
 			$ch->render();
 		}
@@ -245,8 +243,8 @@ class KintassaFieldBand extends KintassaFieldContainer {
 }
 
 class KintassaTextField extends KintassaEditableField {
-	function render_content() {
-		parent::render_content();
+	function begin_render() {
+		parent::begin_render();
 
 		$name = $this->name();
 		$def_val = $this->default_value();
@@ -258,7 +256,6 @@ class KintassaTextField extends KintassaEditableField {
 
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"{$val}\">");
-		echo("</span>");
 	}
 
 	function value() {
@@ -276,18 +273,21 @@ class KintassaTextField extends KintassaEditableField {
 
 class KintassaHiddenField extends KintassaEditableField {
 	function value() {
-		return $this->default_value;
+		$name = $this->name();
+
+		if (isset($_POST[$name])) {
+			$val = $_POST[$name];
+		} else {
+			$val = $this->default_val;
+		}
+
+		return $val;
 	}
 
 	function render() {
-		$def_val = $this->default_value();
-
 		$val = $this->value();
-		if ($val == null) {
-			$val = $def_val;
-		}
-
-		echo("<input type=\"hidden\" name=\"{$this->name}\" value=\"{$val}\"");
+		$name = $this->name();
+		echo("<input type=\"hidden\" name=\"{$name}\" value=\"{$val}\">");
 	}
 }
 
@@ -295,6 +295,11 @@ class KintassaButton extends KintassaField {
 	function __construct($label, $name=null, $primary=false) {
 		parent::__construct($label, $name=$name);
 		$this->primary = $primary;
+	}
+
+	function submitted() {
+		$full_name = $this->name();
+		return isset($_POST[$full_name]);
 	}
 
 	function classes() {
@@ -311,10 +316,8 @@ class KintassaButton extends KintassaField {
 
 	function render() {
 		$name = $this->name();
-
 		$cl = $this->class_attrib_str();
-
-		echo("<input type=\"submit\" {$cl} id=\"{$name}\" name=\"{$name}\" value=\"{$this->label}\">");
+		echo("<input type=\"submit\" {$cl} name=\"{$name}\" value=\"{$this->label}\">");
 	}
 }
 
@@ -419,7 +422,9 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 }
 
 class KintassaRadioButton extends KintassaField {
-	function render_content() {
+	function begin_render() {
+		parent::begin_render();
+
 		$parent = $this->parent();
 		assert(is_a($parent, "KintassaRadioGroup"));
 
@@ -445,13 +450,11 @@ class KintassaRadioButton extends KintassaField {
 	}
 }
 
-abstract class KintassaForm extends KintassaPageElement {
-	function __construct($name) {
-		parent::__construct();
+abstract class KintassaForm extends KintassaFieldContainer {
+	function __construct($label, $name = null) {
+		parent::__construct($label, $name);
 
-		assert($name == strtolower($name));
-
-		$this->name = $name;
+		assert(strlen($this->name) > 0);
 
 		$this->children = array();
 
@@ -463,25 +466,33 @@ abstract class KintassaForm extends KintassaPageElement {
 		}
 	}
 
-	function parent() {
-		// TODO: need logic here if supporting subforms
-		return null;
-	}
-
 	function add_child($ch) {
 		$this->children[] = $ch;
 		$ch->_set_parent($this);
 	}
 
-	function begin_form() {
-		$form_uri = $this->uri();
-		$form_name = $this->name();
-		$cl = $this->class_attrib_str();
-		echo "<form {$cl} method=\"post\" action=\"{$form_uri}\" name=\"{$form_name}\" enctype=\"multipart/form-data\">";
+	function begin_render() {
+		if ($this->_parent) {
+			parent::begin_render();
+		} else {
+			$form_uri = $this->uri();
+			$form_name = $this->name();
+			$cl = $this->class_attrib_str();
+
+			echo "<form {$cl} method=\"post\" action=\"{$form_uri}\" name=\"{$form_name}\" enctype=\"multipart/form-data\">";
+		}
+
+		foreach ($this->children as $ch) {
+			$ch->render();
+		}
 	}
 
-	function end_form() {
-		echo "</form>";
+	function end_render() {
+		if ($this->_parent) {
+			parent::end_render();
+		} else {
+			echo "</form>";
+		}
 	}
 
 	function name() {
@@ -499,19 +510,11 @@ abstract class KintassaForm extends KintassaPageElement {
 	 * button_submitted method in sequence.
 	*/
 	function buttons_submitted($btns) {
-		foreach ($btns as $btn) {
-			$real_btn_name = $this->field_name($btn);
-
-			if (isset($_POST[$real_btn_name])) {
-				return array($btn, $this);
-			}
-
-			foreach ($this->children as $ch) {
-				if (is_a($ch, 'KintassaForm')) {
-					if ($ch->buttons_submitted($btn)) {
-						return array($btn, $ch);
-					}
-				}
+		foreach ($this->children as $ch) {
+			if (!is_a($ch, 'KintassaButton')) continue; // only buttons
+			if (!in_array($ch->name, $btns)) continue; // only allowed actions
+			if ($ch->submitted()) {
+				return array($ch, $this);
 			}
 		}
 
@@ -520,14 +523,6 @@ abstract class KintassaForm extends KintassaPageElement {
 
 	function uri() {
 		return esc_url($_SERVER['REQUEST_URI']);
-	}
-
-	function render() {
-		$this->begin_form();
-		foreach ($this->children as $ch) {
-			$ch->render();
-		}
-		$this->end_form();
 	}
 
 	function is_valid() {
@@ -541,10 +536,12 @@ abstract class KintassaForm extends KintassaPageElement {
 
 	function execute() {
 		if ($this->is_valid()) {
-			$this->handle_submissions();
+			$render = !($this->handle_submissions());
+		} else {
+			$render = true;
 		}
 
-		$this->render();
+		if ($render) $this->render();
 	}
 
 	abstract function handle_submissions();

@@ -56,8 +56,6 @@ abstract class KGalleryForm extends KintassaForm {
 
 		// TODO: temporary validation check.  Should be removed, or modified
 		//       to use options registered as KintassaGalleryApp classes.
-		echo("display_mode from form: ");
-		print_r($dat['display_mode']);
 		assert (in_array($dat['display_mode'], array('slideshow', 'manual_slideshow')));
 
 		return $dat;
@@ -78,15 +76,17 @@ abstract class KGalleryForm extends KintassaForm {
 
 	function is_valid() {
 		$valid = parent::is_valid();
-		if (!$valid) {
-			return $valid;
-		} else {
-			return $this->buttons_submitted(array('confirm')) != null;
-		}
+		if (!$valid) return $valid;
+		return $this->buttons_submitted(array('confirm')) != null;
 	}
 
 	function handle_submissions() {
-		$this->update_record();
+		$res = $this->update_record();
+		if ($res) {
+			echo ("Gallery updated.  Thank you.");
+		}
+
+		return $res;
 	}
 }
 
@@ -100,6 +100,9 @@ class KGalleryAddForm extends KGalleryForm {
 
 		$wpdb->insert(KintassaGallery::table_name(), $dat, $fmt);
 		$this->id = $wpdb->insert_id;
+
+		// TODO: could add error reporting here
+		return true;
 	}
 }
 
@@ -126,6 +129,9 @@ class KGalleryEditForm extends KGalleryForm {
 		);
 
 		$wpdb->update(KGalleryTable::table_name(), $dat, $where, $fmt, $where_fmt);
+
+		// TODO: could add error reporting here
+		return true;
 	}
 }
 

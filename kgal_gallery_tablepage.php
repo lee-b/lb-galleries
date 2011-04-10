@@ -11,11 +11,27 @@ require_once("kgal_gallery.php");
 require_once("kin_tableform.php");
 
 class KGalleryTableForm extends KintassaOptionsTableForm {
-	function do_row_action_add($row_id) {}
-	function do_row_action_edit($row_id) {}
-	function do_row_action_delete($row_id) {}
-	function do_row_action_move_up($row_id) {}
-	function do_row_action_move_down($row_id) {}
+	function do_action_add() {}
+
+	function do_row_action_edit($row_id) {
+		echo ("Editing {$row_id}");
+		return true;
+	}
+
+	function do_row_action_del($row_id) {
+		echo("Deleting {$row_id}");
+		return true;
+	}
+
+	function do_row_action_up($row_id) {
+		echo ("moving {$row_id} up");
+		return false;
+	}
+
+	function do_row_action_down($row_id) {
+		echo ("moving {$row_id} down");
+		return false;
+	}
 
 	function handle_submissions() {
 		$recognised_actions = array("up", "down", "edit", "del");
@@ -24,12 +40,12 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 		if ($actions_taken) {
 			$btn = $actions_taken[0];
 			$form = $actions_taken[1];
+			$row = $form->row_id_field->value();
 
-			$row = $form->row;
+			$action = $btn->name;
+			$handler = "do_row_action_" . $action;
 
-			echo("<div class=\"error\">{$btn} row id: {$row->id}</div>");
-
-			return true;
+			return $this->$handler($row);
 		}
 	}
 
@@ -45,10 +61,12 @@ class KGalleryRowOptionsForm extends KintassaForm {
 	const Delete = 4;
 	const All = 7;
 
-	function __construct($table_form, $row, $opts = KGalleryRowOptionsForm::All) {
+	function __construct($table_form, $row, $opts) {
 		$form_name = $table_form->name() . "_row_" . $row->id;
 		parent::__construct($form_name);
-		$this->row = $row;
+
+		$this->row_id_field = new KintassaHiddenField("row_id", $name="row_id", $default_val = $row->id);
+		$this->add_child($this->row_id_field);
 
 		if ($opts & KGalleryRowOptionsForm::Sort) {
 			$this->add_child(new KintassaButton("&uarr;", $name="up"));
@@ -71,8 +89,12 @@ class KGalleryRowOptionsForm extends KintassaForm {
 }
 
 class KGalleryRowOptionsFactory extends KintassaRowFormFactory {
+	function __construct($opts) {
+		$this->opts = $opts;
+	}
+
 	function instanciate($table_form, $row) {
-		return new KGalleryRowOptionsForm($table_form, $row);
+		return new KGalleryRowOptionsForm($table_form, $row, $this->opts);
 	}
 }
 
@@ -197,7 +219,7 @@ class KGalleryTablePage extends KintassaPage {
 		$table_name = KintassaGallery::table_name();
 		$pager = new KintassaDBResultsPager($table_name);
 
-		$row_form_fac = new KGalleryRowOptionsFactory($table_name);
+		$row_form_fac = new KGalleryRowOptionsFactory(KGalleryRowOptionsForm::All);
 		$this->table_form = new KGalleryTableForm($form_name, $col_map, $pager, $row_form_fac);
 	}
 
