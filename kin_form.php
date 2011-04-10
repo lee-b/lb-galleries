@@ -366,16 +366,6 @@ class KintassaButton extends KintassaField {
 }
 
 class KintassaNumberField extends KintassaTextField {
-	function begin_render($as_sub_el = false) {
-		parent::begin_render($as_sub_el);
-
-		$name = $this->name();
-		$cl = $this->classes();
-
-		echo("<label for=\"{$name}\">{$this->label}</label>");
-		echo("<input type=\"text\" id=\"{name}\" name=\"{$name}\" value=\"\">");
-	}
-
 	function is_valid() {
 		$name = $this->name();
 
