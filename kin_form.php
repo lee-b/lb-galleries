@@ -1,4 +1,4 @@
-<?php
+f<?php
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
@@ -174,7 +174,8 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 	}
 
 	function is_present() {
-		return isset($_POST[$this->name()]);
+		$pres = isset($_POST[$this->name()]);
+		return $pres;
 	}
 
 	function posted_value() {
@@ -219,10 +220,17 @@ class KintassaWPNonceField extends KintassaField {
 		$name = $this->name();
 
 		if (wp_is_admin()) {
-			return check_admin_referer($name);
+			$res = check_admin_referer($name);
 		} else {
-			return wp_verify_nonce($name);
+			$res = wp_verify_nonce($name);
 		}
+
+		if (!$res) {
+			$form = $this->parent_form();
+			$form->validation_error(__("Form validation failed."));
+		}
+
+		return $res;
 	}
 }
 
@@ -266,7 +274,9 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 
 	function is_present() {
 		foreach($this->children as $ch) {
-			if (!$ch->is_present()) return false;
+			if (!$ch->is_present()) {
+				return false;
+			}
 		}
 		return true;
 	}
@@ -407,7 +417,9 @@ class KintassaNumberField extends KintassaTextField {
 		$val = $this->posted_value();
 		$is_num = is_numeric($val);
 
-		if (!$is_num) $this->validation_error(__("Please enter a number"));
+		if (!$is_num) {
+			$this->validation_error(__("Please enter a number"));
+		}
 
 		return $is_num;
 	}
@@ -420,7 +432,9 @@ class KintassaIntegerField extends KintassaNumberField {
 		$val = $this->posted_value();
 
 		$is_int = KintassaUtils::isInteger($val);
-		if (!$is_int) $this->validation_error(__("Please enter an integer"));
+		if (!$is_int) {
+			$this->validation_error(__("Please enter an integer"));
+		}
 
 		return $is_int;
 	}
@@ -451,7 +465,9 @@ class KintassaFileField extends KintassaField {
 		if (!isset($_FILE[$name])) return false;
 
 		$ok = ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
-		if (!$ok) $this->validation_error(__("Upload failed; please retry"));
+		if (!$ok) {
+			$this->validation_error(__("Upload failed; please retry"));
+		}
 
 		return $ok;
 	}
@@ -462,19 +478,30 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 		return true;
 	}
 
-	function validate_posted_data() {
-		if (!parent::validate_posted_data()) return false;
+	function value() {
+		$posted_val = $this->posted_value();
+		if ($this->validate_posted_data()) {
+			return $posted_val;
+		} else {
+			return $this->default_value();
+		}
+	}
 
+	function validate_posted_data() {
 		$posted_val = $this->posted_value();
 		$child_fields = $this->child_field_names();
-		$present = in_array($posted_val, $child_fields);
 
+		$present = in_array($posted_val, $child_fields);
 		if (!$present) {
-			$allowed_opts = implode(",", $child_fields);
 			$this->validation_error(__("Unrecognised option chosen"));
 		}
 
 		return $present;
+	}
+
+	function is_present() {
+		$res = KintassaNamedFormElement::is_present();
+		return $res;
 	}
 }
 
@@ -589,12 +616,17 @@ abstract class KintassaForm extends KintassaFieldContainer {
 	 * a given button name.  Also checks subforms by calling their own
 	 * button_submitted method in sequence.
 	*/
-	function buttons_submitted($btns) {
-		foreach ($this->children as $ch) {
-			if (!is_a($ch, 'KintassaButton')) continue; // only buttons
-			if (!in_array($ch->name, $btns)) continue; // only allowed actions
-			if ($ch->submitted()) {
-				return array($ch, $this);
+	function buttons_submitted($btns, $children = null) {
+		if ($children == null) $children = $this->children;
+
+		foreach ($children as $ch) {
+			if (is_a($ch, 'KintassaButton')) {
+				if ($ch->submitted()) {
+					return array($ch, $this);
+				}
+			} else if (is_a($ch, 'KintassaFieldContainer')) {
+				$child_res = $this->buttons_submitted($btns, $ch->children);
+				if ($child_res != null) return $child_res;
 			}
 		}
 
@@ -611,8 +643,8 @@ abstract class KintassaForm extends KintassaFieldContainer {
 
 	function validate_posted_data() {
 		foreach ($this->children as $ch) {
-			if (!$ch->is_valid()) {
-				$ch_name = $ch->name();
+			$valid = $ch->is_valid();
+			if (!$valid) {
 				return false;
 			}
 		}
