@@ -9,7 +9,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once("kgal_gallery_tablepage.php");
 //require_once("kgal_galimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
-//require_once("kgal_gallery_editform.php");
+require_once("kgal_gallery_editform.php");
 require_once("kgal_about_page.php");
 require_once("kin_utils.php");
 
@@ -41,12 +41,18 @@ class KGalleryMenu {
 		add_submenu_page($this->classify_slug($parent), $page_title, $menu_title, $capability, $this->classify_slug($method_name), &$func);
 	}
 
+	function page_path($filepath, $relpath) {
+		return "/wp-content/plugins/kintassa_gallery/admin/edit_gallery.php";
+	}
+
 	function add_menus() {
 		$mainpage = 'mainpage';
 		$this->add_page($this->menu_title, 'administrator', $mainpage);
-/*		$this->add_subpage($mainpage, 'Edit Gallery', 'administrator', 'edit_gallery');*/
 		$this->add_subpage($mainpage, 'Add Gallery', 'administrator', 'add_gallery');
 		$this->add_subpage($mainpage, 'About', 'administrator', 'about');
+
+		$edit_page = $this->page_path(__file__, "admin/edit_gallery.php");
+		$this->add_subpage($mainpage,'Edit Gallery', 'administrator', 'edit_gallery');
 	}
 
 	function mainpage() {
@@ -63,15 +69,16 @@ class KGalleryMenu {
 		$addForm->execute();
 	}
 
-/*
 	function edit_gallery() {
-		gallery_id = $_GET['gallery_id'];
-		assert (KintassaUtils::isInteger($gallery_id));
+		$gallery_id = $_GET['id'];
 
-		$editForm = new KGalleryEditForm($gallery_id);
+		assert (KintassaUtils::isInteger($gallery_id));
+		// TODO: check id exists
+
+		$editForm = new KGalleryEditForm("kgal_edit", $gallery_id);
 		$editForm->execute();
 	}
-*/
+
 	function about() {
 		$about_page = new KGalleryAboutPage("About {$this->menu_title}");
 		$about_page->execute();

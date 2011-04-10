@@ -199,6 +199,29 @@ abstract class KintassaNamedFormElement extends KintassaFormElement {
 	}
 }
 
+class KintassaLinkButton extends KintassaNamedFormElement {
+	function __construct($label, $name=null, $uri = "/", $args = array()) {
+		parent::__construct($label, $name = $name);
+		$this->uri = $uri;
+		$this->args = $args;
+	}
+
+	function classes() {
+		$cl = parent::classes();
+		$cl[] = "button";
+		return $cl;
+	}
+
+	function begin_render($as_sub_el = false) {
+//		parent::begin_render($as_sub_el);
+		$cl = $this->class_attrib_str();
+		$uri = $this->uri;
+		$label = $this->label;
+		$args = implode("&", $this->args);
+		echo("<a {$cl} href=\"{$uri}\">{$label}</a>");
+	}
+}
+
 abstract class KintassaField extends KintassaNamedFormElement {
 }
 
@@ -474,6 +497,15 @@ class KintassaFileField extends KintassaField {
 }
 
 class KintassaRadioGroup extends KintassaFieldContainer {
+	function __construct($label, $name = null, $default_value = null) {
+		parent::__construct($label, $name=$name);
+		$this->default_value = $default_value;
+	}
+
+	function default_value() {
+		return $this->default_value;
+	}
+
 	function block_layout() {
 		return true;
 	}
@@ -520,9 +552,18 @@ class KintassaRadioButton extends KintassaField {
 		return $_POST[$this->group_name()];
 	}
 
+	function group_default() {
+		return $this->parent()->default_value();
+	}
+
 	function selected() {
-		if (!$this->group_present()) return false;
-		return ($this->group_value() == $this->name);
+		if (!$this->group_present()) {
+			// nothing posted; use default
+			$val = $this->group_default();
+		} else {
+			$val = $this->group_value();
+		}
+		return ($val == $this->name);
 	}
 
 	function begin_render($as_sub_el = false) {

@@ -6,11 +6,19 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-require_once("kgal_gallery_addform.php");
+require_once("kgal_gallery_form.php");
 
 class KGalleryEditForm extends KGalleryForm {
 	function __construct($name, $gallery_id) {
-		parent::__construct($name);
+		$kgal = new KintassaGallery($gallery_id);
+
+		$default_vals = array(
+			"name"				=> $kgal->name,
+			"width"				=> $kgal->width,
+			"height"			=> $kgal->height,
+			"display_method"	=> $kgal->display_mode,
+		);
+		parent::__construct($name, $default_vals);
 
 		$this->id_field = new KintassaHiddenField('id', $default_value = $gallery_id);
 		$this->add_child($this->id_field);
