@@ -54,7 +54,7 @@ abstract class KGalleryForm extends KintassaForm {
 			"name"					=> $this->name_field->value(),
 			"width"					=> $this->width_field->value(),
 			"height"				=> $this->height_field->value(),
-			"display_mode"		=> $this->display_mode_field->value(),
+			"display_mode"			=> $this->display_mode_field->value(),
 		);
 
 		// TODO: temporary validation check.  Should be removed, or modified
@@ -85,7 +85,7 @@ abstract class KGalleryForm extends KintassaForm {
 	function handle_submissions() {
 		$res = $this->update_record();
 		if ($res) {
-			echo ("Gallery updated.  Thank you.");
+			$this->render_success();
 		}
 
 		return $res;

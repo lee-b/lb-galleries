@@ -7,7 +7,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once("kgal_gallery_tablepage.php");
-//require_once("kgal_galimage_tablepage.php");
+//require_once("kgal_galleryimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
 require_once("kgal_gallery_editform.php");
 require_once("kgal_about_page.php");

@@ -7,7 +7,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once("kgal_gallery_form.php");
-
+require_once("kgal_gallery.php");
 
 class KGalleryEditForm extends KGalleryForm {
 	function __construct($name, $gallery_id) {
@@ -21,8 +21,12 @@ class KGalleryEditForm extends KGalleryForm {
 		);
 		parent::__construct($name, $default_vals);
 
-		$this->id_field = new KintassaHiddenField('id', $default_value = $gallery_id);
+		$this->id_field = new KintassaHiddenField('id', $name='id', $default_val = $gallery_id);
 		$this->add_child($this->id_field);
+	}
+
+	function render_success() {
+		echo ("Gallery updated. Thank you.");
 	}
 
 	function update_record() {
@@ -31,17 +35,11 @@ class KGalleryEditForm extends KGalleryForm {
 		$dat = $this->data();
 		$fmt = $this->data_format();
 
-		$where = array(
-			"id"			=> $this->id_field->value(),
-		);
+		$where_dat = array("id"	=> $this->id_field->value());
+		$where_fmt = array("%d");
 
-		$where_fmt = array(
-			"%d"
-		);
+		$wpdb->update(KintassaGallery::table_name(), $dat, $where_dat, $fmt, $where_fmt);
 
-		$wpdb->update(KGalleryTable::table_name(), $dat, $where, $fmt, $where_fmt);
-
-		// TODO: could add error reporting here
 		return true;
 	}
 }

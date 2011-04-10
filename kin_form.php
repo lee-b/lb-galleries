@@ -357,9 +357,20 @@ class KintassaTextField extends KintassaEditableField {
 }
 
 class KintassaHiddenField extends KintassaEditableField {
-	function __construct($label, $name=null, $default_value = null, $non_unique = false) {
-		parent::__construct($label, $name=$name, $default_value = $default_value);
+	function __construct($label, $name=null, $default_val = null, $non_unique = false) {
+		assert($default_val != null);
+
+		parent::__construct($label, $name=$name, $default_val = $default_val, $required = true);
 		$this->non_unique = $non_unique;
+	}
+
+	function is_present() {
+		return true;
+	}
+
+	function is_valid() {
+		$val = $this->value();
+		return KintassaUtils::isInteger($val);
 	}
 
 	function value() {

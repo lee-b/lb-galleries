@@ -8,12 +8,13 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 
 require_once("kin_form.php");
 require_once("kgal_gallery.php");
+require_once("kgal_galleryimage.php");
 require_once("kin_tableform.php");
 require_once("kin_utils.php");
 
-class KGalleryTableForm extends KintassaOptionsTableForm {
+class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	function process_actions() {
-		$recognised_actions = array(/*"up", "down",*/ "edit", "del");
+		$recognised_actions = array("up", "down", "edit", "del");
 		$actions_taken = $this->buttons_submitted($recognised_actions);
 
 		if ($actions_taken) {
@@ -34,8 +35,7 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_del($row_id) {
-		// TODO: cascade-delete images in gallery
-		echo ("Gallery #{$row_id} deleted.");
+		echo ("Gallery Image #{$row_id} deleted.");
 		$this->pager->delete($row_id);
 		return false;
 	}
@@ -60,7 +60,7 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 }
 
-class KGalleryRowOptionsForm extends KintassaRowForm {
+class KGalleryImageRowOptionsForm extends KintassaRowForm {
 	const Sort = 1;
 	const Edit = 2;
 	const Delete = 4;
@@ -75,19 +75,19 @@ class KGalleryRowOptionsForm extends KintassaRowForm {
 		);
 		$this->add_child($this->row_id_field);
 
-		if ($opts & KGalleryRowOptionsForm::Sort) {
+		if ($opts & KGalleryImageRowOptionsForm::Sort) {
 			$this->add_child(new KintassaButton("&uarr;", $name="up", $primary=false, $non_unique=true));
 			$this->add_child(new KintassaButton("&darr;", $name="down", $primary=false, $non_unique=true));
 		}
 
-		if ($opts & KGalleryRowOptionsForm::Edit) {
-			$edit_args = array("mode" => "gallery_edit", "id" => $row->id);
+		if ($opts & KGalleryImageRowOptionsForm::Edit) {
+			$edit_args = array("mode" => "galleryimage_edit", "id" => $row->id);
 			$edit_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $edit_args);
 			$edit_btn = new KintassaLinkButton("Edit", $name="edit", $uri = $edit_uri);
 			$this->add_child($edit_btn);
 		}
 
-		if ($opts & KGalleryRowOptionsForm::Delete) {
+		if ($opts & KGalleryImageRowOptionsForm::Delete) {
 			$this->add_child(new KintassaButton("Del", $name="del", $primary=false, $non_unique=true));
 		}
 	}
@@ -98,17 +98,17 @@ class KGalleryRowOptionsForm extends KintassaRowForm {
 	}
 }
 
-class KGalleryRowOptionsFactory extends KintassaRowFormFactory {
+class KGalleryImageRowOptionsFactory extends KintassaRowFormFactory {
 	function __construct($opts) {
 		$this->opts = $opts;
 	}
 
 	function instanciate($table_form, $row) {
-		return new KGalleryRowOptionsForm($table_form, $row, $this->opts);
+		return new KGalleryImageRowOptionsForm($table_form, $row, $this->opts);
 	}
 }
 
-class KintassaGalleryDBResultsPager extends KintassaPager {
+class KintassaGalleryImageDBResultsPager extends KintassaPager {
 	function __construct($table_name, $page_size = 10) {
 		parent::__construct();
 
@@ -224,7 +224,7 @@ class KintassaGalleryDBResultsPager extends KintassaPager {
 	}
 }
 
-class KGalleryTablePage extends KintassaPage {
+class KGalleryImageTablePage extends KintassaPage {
 	function __construct($name, $title) {
 		parent::__construct($title);
 
@@ -238,12 +238,12 @@ class KGalleryTablePage extends KintassaPage {
 			"Display Mode",
 		);
 
-		$table_name = KintassaGallery::table_name();
-		$pager = new KintassaGalleryDBResultsPager($table_name);
+		$table_name = KintassaGalleryImage::table_name();
+		$pager = new KintassaGalleryImageDBResultsPager($table_name);
 
-		$row_opts = KGalleryRowOptionsForm::Edit | KGalleryRowOptionsForm::Delete;
-		$row_form_fac = new KGalleryRowOptionsFactory($row_opts);
-		$this->table_form = new KGalleryTableForm($form_name, $col_map, $pager, $row_form_fac);
+		$row_opts = KGalleryImageRowOptionsForm::Edit | KGalleryRowOptionsForm::Delete;
+		$row_form_fac = new KGalleryImageRowOptionsFactory($row_opts);
+		$this->table_form = new KGalleryImageTableForm($form_name, $col_map, $pager, $row_form_fac);
 	}
 
 	function content() {

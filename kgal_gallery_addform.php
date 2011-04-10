@@ -19,7 +19,7 @@ class KGalleryAddForm extends KGalleryForm {
 		parent::__construct($name, $default_vals);
 	}
 
-	function render_success_page() {
+	function render_success() {
 		$page_args = array("mode" => "gallery_edit", "id" => $this->id);
 		$edit_uri = KintassaUtils::admin_path('KGalleryMenu', 'mainpage', $page_args);
 
@@ -41,9 +41,6 @@ class KGalleryAddForm extends KGalleryForm {
 		$wpdb->insert(KintassaGallery::table_name(), $dat, $fmt);
 		$this->id = $wpdb->insert_id;
 
-		// TODO: could add error reporting here
-
-		$this->render_success_page();
 		return true;
 	}
 }
