@@ -26,7 +26,7 @@ abstract class KGalleryForm extends KintassaForm {
 		$dimensions_band->add_child($this->height_field);
 		$this->add_child($dimensions_band);
 
-		$this->display_mode_field = new KintassaRadioGroup("Display method", $name="display_method", $default_value=$def['display_method']);
+		$this->display_mode_field = new KintassaRadioGroup("Display method", $name="display_mode", $default_value=$def['display_mode']);
 
 		$sshow_opts = $this->slideshow_options();
 		foreach (array_keys($sshow_opts) as $sshow_opt_name) {
@@ -51,10 +51,10 @@ abstract class KGalleryForm extends KintassaForm {
 
 	function data() {
 		$dat = array(
-			"name"			=> $this->name_field->value(),
-			"width"			=> $this->width_field->value(),
-			"height"		=> $this->height_field->value(),
-			"display_mode"	=> $this->display_mode_field->value(),
+			"name"					=> $this->name_field->value(),
+			"width"					=> $this->width_field->value(),
+			"height"				=> $this->height_field->value(),
+			"display_mode"		=> $this->display_mode_field->value(),
 		);
 
 		// TODO: temporary validation check.  Should be removed, or modified

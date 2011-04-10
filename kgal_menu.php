@@ -42,7 +42,7 @@ class KGalleryMenu {
 	}
 
 	function page_path($filepath, $relpath) {
-		return "/wp-content/plugins/kintassa_gallery/admin/edit_gallery.php";
+		return "/wp-content/plugins/kintassa_gallery/admin/" . $relpath;
 	}
 
 	function add_menus() {
@@ -51,25 +51,32 @@ class KGalleryMenu {
 		$this->add_subpage($mainpage, 'Add Gallery', 'administrator', 'add_gallery');
 		$this->add_subpage($mainpage, 'About', 'administrator', 'about');
 
-		$edit_page = $this->page_path(__file__, "admin/edit_gallery.php");
-		$this->add_subpage($mainpage,'Edit Gallery', 'administrator', 'edit_gallery');
+		$edit_page = KintassaUtils::uri_path("admin/gallery_edit.php");
 	}
 
 	function mainpage() {
+		$recognised_modes = array("gallery_list", "gallery_edit");
+
+		$mode = 'gallery_list';
+		if (isset($_GET['mode'])) {
+			$given_mode = $_GET['mode'];
+			if (in_array($given_mode, $recognised_modes)) {
+				$mode = $given_mode;
+			}
+		}
+
+		$mode_handler = 'handle_' . $mode;
+		$this->$mode_handler();
+	}
+
+	function handle_gallery_list() {
 		require_once("kgal_gallery.php");
 
 		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
 		$pg->execute();
 	}
 
-	function add_gallery() {
-		// TODO: convert to KGalleryAddPage()
-		echo '<h2>' . $this->menu_title . '</h2>';
-		$addForm = new KGalleryAddForm("kgallery_add");
-		$addForm->execute();
-	}
-
-	function edit_gallery() {
+	function handle_gallery_edit() {
 		$gallery_id = $_GET['id'];
 
 		assert (KintassaUtils::isInteger($gallery_id));
@@ -77,6 +84,14 @@ class KGalleryMenu {
 
 		$editForm = new KGalleryEditForm("kgal_edit", $gallery_id);
 		$editForm->execute();
+	}
+
+	function add_gallery() {
+		// TODO: convert to KGalleryAddPage()
+		screen_icon();
+		echo '<h2>' . $this->menu_title . '</h2>';
+		$addForm = new KGalleryAddForm("kgallery_add");
+		$addForm->execute();
 	}
 
 	function about() {

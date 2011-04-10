@@ -19,6 +19,16 @@ class KGalleryAddForm extends KGalleryForm {
 		parent::__construct($name, $default_vals);
 	}
 
+	function render_success_page() {
+		echo("<h2>Gallery Added</h2>");
+		echo(<<<HTML
+<p>Your gallery has been added.  You might want to
+<a href="/wp-admin/admin.php?page=KGalleryMenu_mainpage&mode=gallery_edit&id={$this->id}">Edit this
+gallery</a> now.
+HTML
+);
+	}
+
 	function update_record() {
 		// create and populate the db record in one step
 		global $wpdb;
@@ -30,6 +40,8 @@ class KGalleryAddForm extends KGalleryForm {
 		$this->id = $wpdb->insert_id;
 
 		// TODO: could add error reporting here
+
+		$this->render_success_page();
 		return true;
 	}
 }

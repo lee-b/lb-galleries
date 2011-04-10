@@ -8,6 +8,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 
 require_once("kgal_gallery_form.php");
 
+
 class KGalleryEditForm extends KGalleryForm {
 	function __construct($name, $gallery_id) {
 		$kgal = new KintassaGallery($gallery_id);
@@ -16,7 +17,7 @@ class KGalleryEditForm extends KGalleryForm {
 			"name"				=> $kgal->name,
 			"width"				=> $kgal->width,
 			"height"			=> $kgal->height,
-			"display_method"	=> $kgal->display_mode,
+			"display_mode"		=> $kgal->display_mode,
 		);
 		parent::__construct($name, $default_vals);
 

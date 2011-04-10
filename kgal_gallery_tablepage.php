@@ -9,6 +9,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once("kin_form.php");
 require_once("kgal_gallery.php");
 require_once("kin_tableform.php");
+require_once("kin_utils.php");
 
 class KGalleryTableForm extends KintassaOptionsTableForm {
 	function process_actions() {
@@ -80,7 +81,7 @@ class KGalleryRowOptionsForm extends KintassaRowForm {
 		}
 
 		if ($opts & KGalleryRowOptionsForm::Edit) {
-			$edit_uri = $uri="/wp-admin/admin.php?page=KGalleryMenu_edit_gallery&id={$row->id}";
+			$edit_uri = "/wp-admin/admin.php?page=KGalleryMenu_mainpage&mode=gallery_edit&id=" . $row->id;
 			$edit_btn = new KintassaLinkButton("Edit", $name="edit", $uri = $edit_uri);
 			$this->add_child($edit_btn);
 		}
@@ -166,7 +167,7 @@ class KintassaDBResultsPager extends KintassaPager {
 	}
 
 	function page_link($page_num) {
-		return "/wp-admin/admin.php?page=KGalleryMenu_mainpage&pagenum={$page_num}";
+		return "/wp-admin/admin.php?page=KGalleryMenu_mainpage&mode=gallery_list&pagenum={$page_num}";
 	}
 
 	function render_page_nav() {

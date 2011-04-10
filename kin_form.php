@@ -1,4 +1,4 @@
-f<?php
+<?php
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
