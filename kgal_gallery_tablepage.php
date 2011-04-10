@@ -11,7 +11,21 @@ require_once("kgal_gallery.php");
 require_once("kin_tableform.php");
 
 class KGalleryTableForm extends KintassaOptionsTableForm {
-	function do_action_add() {}
+	function process_actions() {
+		$recognised_actions = array(/*"up", "down",*/ "edit", "del");
+		$actions_taken = $this->buttons_submitted($recognised_actions);
+
+		if ($actions_taken) {
+			$action = $actions_taken[0];
+			$row_id = $actions_taken[1];
+
+			echo("action: $action; row_id: $row_id");
+
+			$handler = "do_row_action_" . $action;
+
+			return $this->$handler($row_id);
+		}
+	}
 
 	function do_row_action_edit($row_id) {
 		echo ("Editing {$row_id}");
@@ -19,8 +33,10 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_del($row_id) {
-		echo("Deleting {$row_id}");
-		return true;
+		// TODO: cascade-delete images in gallery
+		echo ("Gallery #{$row_id} deleted.");
+		$this->pager->delete($row_id);
+		return false;
 	}
 
 	function do_row_action_up($row_id) {
@@ -34,19 +50,7 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 
 	function handle_submissions() {
-		$recognised_actions = array("up", "down", "edit", "del");
-		$actions_taken = $this->buttons_submitted($recognised_actions);
-
-		if ($actions_taken) {
-			$btn = $actions_taken[0];
-			$form = $actions_taken[1];
-			$row = $form->row_id_field->value();
-
-			$action = $btn->name;
-			$handler = "do_row_action_" . $action;
-
-			return $this->$handler($row);
-		}
+		return false;
 	}
 
 	function end_table() {
@@ -55,7 +59,7 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 }
 
-class KGalleryRowOptionsForm extends KintassaForm {
+class KGalleryRowOptionsForm extends KintassaRowForm {
 	const Sort = 1;
 	const Edit = 2;
 	const Delete = 4;
@@ -65,25 +69,27 @@ class KGalleryRowOptionsForm extends KintassaForm {
 		$form_name = $table_form->name() . "_row_" . $row->id;
 		parent::__construct($form_name);
 
-		$this->row_id_field = new KintassaHiddenField("row_id", $name="row_id", $default_val = $row->id);
+		$this->row_id_field = new KintassaHiddenField(
+			"row_id", $name="row_id", $default_val = $row->id, $non_unique=true
+		);
 		$this->add_child($this->row_id_field);
 
 		if ($opts & KGalleryRowOptionsForm::Sort) {
-			$this->add_child(new KintassaButton("&uarr;", $name="up"));
-			$this->add_child(new KintassaButton("&darr;", $name="down"));
+			$this->add_child(new KintassaButton("&uarr;", $name="up", $primary=false, $non_unique=true));
+			$this->add_child(new KintassaButton("&darr;", $name="down", $primary=false, $non_unique=true));
 		}
 
 		if ($opts & KGalleryRowOptionsForm::Edit) {
-			$this->add_child(new KintassaButton("Edit"));
+			$this->add_child(new KintassaButton("Edit", $name="edit", $primary=false, $non_unique=true));
 		}
 
 		if ($opts & KGalleryRowOptionsForm::Delete) {
-			$this->add_child(new KintassaButton("Del"));
+			$this->add_child(new KintassaButton("Del", $name="del", $primary=false, $non_unique=true));
 		}
 	}
 
 	function handle_submissions() {
-		// subform, so we just ignore this
+		// handled by parent table, so we just ignore this
 		return false;
 	}
 }
@@ -107,6 +113,16 @@ class KintassaDBResultsPager extends KintassaPager {
 		$this->table_name =  $table_name;
 		$this->page_size = $page_size;
 		$this->results = null;
+	}
+
+	function sort_up($row_id) {}
+	function sort_down($row_id) {}
+
+	function delete($row_id) {
+		global $wpdb;
+		$tbl = KintassaGallery::table_name();
+		$qry = "DELETE FROM `{$tbl}` WHERE id={$row_id}";
+		$wpdb->query($qry);
 	}
 
 	function num_results() {

@@ -11,16 +11,28 @@ require_once("kin_utils.php");
 
 abstract class KintassaPageElement {
 	const max_depth = 10;
+	const static_prefix = "kintassa_";
 
 	function __construct() {
 		$this->_parent = null;
 		$this->validation_errors = array();
 		$this->extra_classes = array();
+		$this->user_messages = array();
 	}
 
 	function add_class($cls) {
 		if (!in_array($cls, $this->extra_classes)) {
 			$this->extra_classes[] = $cls;
+		}
+	}
+
+	function user_message($msg) {
+		$this->user_messages[] = $msg;
+	}
+
+	function render_user_messages() {
+		foreach ($this->user_messages as $msg) {
+			echo("<div class=\"user-message\">{$msg}</div>");
 		}
 	}
 
@@ -73,23 +85,24 @@ abstract class KintassaPageElement {
 		return false;
 	}
 
-	function begin_render() {
+	function begin_render($as_sub_el = false) {
 		$cl = $this->class_attrib_str();
 
 		$tag = $this->block_layout() ? "div" : "span";
 		echo("<{$tag} {$cl}>");
 
 		$this->render_validation_errors();
+		$this->render_user_messages();
 	}
 
-	function end_render() {
+	function end_render($as_sub_el = false) {
 		$tag = $this->block_layout() ? "div" : "span";
 		echo("</{$tag}>");
 	}
 
-	function render() {
-		$this->begin_render();
-		$this->end_render();
+	function render($as_sub_el = false) {
+		$this->begin_render($as_sub_el);
+		$this->end_render($as_sub_el);
 	}
 }
 
@@ -168,8 +181,8 @@ abstract class KintassaField extends KintassaNamedFormElement {
 }
 
 class KintassaWPNonceField extends KintassaField {
-	function begin_render() {
-		parent::begin_render();
+	function begin_render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
 
 		$action = -1;
 		$name = $this->name();
@@ -215,11 +228,11 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		$ch->_set_parent($this);
 	}
 
-	function begin_render() {
-		parent::begin_render();
+	function begin_render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
 
 		foreach ($this->children as $ch) {
-			$ch->render();
+			$ch->render(true);
 		}
 	}
 
@@ -243,8 +256,12 @@ class KintassaFieldBand extends KintassaFieldContainer {
 }
 
 class KintassaTextField extends KintassaEditableField {
-	function begin_render() {
-		parent::begin_render();
+	function clean_text_input($s) {
+		return esc_attr($s);
+	}
+
+	function begin_render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
 
 		$name = $this->name();
 		$def_val = $this->default_value();
@@ -262,9 +279,9 @@ class KintassaTextField extends KintassaEditableField {
 		$fn = $this->name();
 
 		if (isset($_POST[$fn])) {
-			$val = $_POST[$fn];
+			$val = $this->clean_text_input($_POST[$fn]);
 		} else {
-			$val = null;
+			$val = $this->default_value();
 		}
 
 		return $val;
@@ -272,19 +289,29 @@ class KintassaTextField extends KintassaEditableField {
 }
 
 class KintassaHiddenField extends KintassaEditableField {
-	function value() {
-		$name = $this->name();
-
-		if (isset($_POST[$name])) {
-			$val = $_POST[$name];
-		} else {
-			$val = $this->default_val;
-		}
-
-		return $val;
+	function __construct($label, $name=null, $default_value = null, $non_unique = false) {
+		parent::__construct($label, $name=$name, $default_value = $default_value);
+		$this->non_unique = $non_unique;
 	}
 
-	function render() {
+	function value() {
+		return $this->default_val;
+	}
+
+	function name() {
+		// TODO: code duplicated in KintassaButton.  Refactor.
+		if ($this->non_unique) {
+			return KintassaPageElement::static_prefix . $this->name;
+		} else {
+			return parent::name();
+		}
+	}
+
+	function render($as_sub_el = false) {
+		/*
+		 * we override the standard rendering for this field, since it should
+		 * be entirely hidden
+		 */
 		$val = $this->value();
 		$name = $this->name();
 		echo("<input type=\"hidden\" name=\"{$name}\" value=\"{$val}\">");
@@ -292,14 +319,24 @@ class KintassaHiddenField extends KintassaEditableField {
 }
 
 class KintassaButton extends KintassaField {
-	function __construct($label, $name=null, $primary=false) {
+	function __construct($label, $name=null, $primary=false, $non_unique = false) {
 		parent::__construct($label, $name=$name);
 		$this->primary = $primary;
+		$this->non_unique = $non_unique;
 	}
 
 	function submitted() {
 		$full_name = $this->name();
 		return isset($_POST[$full_name]);
+	}
+
+	function name() {
+		// TODO: code duplicated in KintassaHiddenField.  Refactor.
+		if ($this->non_unique) {
+			return KintassaPageElement::static_prefix . $this->name;
+		} else {
+			return parent::name();
+		}
 	}
 
 	function classes() {
@@ -314,22 +351,29 @@ class KintassaButton extends KintassaField {
 		return $cl;
 	}
 
-	function render() {
+	function begin_render($as_sub_el = false) {
+//		parent::begin_render($as_sub_el); // TODO: refactor so OK to call
+
 		$name = $this->name();
 		$cl = $this->class_attrib_str();
+
 		echo("<input type=\"submit\" {$cl} name=\"{$name}\" value=\"{$this->label}\">");
+	}
+
+	function end_render($as_sub_el = false) {
+//		parent::end_render($as_sub_el); // TODO: refactor so OK to call
 	}
 }
 
 class KintassaNumberField extends KintassaTextField {
-	function render() {
+	function begin_render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
+
 		$name = $this->name();
 		$cl = $this->classes();
 
-		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" id=\"{name}\" name=\"{$name}\" value=\"\">");
-		echo("</span>");
 	}
 
 	function is_valid() {
@@ -362,24 +406,24 @@ class KintassaIntegerField extends KintassaNumberField {
 }
 
 class KintassaCheckbox extends KintassaField {
-	function render() {
+	function render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
+
 		$name = $this->name();
 		$cl = $this->class_attrib_str();
-		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"checkbox\" name=\"{$name}\" value=\"\">");
-		echo("</span>");
 	}
 }
 
 class KintassaFileField extends KintassaField {
-	function render() {
+	function render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
+
 		$name = $this->name();
 		$cl = $this->class_attrib_str();
-		echo("<span {$cl}>");
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"file\" name=\"{$name}\" value=\"\">");
-		echo("</span>");
 	}
 
 	function is_valid() {
@@ -422,8 +466,8 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 }
 
 class KintassaRadioButton extends KintassaField {
-	function begin_render() {
-		parent::begin_render();
+	function begin_render($as_sub_el = false) {
+		parent::begin_render($as_sub_el);
 
 		$parent = $this->parent();
 		assert(is_a($parent, "KintassaRadioGroup"));
@@ -471,10 +515,10 @@ abstract class KintassaForm extends KintassaFieldContainer {
 		$ch->_set_parent($this);
 	}
 
-	function begin_render() {
-		if ($this->_parent) {
-			parent::begin_render();
-		} else {
+	function begin_render($as_sub_el=false) {
+//		parent::begin_render($as_sub_el); // TODO: refactor so OK to call
+
+		if (!$as_sub_el) {
 			$form_uri = $this->uri();
 			$form_name = $this->name();
 			$cl = $this->class_attrib_str();
@@ -483,16 +527,16 @@ abstract class KintassaForm extends KintassaFieldContainer {
 		}
 
 		foreach ($this->children as $ch) {
-			$ch->render();
+			$ch->render(true);
 		}
 	}
 
-	function end_render() {
-		if ($this->_parent) {
-			parent::end_render();
-		} else {
+	function end_render($as_sub_el = false) {
+		if (!$as_sub_el) {
 			echo "</form>";
 		}
+
+//		parent::end_render($as_sub_el); // TODO: refactor so OK to call
 	}
 
 	function name() {
@@ -534,14 +578,14 @@ abstract class KintassaForm extends KintassaFieldContainer {
 		return true;
 	}
 
-	function execute() {
+	function execute($as_sub_el = false) {
 		if ($this->is_valid()) {
 			$render = !($this->handle_submissions());
 		} else {
 			$render = true;
 		}
 
-		if ($render) $this->render();
+		if ($render) $this->render($as_sub_el);
 	}
 
 	abstract function handle_submissions();

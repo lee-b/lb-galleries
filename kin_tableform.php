@@ -14,10 +14,11 @@ abstract class KintassaPager {
 
 	function num_pages() {
 		$num_results = $this->num_results();
+		$page_size = $this->page_size();
 
-		$num_pages = (int) ($num_results / $this->page_size());
+		$num_pages = (int) ($num_results / $page_size);
 
-		if ($num_results % $num_pages) {
+		if ($num_results % $page_size) {
 			$num_pages += 1;
 		}
 
@@ -29,12 +30,16 @@ abstract class KintassaPager {
 	abstract function page_size();
 	abstract function items_on_page();
 	abstract function render_page_nav();
+
+	// These methods really make the class more of a table wrapper than
+	// a simple pager.  Should probably rename / refactor at some point.
+	abstract function delete($row_id);
+	abstract function sort_up($row_id);
+	abstract function sort_down($row_id);
 }
 
 abstract class KintassaTableForm extends KintassaForm {
 	/***
-	 * instanciates a KintassaTable
-	 *
 	 * @param $table_name	name of the table
 	 * @param $col_map		dictionary of column names and flags
 	 * @param $pager		a KintassaPager instance
@@ -54,7 +59,9 @@ abstract class KintassaTableForm extends KintassaForm {
 		$this->row = null;
 	}
 
-	function render() {
+	function begin_render($as_sub_el = false) {
+//		parent::begin_render($as_sub_el); // TODO: refactor so OK to call
+
 		$this->begin_table();
 
 		$this->begin_header();
@@ -71,8 +78,11 @@ abstract class KintassaTableForm extends KintassaForm {
 			}
 			$this->end_row($row);
 		}
+	}
 
+	function end_render($as_sub_el = false) {
 		$this->end_table();
+//		parent::end_render($as_sub_el); // TODO: refactor so OK to call
 	}
 
 	function classes() {
@@ -136,6 +146,9 @@ abstract class KintassaTableForm extends KintassaForm {
 	}
 }
 
+abstract class KintassaRowForm extends KintassaForm {
+}
+
 abstract class KintassaRowFormFactory {
 	function __construct() {}
 	abstract function instanciate($table_form, $row_id);
@@ -150,9 +163,13 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 		// add options column for edit/delete/sort/clone buttons
 		$this->col_map[] = "Options";
 
+		$this->process_actions();
+
 		// generate option forms for each row
 		$this->row_forms = $this->generate_row_forms();
 	}
+
+	abstract function process_actions();
 
 	function handle_forms() {
 		return False;
@@ -181,7 +198,8 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 
 		if ($col == 'Options') {
 			$o = $this->row_forms[$this->row->id];
-			$o->render();
+			$as_subform = false; // naming for clarity
+			$o->render($as_subform);
 		} else {
 			$field_name = str_replace(" ", "_", strtolower($col));
 			echo($this->row->$field_name);
@@ -192,19 +210,12 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 	 * returns the button submitted and the form it was submitted on
 	 */
 	function buttons_submitted($btns) {
-		$parent_has = parent::buttons_submitted($btns);
-		if ($parent_has) {
-			return $parent_has;
-		}
-
-		foreach ($this->row_forms as $subform) {
-			$sub_has = $subform->buttons_submitted($btns);
-			if ($sub_has) {
-				return $sub_has;
+		foreach ($btns as $btn) {
+			if (isset($_POST[KintassaPageElement::static_prefix . $btn])) {
+				$row_id = intval($_POST[KintassaPageElement::static_prefix . 'row_id']);
+				return array($btn, $row_id);
 			}
 		}
-
-		return null;
 	}
 }
 
