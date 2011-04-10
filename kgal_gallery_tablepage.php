@@ -219,7 +219,8 @@ class KGalleryTablePage extends KintassaPage {
 		$table_name = KintassaGallery::table_name();
 		$pager = new KintassaDBResultsPager($table_name);
 
-		$row_form_fac = new KGalleryRowOptionsFactory(KGalleryRowOptionsForm::All);
+		$row_opts = KGalleryRowOptionsForm::Edit | KGalleryRowOptionsForm::Delete;
+		$row_form_fac = new KGalleryRowOptionsFactory($row_opts);
 		$this->table_form = new KGalleryTableForm($form_name, $col_map, $pager, $row_form_fac);
 	}
 
