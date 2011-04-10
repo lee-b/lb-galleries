@@ -37,6 +37,9 @@ abstract class KintassaPageElement {
 	}
 
 	function validation_error($err_msg) {
+		// shouldn't be posting errors if the form hasn't been submitted yet
+		assert($this->is_present());
+
 		$this->add_class("form-invalid");
 		$this->validation_errors[] = $err_msg;
 	}
@@ -113,13 +116,24 @@ abstract class KintassaFormElement extends KintassaPageElement {
 		return $parent_form;
 	}
 
+	function is_present() {
+		return false;
+	}
+
+	function validate_posted_data() {
+		return true;
+	}
+
 	/***
 	 * Since most fields accept whatever values are given, this
 	 * defaults to True.  MUST be overridden when further checks are
 	 * required.
 	 */
 	function is_valid() {
-		return true;
+		if (!$this->is_present()) {
+			return true;
+		}
+		return $this->validate_posted_data();
 	}
 
 	/***
@@ -200,7 +214,7 @@ class KintassaWPNonceField extends KintassaField {
 		echo ($html);
 	}
 
-	function is_valid() {
+	function validate_posted_data() {
 		// NOTE: no parent call here, as wordpress does the whole job for us
 		$name = $this->name();
 
@@ -223,8 +237,8 @@ abstract class KintassaEditableField extends KintassaField {
 		return $this->default_val;
 	}
 
-	function is_valid() {
-		if (!parent::is_valid()) return false;
+	function validate_posted_data() {
+		if (!parent::validate_posted_data()) return false;
 
 		if ($this->required) {
 			if ($this->posted_value() == null) {
@@ -250,6 +264,13 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		$this->children = array();
 	}
 
+	function is_present() {
+		foreach($this->children as $ch) {
+			if (!$ch->is_present()) return false;
+		}
+		return true;
+	}
+
 	function add_child($ch) {
 		$this->children[] = $ch;
 		$ch->_set_parent($this);
@@ -263,7 +284,7 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		}
 	}
 
-	function is_valid() {
+	function validate_posted_data() {
 		foreach ($this->children as $ch) {
 			if (!$ch->is_valid()) {
 				return false;
@@ -285,7 +306,7 @@ class KintassaFieldBand extends KintassaFieldContainer {
 class KintassaTextField extends KintassaEditableField {
 	function posted_value() {
 		$val = parent::posted_value();
-		if (!$val) return $val;
+		if ($val == null) return $val;
 
 		// added filtering of parent's return value
 		return esc_attr($val);
@@ -295,12 +316,7 @@ class KintassaTextField extends KintassaEditableField {
 		parent::begin_render($as_sub_el);
 
 		$name = $this->name();
-		$def_val = $this->default_value();
-
 		$val = $this->value();
-		if ($val == null) {
-			$val = $def_val;
-		}
 
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"text\" name=\"{$name}\" value=\"{$val}\">");
@@ -385,12 +401,12 @@ class KintassaButton extends KintassaField {
 }
 
 class KintassaNumberField extends KintassaTextField {
-	function is_valid() {
-		if (!parent::is_valid()) return false;
+	function validate_posted_data() {
+		if (!parent::validate_posted_data()) return false;
 
 		$val = $this->posted_value();
-
 		$is_num = is_numeric($val);
+
 		if (!$is_num) $this->validation_error(__("Please enter a number"));
 
 		return $is_num;
@@ -398,8 +414,8 @@ class KintassaNumberField extends KintassaTextField {
 }
 
 class KintassaIntegerField extends KintassaNumberField {
-	function is_valid() {
-		if (!parent::is_valid()) return false;
+	function validate_posted_data() {
+		if (!parent::validate_posted_data()) return false;
 
 		$val = $this->posted_value();
 
@@ -446,8 +462,8 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 		return true;
 	}
 
-	function is_valid() {
-		if (!parent::is_valid()) return false;
+	function validate_posted_data() {
+		if (!parent::validate_posted_data()) return false;
 
 		$posted_val = $this->posted_value();
 		$child_fields = $this->child_field_names();
@@ -566,9 +582,14 @@ abstract class KintassaForm extends KintassaFieldContainer {
 		return esc_url($_SERVER['REQUEST_URI']);
 	}
 
-	function is_valid() {
+	function is_present() {
+		return true;
+	}
+
+	function validate_posted_data() {
 		foreach ($this->children as $ch) {
 			if (!$ch->is_valid()) {
+				$ch_name = $ch->name();
 				return false;
 			}
 		}
