@@ -106,33 +106,4 @@ class KGalleryAddForm extends KGalleryForm {
 	}
 }
 
-class KGalleryEditForm extends KGalleryForm {
-	function __construct($name, $gallery_id) {
-		parent::__construct($name);
-
-		$this->id_field = new KintassaHiddenField('id', $default_value = $gallery_id);
-		$this->add_child($this->id_field);
-	}
-
-	function update_record() {
-		global $wpdb;
-
-		$dat = $this->data();
-		$fmt = $this->data_format();
-
-		$where = array(
-			"id"			=> $this->id_field->value(),
-		);
-
-		$where_fmt = array(
-			"%d"
-		);
-
-		$wpdb->update(KGalleryTable::table_name(), $dat, $where, $fmt, $where_fmt);
-
-		// TODO: could add error reporting here
-		return true;
-	}
-}
-
 ?>
