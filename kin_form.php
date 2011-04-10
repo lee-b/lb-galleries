@@ -479,6 +479,25 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 }
 
 class KintassaRadioButton extends KintassaField {
+	function group_name() {
+		return $this->parent()->name();
+	}
+
+	function group_present() {
+		// returns true if a member of the group has been posted
+		return isset($_POST[$this->group_name()]);
+	}
+
+	function group_value() {
+		// returns true if a member of the group has been posted
+		return $_POST[$this->group_name()];
+	}
+
+	function selected() {
+		if (!$this->group_present()) return false;
+		return ($this->group_value() == $this->name);
+	}
+
 	function begin_render($as_sub_el = false) {
 		parent::begin_render($as_sub_el);
 
@@ -492,7 +511,11 @@ class KintassaRadioButton extends KintassaField {
 		$val = $this->name;
 
 		$cl = $this->class_attrib_str();
-		echo("<input type=\"radio\" id=\"{$id}\" name=\"{$radio_group_name}\" value=\"{$val}\">");
+
+		$selected = "";
+		if ($this->selected() == $val) $selected = " checked";
+
+		echo("<input type=\"radio\" id=\"{$id}\" name=\"{$radio_group_name}\" value=\"{$val}\"$selected>");
 		echo("<label for=\"{$id}\">{$label}</label>");
 	}
 
