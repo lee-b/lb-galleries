@@ -7,9 +7,10 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once("kgal_gallery_tablepage.php");
-//require_once("kgal_galleryimage_tablepage.php");
+require_once("kgal_galleryimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
 require_once("kgal_gallery_editform.php");
+require_once("kgal_image.php");
 require_once("kgal_about_page.php");
 require_once("kin_utils.php");
 
@@ -56,6 +57,8 @@ class KGalleryMenu {
 			$given_mode = $_GET['mode'];
 			if (in_array($given_mode, $recognised_modes)) {
 				$mode = $given_mode;
+			} else {
+				$mode = "unrecognised_mode";
 			}
 		}
 
@@ -63,11 +66,36 @@ class KGalleryMenu {
 		$this->$mode_handler();
 	}
 
+	function handle_unrecognised_mode() {
+		echo("Error: the requested mode is unrecognised, or not yet implemented.");
+	}
+
 	function handle_gallery_list() {
 		require_once("kgal_gallery.php");
 
 		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
 		$pg->execute();
+	}
+
+	function images_form($gallery_id) {
+		$form_name = "kgallery_images";
+
+		$col_map = array(
+			"id",
+			"sort_pri",
+			"Image" => "filepath",
+			"Name",
+			"Description",
+			// gallery_id hidden
+		);
+
+		$table_name = KintassaGalleryImage::table_name();
+		$pager = new KintassaGalleryImageDBResultsPager($table_name, $page_size = 10, $gallery_id=$gallery_id);
+
+		$row_opts = KGalleryImageRowOptionsForm::All;
+		$row_form_fac = new KGalleryImageRowOptionsFactory($row_opts);
+		$images_table_form = new KGalleryImageTableForm($form_name, $col_map, $pager, $row_form_fac);
+		$images_table_form->execute();
 	}
 
 	function handle_gallery_edit() {
@@ -78,6 +106,8 @@ class KGalleryMenu {
 
 		$editForm = new KGalleryEditForm("kgal_edit", $gallery_id);
 		$editForm->execute();
+
+		$this->images_form($gallery_id);
 	}
 
 	function add_gallery() {

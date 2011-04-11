@@ -202,7 +202,12 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 			$o->render($as_subform);
 		} else {
 			$field_name = str_replace(" ", "_", strtolower($col));
-			echo($this->row->$field_name);
+			if (isset($this->col_map[$field_name])) {
+				$mapped_name = $this->col_map[$field_name];
+			} else {
+				$mapped_name = $field_name;
+			}
+			echo($this->row->$mapped_name);
 		}
 	}
 

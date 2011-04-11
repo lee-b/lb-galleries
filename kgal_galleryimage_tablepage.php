@@ -8,7 +8,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 
 require_once("kin_form.php");
 require_once("kgal_gallery.php");
-require_once("kgal_galleryimage.php");
+require_once("kgal_image.php");
 require_once("kin_tableform.php");
 require_once("kin_utils.php");
 
@@ -109,18 +109,23 @@ class KGalleryImageRowOptionsFactory extends KintassaRowFormFactory {
 }
 
 class KintassaGalleryImageDBResultsPager extends KintassaPager {
-	function __construct($table_name, $page_size = 10) {
+	function __construct($table_name, $page_size = 10, $gallery_id = null) {
 		parent::__construct();
 
 		assert ($page_size > 0);
+		assert($gallery_id != null);
 
 		$this->table_name =  $table_name;
 		$this->page_size = $page_size;
+		$this->gallery_id = $gallery_id;
 		$this->results = null;
 	}
 
-	function sort_up($row_id) {}
-	function sort_down($row_id) {}
+	function sort_up($row_id) {
+	}
+
+	function sort_down($row_id) {
+	}
 
 	function delete($row_id) {
 		global $wpdb;
@@ -203,8 +208,10 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$page_num = $this->current_page();
 		$page_num -= 1; // count from zero
 
+		$gallery_id = $this->gallery_id;
+
 		$start_item = $page_size * $page_num;
-		$qry = "SELECT * FROM {$this->table_name} ORDER BY `name` ASC LIMIT {$start_item},{$page_size}";
+		$qry = "SELECT * FROM {$this->table_name} WHERE `gallery_id`={$gallery_id} ORDER BY `name` ASC LIMIT {$start_item},{$page_size}";
 
 		return $qry;
 	}
