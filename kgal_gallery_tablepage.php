@@ -124,8 +124,7 @@ class KintassaGalleryDBResultsPager extends KintassaPager {
 
 	function delete($row_id) {
 		global $wpdb;
-		$tbl = KintassaGallery::table_name();
-		$qry = "DELETE FROM `{$tbl}` WHERE id={$row_id}";
+		$qry = "DELETE FROM `{$this->table_name}` WHERE id={$row_id}";
 		$wpdb->query($qry);
 	}
 
