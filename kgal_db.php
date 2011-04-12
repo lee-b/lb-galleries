@@ -38,6 +38,7 @@ SQL;
 		  `sort_pri` INT NULL DEFAULT 0 ,
 		  `filepath` VARCHAR(4096) NULL ,
 		  `name` VARCHAR(255) NULL ,
+		  `mimetype` VARCHAR(255) NULL ,
 		  `description` VARCHAR(255) NULL ,
 		  `gallery_id` INT NOT NULL,
 		  PRIMARY KEY (`id`)

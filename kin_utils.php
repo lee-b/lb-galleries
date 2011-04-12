@@ -21,6 +21,49 @@ class KintassaUtils {
 
 		return $base_uri . $args;
 	}
+
+	static function load_image($fname) {
+		$res = array();
+
+		$imgsize = getimagesize($fname);
+		if (!$imgsize) {
+			return null;
+		}
+
+		$res['width'] = $imgsize[0];
+		$res['height'] = $imgsize[1];
+		$res['mimetype'] = $imgsize['mime'];
+
+		$loader_map = array(
+			"image/jpeg"		=> "imagecreatefromjpeg",
+			"image/png"			=> "imagecreatefrompng",
+			"image/gif"			=> "imagecreatefromgif"
+		);
+
+		$loader = $loader_map[$res['mimetype']];
+
+		$img = @$loader($fname);
+		if ($img == null) {
+			return null;
+		}
+		print_r($img);
+
+		$res['image'] = $img;
+
+		return $res;
+	}
+
+	static function save_image($img, $fname) {
+		$saver_map = array(
+			"image/jpeg"		=> "imagejpeg",
+			"image/png"			=> "imagepng",
+			"image/gif"			=> "imagegif",
+		);
+
+		$saver = $saver_map[$img['mimetype']];
+		$real_img = $img['image'];
+		$saver($real_img, $fname);
+	}
 }
 
 ?>

@@ -8,13 +8,13 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 
 abstract class KintassaMicroORMObject {
 	function __construct($id = null) {
-		$this->id = null;
+		$this->id = $id;
+		$this->dirty = false;
 
-		$this->loaded = false;
-		$this->saved = false;
+		$this->init();
 
 		if ($id != null) {
-			$this->load($id);
+			$this->dirty = !($this->load($id));
 		}
 	}
 
@@ -45,16 +45,14 @@ abstract class KintassaMicroORMObject {
 		return $res;
 	}
 
-	function is_saved() {
-		return $this->saved;
+	function is_dirty() {
+		return $this->dirty;
 	}
 
-	function is_loaded() {
-		return $this->loaded;
-	}
+	function init() {}
 
 	abstract protected function save();
-	abstract protected function load($id);
+	abstract protected function load();
 }
 
 ?>

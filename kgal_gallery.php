@@ -69,14 +69,6 @@ class KintassaManualSlideshowGalleryApp extends KintassaGalleryApp {
 }
 
 class KintassaGallery extends KintassaMicroORMObject {
-	function __construct($id = null) {
-		parent::__construct($id);
-
-		if (!$this->is_loaded()) {
-			$this->load($id);
-		}
-	}
-
 	static function table_name() {
 		global $wpdb;
 		return $wpdb->prefix . "kintassa_gallery";
@@ -99,17 +91,29 @@ class KintassaGallery extends KintassaMicroORMObject {
 		}
 	}
 
-	function load($id) {
+	function init() {
+		$this->name = null;
+		$this->width = null;
+		$this->height = null;
+		$this->display_mode = null;
+	}
+
+	function load() {
 		global $wpdb;
 
-		assert ($id != null);
-		$row = $wpdb->get_row("SELECT * FROM `{$this->table_name()}` WHERE id={$id}");
+		assert ($this->id != null);
+
+		$row = $wpdb->get_row("SELECT * FROM `{$this->table_name()}` WHERE id={$this->id}");
+		if (!$row) {
+			return false;
+		}
 
 		$this->name = $row->name;
 		$this->width = $row->width;
 		$this->height = $row->height;
 		$this->display_mode = $row->display_mode;
-		$this->id = $id;
+
+		return true;
 	}
 
 	function display_mode_map() {

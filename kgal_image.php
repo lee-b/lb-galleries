@@ -9,12 +9,13 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 require_once('kin_micro_orm.php');
 
 class KintassaGalleryImage extends KintassaMicroORMObject {
-	function __construct($id = null) {
-		parent::__construct(KintassaGalleryImage::table_name, $id);
-
-		if (!$this->is_loaded()) {
-			// TODO: Not implemented
-		}
+	function init() {
+		$this->sort_pri = null;
+		$this->filepath = null;
+		$this->name = null;
+		$this->mimetype = null;
+		$this->description = null;
+		$this->gallery_id = null;
 	}
 
 	static function table_name() {
@@ -24,31 +25,42 @@ class KintassaGalleryImage extends KintassaMicroORMObject {
 
 	function save() {
 		// TODO: Not implemented
+		assert(false);
+		return false;
 	}
 
-	function load($id) {
+	function load() {
 		global $wpdb;
 
-		assert ($this->id != null);
+		assert($this->id != null);
 
-		// TODO: Not implemented
+		$table_name = $this->table_name();
+		$qry = "SELECT sort_pri,filepath,name,mimetype,description,gallery_id FROM `{$table_name}` WHERE `id`={$this->id};";
+		$res = $wpdb->get_row($qry);
+		if (!$res) {
+			return false;
+		}
+
+		$this->sort_pri = $res->sort_pri;
+		$this->filepath = $res->filepath;
+		$this->name = $res->name;
+		$this->mimetype = $res->mimetype;
+		$this->description = $res->description;
+		$this->gallery_id = $res->gallery_id;
+
+		return true;
 	}
 
-	function render($width = null, $height = null) {
-		if (!$this->is_loaded()) {
-			$this->load();
+	function file_path() {
+		return $this->filepath;
+	}
 
-			$gallery_code = "<div class=\"kintassa_gallery\"";
+	function mime_type() {
+		return $this->mimetype;
+	}
 
-			$style_code = "";
-			if ($width) { $style_code .= "width: {$width};"; }
-			if ($height) { $style_code .= "height: {$height};"; }
-			if (strlen($style_code) > 0) { $gallery_code .= " style=\"{$style_code}\""; }
-
-			$gallery_code .= ">GALLERY NUMBER {$this->id}</div>";
-
-			return $gallery_code;
-		}
+	function gallery_id() {
+		return $this->gallery_id;
 	}
 }
 
