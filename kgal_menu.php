@@ -10,6 +10,8 @@ require_once("kgal_gallery_tablepage.php");
 require_once("kgal_galleryimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
 require_once("kgal_gallery_editform.php");
+require_once("kgal_galleryimage_addform.php");
+require_once("kgal_galleryimage_editform.php");
 require_once("kgal_image.php");
 require_once("kgal_about_page.php");
 require_once("kin_utils.php");
@@ -72,14 +74,7 @@ class KGalleryMenu {
 		echo("<div class=\"error\">Error: the requested mode is unrecognised, or not yet implemented.</div>");
 	}
 
-	function handle_gallery_list() {
-		require_once("kgal_gallery.php");
-
-		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
-		$pg->execute();
-	}
-
-	function images_form($gallery_id) {
+	function images_subform($gallery_id) {
 		$form_name = "kgallery_images";
 
 		$col_map = array(
@@ -100,9 +95,16 @@ class KGalleryMenu {
 		$images_table_form->execute();
 	}
 
+	function handle_gallery_list() {
+		require_once("kgal_gallery.php");
+
+		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
+		$pg->execute();
+	}
+
 	function handle_gallery_edit() {
 		screen_icon();
-		echo('<h2>Edit Gallery</h2>');
+		echo '<h2>' . __("Edit Gallery") . '</h2>';
 
 		$gallery_id = $_GET['id'];
 		assert (KintassaUtils::isInteger($gallery_id));
@@ -110,18 +112,37 @@ class KGalleryMenu {
 		$editForm = new KGalleryEditForm("kgal_edit", $gallery_id);
 		$editForm->execute();
 
-		$this->images_form($gallery_id);
+		$this->images_subform($gallery_id);
 	}
 
 	function handle_gallery_add() {
 		screen_icon();
-		echo '<h2>' . $this->menu_title . '</h2>';
+		echo '<h2>' . __("Add Gallery") . '</h2>';
 		$addForm = new KGalleryAddForm("kgallery_add");
 		$addForm->execute();
 	}
 
+	function handle_galleryimage_edit() {
+		screen_icon();
+		echo('<h2>' . __("Edit Gallery Image") . '</h2>');
+
+		$gallery_image_id = $_GET['id'];
+		assert (KintassaUtils::isInteger($gallery_image_id));
+
+		$editForm = new KGalleryImageEditForm("kgalimage_edit", $gallery_image_id);
+		$editForm->execute();
+	}
+
+	function handle_galleryimage_add() {
+		screen_icon();
+		echo '<h2>' . __("Add Gallery Image") . '</h2>';
+
+		$addForm = new KGalleryImageAddForm("kgalimage_add");
+		$addForm->execute();
+	}
+
 	function about() {
-		$about_page = new KGalleryAboutPage("About {$this->menu_title}");
+		$about_page = new KGalleryAboutPage(__("About Kintassa Galleries"));
 		$about_page->execute();
 	}
 }

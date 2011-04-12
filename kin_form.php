@@ -496,14 +496,20 @@ class KintassaFileField extends KintassaField {
 	}
 
 	function is_valid() {
-		if (!isset($_FILE[$name])) return false;
+		if (!isset($_FILE[$this->name])) return false;
 
-		$ok = ($_FILE[$name]['error'] == UPLOAD_ERR_OK);
+		$ok = ($_FILE[$this->name]['error'] == UPLOAD_ERR_OK);
 		if (!$ok) {
 			$this->validation_error(__("Upload failed; please retry"));
 		}
 
 		return $ok;
+	}
+}
+
+class KintassaImageUploadField extends KintassaFileField {
+	function render($as_sub_el = false) {
+		echo "(Image upload field here )";
 	}
 }
 

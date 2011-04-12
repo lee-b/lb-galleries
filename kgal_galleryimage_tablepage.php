@@ -269,6 +269,12 @@ class KGalleryImageTablePage extends KintassaPage {
 
 	function content() {
 		$this->table_form->execute();
+
+		$page_args = array(
+			"mode" => "galleryimage_add",
+		);
+		$page_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $page_args);
+		echo("<a href=\"{$page_uri}\" class=\"button\">Add Image</a>");
 	}
 }
 
