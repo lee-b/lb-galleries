@@ -25,7 +25,33 @@ class KintassaGalleryImage extends KintassaMicroORMObject {
 
 	function save() {
 		// TODO: Not implemented
-		assert(false);
+		global $wpdb;
+
+		$table_name = KintassaGalleryImage::table_name();
+		$data = array(
+			"sort_pri"		=> $this->sort_pri,
+			"filepath"		=> $this->filepath,
+			"name"			=> $this->name,
+			"mimetype"		=> $this->mimetype,
+			"description"	=> $this->description,
+			"gallery_id"	=> $this->gallery_id,
+		);
+		$where = array(
+			"id"			=> $this->id,
+		);
+		$data_fmt = array(
+			"%d",
+			"%s",
+			"%s",
+			"%s",
+			"%s",
+			"%d"
+		);
+		$where_fmt = array("%d");
+
+		$res = $wpdb->update($table_name, $data, $where, $data_fmt, $where_fmt);
+		print_r($res);
+
 		return false;
 	}
 

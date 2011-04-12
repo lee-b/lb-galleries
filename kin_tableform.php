@@ -14,8 +14,9 @@ abstract class KintassaPager {
 
 	function num_pages() {
 		$num_results = $this->num_results();
-		$page_size = $this->page_size();
+		if ($num_results <= 1) return 1;
 
+		$page_size = $this->page_size();
 		$num_pages = (int) ($num_results / $page_size);
 
 		if ($num_results % $page_size) {
@@ -116,6 +117,11 @@ abstract class KintassaTableForm extends KintassaForm {
 
 	function begin_footer() {
 		echo("<tfoot>");
+		echo("<tr>");
+		foreach ($this->col_map as $k) {
+			echo("<th>{$k}</th>");
+		}
+		echo("</tr>");
 	}
 
 	function end_footer() {

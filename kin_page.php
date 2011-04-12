@@ -12,6 +12,7 @@ abstract class KintassaPage {
 	}
 
 	function begin_page() {
+		screen_icon();
 		echo("<h2 class=\"title\">{$this->title}</h2>");
 	}
 

@@ -11,8 +11,9 @@ require_once("kin_page.php");
 class KGalleryAboutPage extends KintassaPage {
 	function content() {
 		echo <<<HTML
-	<p>Copyright &copy; 2011 <a href="http://www.kintassa.com/">Kintassa</a>.
-	All rights reserved.</p>
+<p>Copyright &copy; 2011 <a href="http://www.kintassa.com/">Kintassa</a>.
+All rights reserved.</p>
+
 HTML;
 	}
 }

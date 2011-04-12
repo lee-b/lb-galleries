@@ -30,8 +30,7 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_edit($row_id) {
-		echo ("Editing {$row_id}");
-		return true;
+		// dummy; this is handled on a new page
 	}
 
 	function do_row_action_del($row_id) {
@@ -41,13 +40,11 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_up($row_id) {
-		echo ("moving {$row_id} up");
-		return false;
+		$this->pager->sort_up($row_id);
 	}
 
 	function do_row_action_down($row_id) {
-		echo ("moving {$row_id} down");
-		return false;
+		$this->pager->sort_down($row_id);
 	}
 
 	function handle_submissions() {
@@ -93,7 +90,7 @@ class KGalleryImageRowOptionsForm extends KintassaRowForm {
 	}
 
 	function handle_submissions() {
-		// handled by parent table, so we just ignore this
+		// dummy, handled by parent table
 		return false;
 	}
 }
@@ -121,10 +118,25 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$this->results = null;
 	}
 
+	private function modify_sort($row_id, $sort_delta) {
+		$gal = new KintassaGalleryImage($row_id);
+		if ($gal->is_dirty()) {
+			// failed to load from db; probably deleted now due to different
+			// browser windows being out of sync, so just ignore the request
+			// and let the updated table show the user what's now available.
+			return false;
+		}
+		$gal->sort_pri += $sort_delta;
+		$gal->save();
+		return false;
+	}
+
 	function sort_up($row_id) {
+		$this->modify_sort($row_id, 1);
 	}
 
 	function sort_down($row_id) {
+		$this->modify_sort($row_id, -1);
 	}
 
 	function delete($row_id) {
@@ -180,6 +192,9 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 	function render_page_nav() {
 		$num_records = $this->num_results();
 		$pages = $this->num_pages();
+
+		if ($pages == 1) return; // no nav if only one page
+
 		$current_page = $this->current_page();
 
 		echo("<div class=\"page-nav\">{$num_records} entries found; {$pages} pages, {$this->page_size} entries per page. Go to page: ");
@@ -197,7 +212,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 	}
 
 	function build_count_query() {
-		$qry = "SELECT COUNT(*) FROM {$this->table_name}";
+		$qry = "SELECT COUNT(*) FROM `{$this->table_name}` WHERE `gallery_id`={$this->gallery_id}";
 		return $qry;
 	}
 
@@ -210,7 +225,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$gallery_id = $this->gallery_id;
 
 		$start_item = $page_size * $page_num;
-		$qry = "SELECT * FROM {$this->table_name} WHERE `gallery_id`={$gallery_id} ORDER BY `name` ASC LIMIT {$start_item},{$page_size}";
+		$qry = "SELECT * FROM {$this->table_name} WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` DESC, `name` ASC LIMIT {$start_item},{$page_size}";
 
 		return $qry;
 	}

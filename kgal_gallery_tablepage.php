@@ -174,6 +174,8 @@ class KintassaGalleryDBResultsPager extends KintassaPager {
 
 	function render_page_nav() {
 		$num_records = $this->num_results();
+		if ($num_records <= 1) return;
+
 		$pages = $this->num_pages();
 		$current_page = $this->current_page();
 
@@ -247,6 +249,12 @@ class KGalleryTablePage extends KintassaPage {
 
 	function content() {
 		$this->table_form->execute();
+
+		$page_args = array(
+			"mode" => "gallery_add",
+		);
+		$page_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $page_args);
+		echo("<a href=\"{$page_uri}\" class=\"button-link\">Add Gallery</a>");
 	}
 }
 

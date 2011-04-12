@@ -16,7 +16,7 @@ require_once("kin_utils.php");
 
 class KGalleryMenu {
 	function __construct() {
-		$this->menu_title = "Kintassa Galleries";
+		$this->menu_title = "Galleries";
 		add_action('admin_menu', array(&$this, 'add_menus'));
 	}
 
@@ -45,12 +45,14 @@ class KGalleryMenu {
 	function add_menus() {
 		$mainpage = 'mainpage';
 		$this->add_page($this->menu_title, 'administrator', $mainpage);
-		$this->add_subpage($mainpage, 'Add Gallery', 'administrator', 'add_gallery');
 		$this->add_subpage($mainpage, 'About', 'administrator', 'about');
 	}
 
 	function mainpage() {
-		$recognised_modes = array("gallery_list", "gallery_edit");
+		$recognised_modes = array(
+			"gallery_list", "gallery_add", "gallery_edit",
+			"galleryimage_add", "galleryimage_edit"
+		);
 
 		$mode = 'gallery_list';
 		if (isset($_GET['mode'])) {
@@ -67,7 +69,7 @@ class KGalleryMenu {
 	}
 
 	function handle_unrecognised_mode() {
-		echo("Error: the requested mode is unrecognised, or not yet implemented.");
+		echo("<div class=\"error\">Error: the requested mode is unrecognised, or not yet implemented.</div>");
 	}
 
 	function handle_gallery_list() {
@@ -99,10 +101,11 @@ class KGalleryMenu {
 	}
 
 	function handle_gallery_edit() {
-		$gallery_id = $_GET['id'];
+		screen_icon();
+		echo('<h2>Edit Gallery</h2>');
 
+		$gallery_id = $_GET['id'];
 		assert (KintassaUtils::isInteger($gallery_id));
-		// TODO: check id exists
 
 		$editForm = new KGalleryEditForm("kgal_edit", $gallery_id);
 		$editForm->execute();
@@ -110,8 +113,7 @@ class KGalleryMenu {
 		$this->images_form($gallery_id);
 	}
 
-	function add_gallery() {
-		// TODO: convert to KGalleryAddPage()
+	function handle_gallery_add() {
 		screen_icon();
 		echo '<h2>' . $this->menu_title . '</h2>';
 		$addForm = new KGalleryAddForm("kgallery_add");
