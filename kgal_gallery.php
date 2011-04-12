@@ -6,13 +6,22 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
+require_once('kgal_config.php');
 require_once('kin_micro_orm.php');
 require_once('kin_applet.php');
+require_once('kgal_image.php');
+require_once('kgal_image_finder.php');
+
 
 abstract class KintassaGalleryApp extends KintassaApplet {
 	function __construct($gallery) {
 		parent::__construct();
 		$this->gallery = $gallery;
+		$this->finder = new KGalImageFinder(KGAL_CACHE_PATH);
+	}
+
+	function image_uri($img) {
+		return $this->finder->uri_from_id($img->id);
 	}
 }
 
@@ -20,6 +29,8 @@ class KintassaAutomatedSlideshowGalleryApp extends KintassaGalleryApp {
 	function render() {
 		$gallery = $this->gallery;
 		$gallery_code = "<div class=\"kintassa_gallery\"";
+
+		$images = $gallery->images();
 
 		$style_code = "";
 		if ($gallery->width) {
@@ -34,7 +45,15 @@ class KintassaAutomatedSlideshowGalleryApp extends KintassaGalleryApp {
 			$gallery_code .= " style=\"{$style_code}\"";
 		}
 
-		$gallery_code .= ">GALLERY NUMBER {$gallery->id}</div>";
+		$gallery_code .= ">GALLERY NUMBER {$gallery->id}";
+
+		$gallery_code .= "<ul>";
+		foreach($images as $img) {
+			$gallery_code .= "<li><img width=\"{$gallery->width}\" height=\"{$gallery->height}\" src=\"" . $this->image_uri($img) . "\" title=\"{$img->name}\"></li>";
+		}
+		$gallery_code .= "</ul>";
+
+		$gallery_code .= "</div>";
 
 		echo($gallery_code);
 	}
@@ -141,12 +160,13 @@ class KintassaGallery extends KintassaMicroORMObject {
 
 		require_once("kgal_image.php");
 
-		$rows = $wpdb->get_results("SELECT id,sort_pri FROM `{KintassaGalleryImage::table_name()}` WHERE gallery_id={$this->id} ORDER BY sort_pri,title");
+		$table_name = KintassaGalleryImage::table_name();
+		$rows = $wpdb->get_results("SELECT id,sort_pri FROM `{$table_name}` WHERE gallery_id={$this->id} ORDER BY sort_pri,name");
 
 		$images = array();
 		foreach ($rows as $row) {
 			$img = new KintassaGalleryImage($row->id);
-			$images.add($img);
+			$images[] = $img;
 		}
 
 		return $images;

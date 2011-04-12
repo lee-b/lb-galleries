@@ -32,15 +32,13 @@ require_once($wp_load);
 
 // real code starts here /////////////////////////////////////////////////////
 
+require_once("../kgal_config.php");
 require_once("../kgal_image_finder.php");
 require_once("../kgal_image.php");
 require_once("../kgal_gallery.php");
 require_once("../kin_utils.php");
 
 function send_gallery_image_by_id($id) {
-	$upload_path = '/vweb/kintassa_wpscratch/webroot/wp-content/plugins/kintassa_gallery/uploads';
-	$cache_path = '/vweb/kintassa_wpscratch/webroot/wp-content/plugins/kintassa_gallery/cache';
-
 	// load basic image details from db
 	$img = new KintassaGalleryImage($id);
 	if ($img->is_dirty()) {
@@ -50,7 +48,7 @@ function send_gallery_image_by_id($id) {
 
 	// find/generate a version of the image that's scaled correctly for this
 	// gallery
-	$finder = new KGalImageFinder($upload_path, $cache_path);
+	$finder = new KGalImageFinder(KGAL_CACHE_PATH);
 	$path = $finder->image_path_from_id($id);
 	if (!$path) {
 		exit("ERROR: Couldn't locate image file for image id $id");
@@ -61,8 +59,15 @@ function send_gallery_image_by_id($id) {
 	readfile($path);
 }
 
-$id = $_GET['id'];
-assert(KintassaUtils::isInteger($id));
-send_gallery_image_by_id($id);
+if (isset($_GET['id'])) {
+	$id = $_GET['id'];
+	assert(KintassaUtils::isInteger($id));
+	send_gallery_image_by_id($id);
+} else {
+	header("HTTP/1.0 404 Not found");
+	header("Status: 404 Not found");
+	echo("<html><head><title>Not found</title><body>The requested image doesn't exist (any longer?)</body></html>");
+	echo("The requested image doesn't exist (any longer?)");
+}
 
 ?>

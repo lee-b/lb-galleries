@@ -107,6 +107,12 @@ class KintassaResizeableImage extends KintassaFilteredImage {
 
 class KintassaImageFinder {
 	function __construct($cache_root) {
+		if (!file_exists($cache_root)) {
+			exit("ERROR: $cache_root does not exist!");
+		}
+		if (!is_writeable($cache_root)) {
+			exit("ERROR: $cache_root is not writeable!");
+		}
 		$this->cache_root = $cache_root;
 	}
 }
