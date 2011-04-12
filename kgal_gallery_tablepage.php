@@ -13,7 +13,7 @@ require_once("kin_utils.php");
 
 class KGalleryTableForm extends KintassaOptionsTableForm {
 	function process_actions() {
-		$recognised_actions = array(/*"up", "down",*/ "edit", "del");
+		$recognised_actions = array("edit", "del");
 		$actions_taken = $this->buttons_submitted($recognised_actions);
 
 		if ($actions_taken) {
@@ -29,7 +29,7 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_edit($row_id) {
-		echo ("Editing {$row_id}");
+		// dummy, handled on a new page
 		return true;
 	}
 
@@ -41,12 +41,12 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_up($row_id) {
-		echo ("moving {$row_id} up");
+		// dummy, option not available for galleries
 		return false;
 	}
 
 	function do_row_action_down($row_id) {
-		echo ("moving {$row_id} down");
+		// dummy, option not available for galleries
 		return false;
 	}
 
@@ -93,7 +93,7 @@ class KGalleryRowOptionsForm extends KintassaRowForm {
 	}
 
 	function handle_submissions() {
-		// handled by parent table, so we just ignore this
+		// dummy, handled by parent table
 		return false;
 	}
 }
