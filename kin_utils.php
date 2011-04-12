@@ -46,7 +46,6 @@ class KintassaUtils {
 		if ($img == null) {
 			return null;
 		}
-		print_r($img);
 
 		$res['image'] = $img;
 

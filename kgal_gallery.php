@@ -20,42 +20,86 @@ abstract class KintassaGalleryApp extends KintassaApplet {
 		$this->finder = new KGalImageFinder(KGAL_CACHE_PATH);
 	}
 
+	function unique_id() {
+		return "kintassa-gallery-{$this->gallery->id}";
+	}
+
 	function image_uri($img) {
 		return $this->finder->uri_from_id($img->id);
 	}
+
+	function classes() {
+		return array("kintassa-gallery-app");
+	}
+
+	function classes_attrib_str() {
+		return "class=\"" . implode(" ", $this->classes()) . "\"";
+	}
+
+	function styles() {
+		$sty = array();
+		$sty['width'] = $this->gallery->width;
+		$sty['height'] = $this->gallery->height;
+		return $sty;
+	}
+
+	function styles_attrib_str() {
+		$style_str = "style=\"";
+		$styles = $this->styles();
+		foreach($styles as $k => $v) {
+			$style_str .= "{$k}: {$v};";
+		}
+		$style_str .= "\"";
+		return $style_str;
+	}
 }
 
+/***
+ * Gallery display applet using jQuery + Gallerific
+ */
 class KintassaAutomatedSlideshowGalleryApp extends KintassaGalleryApp {
+	function classes() {
+		$cls = parent::classes();
+		$cls[] = "kintassa-automated-slideshow-app";
+		return $cls;
+	}
+
+	function render_script($target) {
+		echo(<<<HTML
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    jQuery('{$target}').cycle({
+		fx: 'fade' // choose your transition type, ex: fade, scrollUp, shuffle, etc...
+	});
+});</script>
+HTML
+);
+	}
+
 	function render() {
 		$gallery = $this->gallery;
-		$gallery_code = "<div class=\"kintassa_gallery\"";
+		$unique_id = $this->unique_id();
+		$cls = $this->classes_attrib_str();
+		$sty = $this->styles_attrib_str();
+
+		$gallery_code = "<div id=\"$unique_id\" {$cls} {$sty}>";
 
 		$images = $gallery->images();
-
-		$style_code = "";
-		if ($gallery->width) {
-			$style_code .= "width: {$gallery->width};";
-		}
-
-		if ($gallery->height) {
-			$style_code .= "height: {$gallery->height};";
-		}
-
-		if (strlen($style_code) > 0) {
-			$gallery_code .= " style=\"{$style_code}\"";
-		}
-
-		$gallery_code .= ">GALLERY NUMBER {$gallery->id}";
-
-		$gallery_code .= "<ul>";
+		$first = true;
 		foreach($images as $img) {
-			$gallery_code .= "<li><img width=\"{$gallery->width}\" height=\"{$gallery->height}\" src=\"" . $this->image_uri($img) . "\" title=\"{$img->name}\"></li>";
-		}
-		$gallery_code .= "</ul>";
+			if ($first) {
+				$cls = " class=\"first-item\"";
+				$first = false;
+			} else {
+				$cls = "";
+			}
 
+			$gallery_code .= "<img {$cls} width=\"{$gallery->width}\" height=\"{$gallery->height}\" src=\"" . $this->image_uri($img) . "\" title=\"{$img->name}\">";
+		}
 		$gallery_code .= "</div>";
 
 		echo($gallery_code);
+		$this->render_script("#{$unique_id}");
 	}
 }
 

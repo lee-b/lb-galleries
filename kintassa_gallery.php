@@ -22,6 +22,20 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 
 		require_once("kgal_shortcode.php");
 		$kgallery_shortcode = new KGalleryShortcode();
+
+		add_action('init', array($this, 'install_scripts'));
+	}
+
+	function reg_script($name, $relpath) {
+		$abs_url = plugins_url("scripts" . DIRECTORY_SEPARATOR . $relpath, __file__);
+		wp_register_script($name, $abs_url, false, null);
+	}
+
+	function install_scripts() {
+		$this->reg_script("jquery_cycle_lite", "jquery.cycle.lite.min.js");
+
+		wp_enqueue_script("jquery");
+		wp_enqueue_script("jquery_cycle_lite");
 	}
 
 	function install() {
