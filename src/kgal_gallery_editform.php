@@ -13,6 +13,8 @@ class KGalleryEditForm extends KGalleryForm {
 	function __construct($name, $gallery_id) {
 		$kgal = new KintassaGallery($gallery_id);
 
+		$this->gallery_id = $gallery_id;
+
 		$default_vals = array(
 			"name"				=> $kgal->name,
 			"width"				=> $kgal->width,
@@ -23,11 +25,6 @@ class KGalleryEditForm extends KGalleryForm {
 
 		$this->id_field = new KintassaHiddenField('id', $name='id', $default_val = $gallery_id);
 		$this->add_child($this->id_field);
-
-		$add_image_args = array("mode" => "galleryimage_add", "gallery_id" => $gallery_id);
-		$add_image_link = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $add_image_args);
-		$this->add_image_button = new KintassaLinkButton("Add Image", $name="add_image", $uri=$add_image_link);
-		$this->add_child($this->add_image_button);
 	}
 
 	function render_success() {

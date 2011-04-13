@@ -7,16 +7,13 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 */
 
 require_once("kgal_config.php");
-require_once("kgal_gallery_tablepage.php");
-require_once("kgal_galleryimage_tablepage.php");
+require_once("kgal_mainpage.php");
 require_once("kgal_gallery_addform.php");
 require_once("kgal_gallery_editform.php");
-require_once("kgal_galleryimage_addform.php");
-require_once("kgal_galleryimage_editform.php");
 require_once("kgal_gallery.php");
 require_once("kgal_image.php");
 require_once("kgal_about_page.php");
-require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core" . DIRECTORY_SEPARATOR . "kin_utils.php");
 
 class KGalleryMenu {
 	function __construct() {
@@ -53,105 +50,8 @@ class KGalleryMenu {
 	}
 
 	function mainpage() {
-		$recognised_modes = array(
-			"gallery_list", "gallery_add", "gallery_edit",
-			"galleryimage_add", "galleryimage_edit"
-		);
-
-		$mode = 'gallery_list';
-		if (isset($_GET['mode'])) {
-			$given_mode = $_GET['mode'];
-			if (in_array($given_mode, $recognised_modes)) {
-				$mode = $given_mode;
-			} else {
-				$mode = "unrecognised_mode";
-			}
-		}
-
-		$mode_handler = 'handle_' . $mode;
-		$this->$mode_handler();
-	}
-
-	function handle_unrecognised_mode() {
-		echo("<div class=\"error\">" . __("Error: the requested mode is unrecognised, or not yet implemented.") . "</div>");
-	}
-
-	function images_subform($gallery_id) {
-		$form_name = "kgallery_images";
-
-		$col_map = array(
-			"id"			=> null,
-			"sort_pri"		=> "Sort Order",
-			"filepath"		=> "Image",
-			"name"			=> "Name",
-			"description"	=> "Description"
-		);
-
-		$table_name = KintassaGalleryImage::table_name();
-		$pager = new KintassaGalleryImageDBResultsPager($table_name, $page_size = 10, $gallery_id=$gallery_id);
-
-		$row_opts = KGalleryImageRowOptionsForm::All;
-		$row_form_fac = new KGalleryImageRowOptionsFactory($row_opts);
-		$images_table_form = new KGalleryImageTableForm($form_name, $col_map, $pager, $row_form_fac);
-		$images_table_form->execute();
-	}
-
-	function handle_gallery_list() {
-		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
-		$pg->execute();
-	}
-
-	function handle_gallery_edit() {
-		screen_icon();
-		echo '<h2>' . __("Edit Gallery") . '</h2>';
-
-		$gallery_id = $_GET['id'];
-		assert (KintassaUtils::isInteger($gallery_id));
-
-		$editForm = new KGalleryEditForm("kgal_edit", $gallery_id);
-		$editForm->execute();
-
-		$this->images_subform($gallery_id);
-	}
-
-	function handle_gallery_add() {
-		screen_icon();
-		echo '<h2>' . __("Add Gallery") . '</h2>';
-		$addForm = new KGalleryAddForm("kgallery_add");
-		$addForm->execute();
-	}
-
-	function handle_galleryimage_edit() {
-		screen_icon();
-		echo('<h2>' . __("Edit Gallery Image") . '</h2>');
-
-		$gallery_image_id = $_GET['id'];
-		assert (KintassaUtils::isInteger($gallery_image_id));
-
-		$editForm = new KGalleryImageEditForm("kgalimage_edit", $gallery_image_id);
-		$editForm->execute();
-	}
-
-	function handle_galleryimage_add() {
-		screen_icon();
-		echo '<h2>' . __("Add Gallery Image") . '</h2>';
-
-		if (!isset($_GET['gallery_id']) || !KintassaUtils::isInteger($_GET['gallery_id'])) {
-			echo("<div class=\"error\">Error: invalid gallery id specified</div>");
-			return;
-		} else {
-			$gallery_id = $_GET['gallery_id'];
-		}
-
-		$default_vals = array(
-			"sort_pri"		=> 0,
-			"filepath"		=> null,
-			"name"			=> null,
-			"description"	=> "",
-			"gallery_id"	=> $gallery_id,
-		);
-		$addForm = new KGalleryImageAddForm("kgalimage_add", $default_vals);
-		$addForm->execute();
+		$main_page = new KGalleryMainPage(__("Kintassa Galleries"));
+		$main_page->execute();
 	}
 
 	function about() {
