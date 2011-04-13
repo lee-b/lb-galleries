@@ -6,6 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
+require_once("kgal_config.php");
 require_once("kin_image_filter.php");
 require_once("kgal_image.php");
 require_once("kgal_gallery.php");
@@ -44,6 +45,36 @@ class KGalImageFinder extends KintassaMappedImageFinder {
 		}
 
 		return $filtered_path;
+	}
+}
+
+class KintassaThumbnailFinder extends KintassaImageFinder {
+	function __construct($width, $height) {
+		parent::__construct(KGAL_CACHE_PATH);
+		$this->width = $width;
+		$this->height = $height;
+	}
+
+	function uri_from_fname($fname) {
+		$encoded_path = escapeuri($fname);
+		return WP_PLUGIN_URL . "/kintassa_gallery/content/thumb.php?width={$this->width}&height={$this->height}&fname={$encoded_fname}";
+	}
+
+	function resized_path_to($full_path) {
+		if (!file_exists($full_path)) {
+			return null;
+		}
+		$resizeable_image = new KintassaResizeableImage($full_path);
+		$args = array(
+			"width"	=>	$this->width,
+			"height"=>	$this->height,
+		);
+		$output_fname = $resizeable_image->filtered_path($this->cache_root, $args);
+		$ok = $resizeable_image->ensure_cached($output_fname, $args);
+		if (!$ok) {
+			return null;
+		}
+		return $output_fname;
 	}
 }
 
