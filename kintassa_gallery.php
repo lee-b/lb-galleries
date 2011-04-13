@@ -20,7 +20,7 @@ require_once("src/kgal_tags.php");
 
 class KintassaGalleryPlugin extends KintassaWPPlugin {
 	function __construct() {
-		parent::__construct(__FILE__);
+		parent::__construct(__file__);
 
 		$kgallery_menu = new KGalleryMenu();
 		$kgallery_shortcode = new KGalleryShortcode();
@@ -42,7 +42,7 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 	function reg_script($name, $relpath) {
 		$abs_url = plugins_url("scripts" . DIRECTORY_SEPARATOR . $relpath, __file__);
 		wp_register_script($name, $abs_url, false, null);
-        $myStyleUrl = plugins_url('/stylesheets/kintassa_gallery.css', __FILE__);
+        $myStyleUrl = plugins_url('/stylesheets/kintassa_gallery.css', __file__);
 	    wp_register_style('kintassa_gallery', $myStyleUrl);
 	}
 
