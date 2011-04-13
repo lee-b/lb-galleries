@@ -55,6 +55,28 @@ abstract class KintassaGalleryApp extends KintassaApplet {
 }
 
 /***
+ * Dummy renderer used for error messages when the requested renderer
+ * doesn't exist
+ */
+class KintassaInvalidGalleryApp extends KintassaGalleryApp {
+	function render() {
+		$gallery = $this->gallery;
+		$unique_id = $this->unique_id();
+		$cls = $this->classes_attrib_str();
+		$sty = $this->styles_attrib_str();
+
+		$gallery_code = <<<HTML
+<div id=\"$unique_id\" {$cls} {$sty}>
+<p>This gallery's renderer app is not available. Please (re)install the
+necessary sub-features, or change the gallery's Display Mode.</p>
+</div>
+HTML
+;
+		echo($gallery_code);
+	}
+}
+
+/***
  * Gallery display applet using jQuery + Gallerific
  */
 class KintassaAutomatedSlideshowGalleryApp extends KintassaGalleryApp {
@@ -104,30 +126,59 @@ HTML
 }
 
 class KintassaManualSlideshowGalleryApp extends KintassaGalleryApp {
+	function classes() {
+		$cls = parent::classes();
+		$cls[] = "kintassa-manual-slideshow-app";
+		return $cls;
+	}
+
+	function render_script($target) {
+		echo(<<<HTML
+<script type="text/javascript">
+jQuery(function() {
+    jQuery('{$target}').cycle({
+        fx:      'scrollHorz',
+        timeout:  0,
+        speed:	 300,
+        prev:    '#prev',
+        next:    '#next'
+	});
+});
+</script>
+HTML
+);
+	}
+
 	function render() {
 		$gallery = $this->gallery;
-		$gallery_code = "<div class=\"kintassa_gallery\"";
+		$unique_id = $this->unique_id();
+		$cls = $this->classes_attrib_str();
+		$sty = $this->styles_attrib_str();
 
-		$style_code = "";
-		if ($gallery->width) {
-			$style_code .= "width: {$gallery->width};";
-		}
-
-		if ($gallery->height) {
-			$style_code .= "height: {$gallery->height};";
-		}
-
-		if (strlen($style_code) > 0) {
-			$gallery_code .= " style=\"{$style_code}\"";
-		}
-
-		$gallery_code .= ">GALLERY NUMBER {$gallery->id}";
-
-		$gallery_code .= "<div class=\"kintassa_slideshow_navbar\">(navbar)</div>";
-
+		$gallery_code = "<div id=\"{$unique_id}-wrapper\" {$cls} {$sty}>";
+		$gallery_code .= "<div id=\"nav\">";
+		$gallery_code .= "<a href=\"#\"><span id=\"prev\">Prev</span></a>&nbsp;";
+		$gallery_code .= "<a href=\"#\"><span id=\"next\">Next</span></a>";
 		$gallery_code .= "</div>";
 
+		$gallery_code .= "<div id=\"$unique_id\" {$cls} {$sty}>";
+
+		$images = $gallery->images();
+		$first = true;
+		foreach($images as $img) {
+			if ($first) {
+				$cls = " class=\"first-item\"";
+				$first = false;
+			} else {
+				$cls = "";
+			}
+
+			$gallery_code .= "<img {$cls} width=\"{$gallery->width}\" height=\"{$gallery->height}\" src=\"" . $this->image_uri($img) . "\" title=\"{$img->name}\">";
+		}
+		$gallery_code .= "</div></div>";
+
 		echo($gallery_code);
+		$this->render_script("#{$unique_id}");
 	}
 }
 
@@ -181,8 +232,9 @@ class KintassaGallery extends KintassaMicroORMObject {
 
 	function display_mode_map() {
 		return array(
-			"slideshow" => "KintassaAutomatedSlideshowGalleryApp",
-			"manual_slideshow" => "KintassaManualSlideshowGalleryApp"
+			"slideshow"			=> "KintassaAutomatedSlideshowGalleryApp",
+			"manual_slideshow"	=> "KintassaManualSlideshowGalleryApp",
+			"dummy"				=> "KintassaInvalidGalleryApp"
 		);
 	}
 
@@ -191,7 +243,9 @@ class KintassaGallery extends KintassaMicroORMObject {
 
 		$mode_map = $this->display_mode_map();
 
-		assert (array_key_exists($this->display_mode, $mode_map));
+		if (!array_key_exists($this->display_mode, $mode_map)) {
+			$this->display_mode = 'dummy';
+		}
 
 		$app_class = $mode_map[$this->display_mode];
 

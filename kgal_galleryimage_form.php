@@ -52,6 +52,12 @@ abstract class KGalleryImageForm extends KintassaForm {
 		$this->add_child($button_bar);
 	}
 
+	function gallery_return_link() {
+		$edit_args = array("mode" => "gallery_edit", "id" => $this->gallery_id_field->value());
+		$edit_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $edit_args);
+		echo ("<a href=\"$edit_uri\">" . __("Return to gallery") . "</a>");
+	}
+
 	function data() {
 		$dat = array(
 			"sort_pri"				=> $this->sort_pri_field->value(),
@@ -75,6 +81,12 @@ abstract class KGalleryImageForm extends KintassaForm {
 
 	/// update the record in the database, based on the form details
 	abstract function update_record();
+
+	function render($as_sub_el = false) {
+		parent::render($as_sub_el);
+
+		$this->gallery_return_link();
+	}
 
 	function is_valid() {
 		if (!parent::is_valid()) return false;

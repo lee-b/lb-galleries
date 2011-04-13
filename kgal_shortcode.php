@@ -11,13 +11,6 @@ require_once("kgal_gallery.php");
 class KGalleryShortcode {
 	function __construct() {
 		add_shortcode('kintassa_gallery', array(&$this, 'render_shortcode'));
-		$this->register_stylesheets();
-	}
-
-	function register_stylesheets() {
-        $myStyleUrl = plugins_url('/stylesheets/kintassa_gallery.css', __FILE__);
-	    wp_register_style('kintassa_gallery', $myStyleUrl);
-        wp_enqueue_style('kintassa_gallery');
 	}
 
 	/***

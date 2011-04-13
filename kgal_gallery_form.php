@@ -8,6 +8,7 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 
 require_once("kin_form.php");
 require_once("kgal_gallery.php");
+require_once("kin_utils.php");
 
 abstract class KGalleryForm extends KintassaForm {
 	function __construct($name, $default_vals) {

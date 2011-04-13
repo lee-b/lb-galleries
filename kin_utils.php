@@ -52,6 +52,42 @@ class KintassaUtils {
 		return $res;
 	}
 
+	static function resample_image($orig_img,$thumbnail_width,$thumbnail_height) {
+		// NOTE: borrowed and modified from a post on the imagecopyresampled()
+		//       wordpress codex page
+
+		$width_orig = $orig_img['width'];
+		$height_orig = $orig_img['height'];
+		$ratio_orig = $width_orig/$height_orig;
+
+		if ($thumbnail_width/$thumbnail_height > $ratio_orig) {
+			$new_height = $thumbnail_width/$ratio_orig;
+			$new_width = $thumbnail_width;
+		} else {
+			$new_width = $thumbnail_height*$ratio_orig;
+			$new_height = $thumbnail_height;
+		}
+
+		$x_mid = $new_width/2;  //horizontal middle
+		$y_mid = $new_height/2; //vertical middle
+
+		$process = imagecreatetruecolor(round($new_width), round($new_height));
+
+		imagecopyresampled($process, $orig_img['image'], 0, 0, 0, 0, $new_width, $new_height, $width_orig, $height_orig);
+		$thumb = imagecreatetruecolor($thumbnail_width, $thumbnail_height);
+		imagecopyresampled($thumb, $process, 0, 0, ($x_mid-($thumbnail_width/2)), ($y_mid-($thumbnail_height/2)), $thumbnail_width, $thumbnail_height, $thumbnail_width, $thumbnail_height);
+
+		imagedestroy($process);
+
+		$new_img = array();
+		$new_img['width'] = $new_w;
+		$new_img['height'] = $new_h;
+		$new_img['image'] = $thumb;
+		$new_img['mimetype'] = $orig_img['mimetype'];
+
+		return $new_img;
+	}
+
 	static function save_image($img, $fname) {
 		$saver_map = array(
 			"image/jpeg"		=> "imagejpeg",
@@ -62,6 +98,12 @@ class KintassaUtils {
 		$saver = $saver_map[$img['mimetype']];
 		$real_img = $img['image'];
 		$saver($real_img, $fname);
+	}
+
+	function destroy_image(&$img) {
+		imagedestroy($img['image']);
+		$img['image'] = null;
+		$img = null;
 	}
 }
 

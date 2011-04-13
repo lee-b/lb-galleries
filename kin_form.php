@@ -510,15 +510,34 @@ class KintassaFileField extends KintassaEditableField {
 
 class KintassaImageUploadField extends KintassaFileField {
 	function render($as_sub_el = false) {
+		parent::render();
+
 		$fname = basename($this->value());
 		$fname = urlencode($fname);
 		$width = 80;
 		$height = 80;
 		$url = WP_PLUGIN_URL . "/" . basename(dirname(__file__)) . "/content/thumb.php";
 		$url .= "?fname={$fname}&width={$width}&height={$height}";
-		echo "<img src=\"{$url}\" width=\"${width}\" height=\"{$height}\">";
 
-		parent::render();
+		$img_path = KGAL_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fname;
+
+		if (($img_path != null) && (strlen($img_path) > 0) && file_exists($img_path) && is_file($img_path)) {
+			echo "<div class=\"image-thumbnail\">";
+			echo "<img class=\"uploaded-thumbnail\" src=\"{$url}\" width=\"${width}\" height=\"{$height}\">";
+			echo "<table>";
+
+			$img_details = getimagesize($img_path);
+			$ftype = $img_details['mime'];
+			$fsize = filesize($img_path);
+			$w = $img_details[0];
+			$h = $img_details[1];
+
+			echo "<tr><th>Image type</th><td>{$ftype}</td></tr>";
+			echo "<tr><th>File size</th><td>{$fsize} bytes</td></tr>";
+			echo "<tr><th>Width</th><td>{$w}</td></tr>";
+			echo "<tr><th>Height</th><td>{$h}</td></tr>";
+			echo "</table>";
+		}
 	}
 
 	/***
@@ -539,10 +558,11 @@ class KintassaImageUploadField extends KintassaFileField {
 
 		$new_fname = KGAL_UPLOAD_PATH . DIRECTORY_SEPARATOR . $orig_basename;
 		$count = 1;
+		$pathparts = pathinfo($new_fname);
 		while(file_exists($new_fname)) {
 			$count += 1;
-			$new_fname = $pathinfo['dir'] . DIRECTORY_SEPARATOR;
-			$new_fname .= $pathinfo['basename'] . "_" . $count;
+			$new_fname = $pathparts['dirname'] . DIRECTORY_SEPARATOR;
+			$new_fname .= $pathparts['basename'] . "_" . $count;
 		}
 
 		move_uploaded_file($tmp_fname, $new_fname);
@@ -556,7 +576,7 @@ class KintassaImageUploadField extends KintassaFileField {
 			if (($_FILES[$form_field_name] != UPLOAD_ERR_NO_FILE) && ($_FILES[$form_field_name]['size'] > 0)) {
 				return $this->finalize_upload();
 			} else {
-				echo "<div class=\"warning\">Upload error, please retry.</div>";
+				// nothing uploaded, so just keep the old file.
 				return $this->default_val;
 			}
 		} else {

@@ -136,7 +136,21 @@ class KGalleryMenu {
 		screen_icon();
 		echo '<h2>' . __("Add Gallery Image") . '</h2>';
 
-		$addForm = new KGalleryImageAddForm("kgalimage_add");
+		if (!isset($_GET['gallery_id']) || !KintassaUtils::isInteger($_GET['gallery_id'])) {
+			echo("<div class=\"error\">Error: invalid gallery id specified</div>");
+			return;
+		} else {
+			$gallery_id = $_GET['gallery_id'];
+		}
+
+		$default_vals = array(
+			"sort_pri"		=> 0,
+			"filepath"		=> null,
+			"name"			=> null,
+			"description"	=> "",
+			"gallery_id"	=> $gallery_id,
+		);
+		$addForm = new KGalleryImageAddForm("kgalimage_add", $default_vals);
 		$addForm->execute();
 	}
 

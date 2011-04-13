@@ -21,8 +21,6 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 			$action = $actions_taken[0];
 			$row_id = $actions_taken[1];
 
-			echo("action: $action; row_id: $row_id");
-
 			$handler = "do_row_action_" . $action;
 
 			return $this->$handler($row_id);
@@ -34,8 +32,9 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_del($row_id) {
-		echo ("Gallery Image #{$row_id} deleted.");
-		$this->pager->delete($row_id);
+		if ($this->pager->delete($row_id)) {
+			echo ("<div class=\"notice\">Gallery image #{$row_id} deleted.</div>");
+		}
 		return false;
 	}
 
@@ -154,10 +153,22 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$this->modify_sort($row_id, -1);
 	}
 
+	private function get_filename_for_row($row_id) {
+		global $wpdb;
+		$table_name = KintassaGalleryImage::table_name();
+		$qry = "SELECT `filepath` FROM `{$table_name}` WHERE id={$row_id}";
+		$fname = $wpdb->get_var($qry);
+		return $fname;
+	}
+
 	function delete($row_id) {
 		global $wpdb;
+		$fname = $this->get_filename_for_row($row_id);
 		$qry = "DELETE FROM `{$this->table_name}` WHERE id={$row_id}";
-		$wpdb->query($qry);
+		if (file_exists($fname)) {
+			unlink($fname);
+		}
+		return ($wpdb->query($qry) != false);
 	}
 
 	function num_results() {

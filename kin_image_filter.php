@@ -81,25 +81,15 @@ class KintassaResizeableImage extends KintassaFilteredImage {
 	}
 
 	function filter_image($orig_path, $output_path, $args) {
-		$img = KintassaUtils::load_image($orig_path);
-
-		$real_orig_img = $img['image'];
-		$orig_w = $img['width'];
-		$orig_h = $img['height'];
-
 		$new_w = $args['width'];
 		$new_h = $args['height'];
 
-		$real_new_img = imagecreatetruecolor($new_w, $new_h);
-		imagecopyresampled($real_new_img, $real_orig_img, 0,0,0,0, $new_w,$new_h, $orig_w,$orig_h);
-
-		$new_img = array();
-		$new_img['width'] = $new_w;
-		$new_img['height'] = $new_h;
-		$new_img['image'] = $real_new_img;
-		$new_img['mimetype'] = $img['mimetype'];
-
+		$img = KintassaUtils::load_image($orig_path);
+		$new_img = KintassaUtils::resample_image($img, $new_w, $new_h);
 		KintassaUtils::save_image($new_img, $output_path);
+
+		KintassaUtils::destroy_image($img);
+		KintassaUtils::destroy_image($new_img);
 
 		return true;
 	}
@@ -107,12 +97,6 @@ class KintassaResizeableImage extends KintassaFilteredImage {
 
 class KintassaImageFinder {
 	function __construct($cache_root) {
-		if (!file_exists($cache_root)) {
-			exit("ERROR: $cache_root does not exist!");
-		}
-		if (!is_writeable($cache_root)) {
-			exit("ERROR: $cache_root is not writeable!");
-		}
 		$this->cache_root = $cache_root;
 	}
 }

@@ -20,15 +20,13 @@ class KGalleryImageAddForm extends KGalleryImageForm {
 	}
 
 	function render_success() {
-		$page_args = array("mode" => "gallery_edit", "id" => $this->id);
+		$page_args = array("mode" => "galleryimage_edit", "id" => $this->id);
 		$edit_uri = KintassaUtils::admin_path('KGalleryMenu', 'mainpage', $page_args);
 
-		echo("<h2>" . __("Gallery Added") . "</h2>");
-		echo(
-			"<p>"
-			. __("Your gallery has been added.  You might want to <a href=\"{$edit_uri}\">Edit this gallery</a> now.")
-			. "</p>"
-		);
+		echo("<h2>" . __("Image Added") . "</h2>");
+		echo("<p>" . __("Your gallery image has been added.  Thank you.") . "</p>");
+
+		$this->gallery_return_link();
 	}
 
 	function update_record() {
@@ -38,7 +36,7 @@ class KGalleryImageAddForm extends KGalleryImageForm {
 		$dat = $this->data();
 		$fmt = $this->data_format();
 
-		$wpdb->insert(KintassaGallery::table_name(), $dat, $fmt);
+		$wpdb->insert(KintassaGalleryImage::table_name(), $dat, $fmt);
 		$this->id = $wpdb->insert_id;
 
 		return true;

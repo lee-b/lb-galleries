@@ -38,6 +38,7 @@ require_once("../kin_utils.php");
 
 function send_thumb($fname, $width, $height) {
 	$finder = new KintassaThumbnailFinder($width, $height);
+
 	$thumb_file = $finder->resized_path_to($fname);
 	if (!$thumb_file || $thumb_file == null) {
 		echo("ERROR: couldn't resize image!");
@@ -60,7 +61,9 @@ $ok = (	isset($_GET['fname']) &&
 		isset($_GET['width']) &&
 		isset($_GET['height']) &&
 		KintassaUtils::isInteger($width) &&
-		KintassaUtils::isInteger($height)
+		KintassaUtils::isInteger($height) &&
+		$width <= 2048 &&
+		$height <= 2048
 );
 
 $fname = basename($fname); // ensure no parent directory escapes occur

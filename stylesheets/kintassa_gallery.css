@@ -1,7 +1,7 @@
 /*
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
-Copyright: Copyright (c) 2011 Kintassa. 
+Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
@@ -28,4 +28,8 @@ div.kintassa-gallery-app ul.slideshow-image-list li {
 div.kintassa-gallery-app ul.slideshow-image-list,
 div.kintassa-gallery-app ul.slideshow-image-list li {
 	margin: 0;
+}
+
+div.uploaded-thumbnail {
+	float: left;
 }

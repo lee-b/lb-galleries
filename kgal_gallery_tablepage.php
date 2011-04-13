@@ -20,8 +20,6 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 			$action = $actions_taken[0];
 			$row_id = $actions_taken[1];
 
-			echo("action: $action; row_id: $row_id");
-
 			$handler = "do_row_action_" . $action;
 
 			return $this->$handler($row_id);
@@ -35,8 +33,9 @@ class KGalleryTableForm extends KintassaOptionsTableForm {
 
 	function do_row_action_del($row_id) {
 		// TODO: cascade-delete images in gallery
-		echo ("Gallery #{$row_id} deleted.");
-		$this->pager->delete($row_id);
+		if ($this->pager->delete($row_id)) {
+			echo ("Gallery #{$row_id} deleted.");
+		}
 		return false;
 	}
 
@@ -125,7 +124,7 @@ class KintassaGalleryDBResultsPager extends KintassaPager {
 	function delete($row_id) {
 		global $wpdb;
 		$qry = "DELETE FROM `{$this->table_name}` WHERE id={$row_id}";
-		$wpdb->query($qry);
+		return ($wpdb->query($qry) != false);
 	}
 
 	function num_results() {

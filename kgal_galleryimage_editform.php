@@ -30,9 +30,10 @@ class KGalleryImageEditForm extends KGalleryImageForm {
 	}
 
 	function render_success() {
-		$edit_args = array("mode" => "galleryimage_edit", "id" => $this->id);
-		$edit_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $edit_args);
-		echo (__("Image updated. Thank you.  <a href=\"$edit_uri\">Return</a>"));
+		echo("<h2>" . __("Image Updated") . "</h2>");
+		echo("<p>" . __("Your gallery image changes have been saved.  Thank you.") . "</p>");
+
+		$this->gallery_return_link();
 	}
 
 	function update_record() {
@@ -44,7 +45,8 @@ class KGalleryImageEditForm extends KGalleryImageForm {
 		$where_dat = array("id"	=> $this->id);
 		$where_fmt = array("%d");
 
-		$wpdb->update(KintassaGalleryImage::table_name(), $dat, $where_dat, $fmt, $where_fmt);
+		$res = $wpdb->update(KintassaGalleryImage::table_name(), $dat, $where_dat, $fmt, $where_fmt);
+		if (!$res) return false;
 
 		return true;
 	}
