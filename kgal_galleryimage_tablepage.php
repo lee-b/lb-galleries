@@ -59,10 +59,13 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	function begin_col($col) {
 		if ($col == "filepath") {
 			KintassaTableForm::begin_col($col);
-			$fname = urlencode("sunset.jpg");
+			$fname = $this->row->$col;
 			$width = 80;
 			$height = 80;
-			echo "<img src=\"https://wpscratch.kintassa.com/wp-content/plugins/kintassa_gallery/content/thumb.php?fname={$fname}&width={$width}&height={$height}\" width=\"${width}\" height=\"{$height}\">";
+			$basename = urlencode(basename($fname));
+			$lnk = WP_PLUGIN_URL . "/" . basename(dirname(__file__)) . "/content/thumb.php?";
+			$lnk .= "fname=$basename&width=${width}&height=${height}";
+			echo "<img src=\"$lnk\">";
 		} else {
 			parent::begin_col($col);
 		}
