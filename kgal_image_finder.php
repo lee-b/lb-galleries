@@ -12,7 +12,7 @@ require_once("kgal_gallery.php");
 
 class KGalImageFinder extends KintassaMappedImageFinder {
 	function uri_from_id($id) {
-		return "/wp-content/plugins/kintassa_gallery/content/image.php?id={$id}";
+		return WP_PLUGIN_URL . "/kintassa_gallery/content/image.php?id={$id}";
 	}
 
 	function image_path_from_id($id) {
