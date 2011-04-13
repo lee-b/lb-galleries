@@ -144,11 +144,19 @@ abstract class KintassaTableForm extends KintassaForm {
 
 	function begin_footer() {
 		echo("<tfoot>");
-		echo("<tr>");
-		foreach ($this->col_map as $col_name) {
-			if (!$this->show_col($col_name)) continue;
-			$pretty_name = $this->col_name($col_name);
-			echo("<th>{$pretty_name}</th>");
+		foreach ($this->col_map as $col_key => $col_name) {
+			echo("<th>");
+
+			if (!$this->show_col($col_key)) {
+				echo("no_show: $col_key");
+				print_r($this->col_map);
+				continue;
+			}
+
+			$pretty_name = $this->pretty_col_name($col_key);
+			echo("{$pretty_name}");
+
+			echo("</th>");
 		}
 		echo("</tr>");
 	}
