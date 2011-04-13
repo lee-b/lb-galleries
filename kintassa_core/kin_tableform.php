@@ -7,7 +7,6 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 */
 
 require_once("kin_form.php");
-require_once("kin_page.php");
 
 abstract class KintassaPager {
 	function __construct() {}

@@ -39,6 +39,7 @@ class KGalleryTablePage extends KintassaPage {
 			"mode" => "gallery_add",
 		);
 		$page_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $page_args);
+
 		echo("<a href=\"{$page_uri}\" class=\"button\">Add Gallery</a>");
 	}
 }
