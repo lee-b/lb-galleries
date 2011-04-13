@@ -485,12 +485,13 @@ class KintassaCheckbox extends KintassaField {
 	}
 }
 
-class KintassaFileField extends KintassaField {
+class KintassaFileField extends KintassaEditableField {
 	function render($as_sub_el = false) {
 		parent::begin_render($as_sub_el);
 
 		$name = $this->name();
 		$cl = $this->class_attrib_str();
+
 		echo("<label for=\"{$name}\">{$this->label}</label>");
 		echo("<input type=\"file\" name=\"{$name}\" value=\"\">");
 	}
@@ -509,10 +510,58 @@ class KintassaFileField extends KintassaField {
 
 class KintassaImageUploadField extends KintassaFileField {
 	function render($as_sub_el = false) {
-		$fname = urlencode("sunset.jpg");
+		$fname = basename($this->value());
+		$fname = urlencode($fname);
 		$width = 80;
 		$height = 80;
-		echo "<img src=\"https://wpscratch.kintassa.com/wp-content/plugins/kintassa_gallery/content/thumb.php?fname={$fname}&width={$width}&height={$height}\" width=\"${width}\" height=\"{$height}\">";
+		$url = WP_PLUGIN_URL . "/" . basename(dirname(__file__)) . "/content/thumb.php";
+		$url .= "?fname={$fname}&width={$width}&height={$height}";
+		echo "<img src=\"{$url}\" width=\"${width}\" height=\"{$height}\">";
+
+		parent::render();
+	}
+
+	/***
+	 * checks uploaded file, moves it into the uploads directory without
+	 * collisions, and returns final name of the file.
+	 */
+	function finalize_upload() {
+		if (file_exists($this->default_val)) {
+			unlink($this->default_val);
+		}
+
+		$form_field_name = $this->name();
+
+		$orig_fname = $_FILES[$form_field_name]['name'];
+		$tmp_fname = $_FILES[$form_field_name]['tmp_name'];
+
+		$orig_basename = basename($orig_fname);
+
+		$new_fname = KGAL_UPLOAD_PATH . DIRECTORY_SEPARATOR . $orig_basename;
+		$count = 1;
+		while(file_exists($new_fname)) {
+			$count += 1;
+			$new_fname = $pathinfo['dir'] . DIRECTORY_SEPARATOR;
+			$new_fname .= $pathinfo['basename'] . "_" . $count;
+		}
+
+		move_uploaded_file($tmp_fname, $new_fname);
+		$this->default_val = $new_fname;
+		return $new_fname;
+	}
+
+	function value() {
+		$form_field_name = $this->name();
+		if (isset($_FILES[$form_field_name])) {
+			if (($_FILES[$form_field_name] != UPLOAD_ERR_NO_FILE) && ($_FILES[$form_field_name]['size'] > 0)) {
+				return $this->finalize_upload();
+			} else {
+				echo "<div class=\"warning\">Upload error, please retry.</div>";
+				return $this->default_val;
+			}
+		} else {
+			return $this->default_val;
+		}
 	}
 }
 

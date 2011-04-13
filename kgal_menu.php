@@ -71,7 +71,7 @@ class KGalleryMenu {
 	}
 
 	function handle_unrecognised_mode() {
-		echo("<div class=\"error\">Error: the requested mode is unrecognised, or not yet implemented.</div>");
+		echo("<div class=\"error\">" . __("Error: the requested mode is unrecognised, or not yet implemented.") . "</div>");
 	}
 
 	function images_subform($gallery_id) {

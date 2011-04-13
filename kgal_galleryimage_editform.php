@@ -7,10 +7,12 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 require_once("kgal_galleryimage_form.php");
-require_once("kgal_gallery.php");
+require_once("kgal_image.php");
+require_once("kin_utils.php");
 
 class KGalleryImageEditForm extends KGalleryImageForm {
 	function __construct($name, $gallery_image_id) {
+		$this->id = $gallery_image_id;
 		$img = new KintassaGalleryImage($gallery_image_id);
 
 		$default_vals = array(
@@ -28,7 +30,9 @@ class KGalleryImageEditForm extends KGalleryImageForm {
 	}
 
 	function render_success() {
-		echo ("Image updated. Thank you.");
+		$edit_args = array("mode" => "galleryimage_edit", "id" => $this->id);
+		$edit_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $edit_args);
+		echo (__("Image updated. Thank you.  <a href=\"$edit_uri\">Return</a>"));
 	}
 
 	function update_record() {
@@ -37,10 +41,10 @@ class KGalleryImageEditForm extends KGalleryImageForm {
 		$dat = $this->data();
 		$fmt = $this->data_format();
 
-		$where_dat = array("id"	=> $this->id_field->value());
+		$where_dat = array("id"	=> $this->id);
 		$where_fmt = array("%d");
 
-		$wpdb->update(KintassaGallery::table_name(), $dat, $where_dat, $fmt, $where_fmt);
+		$wpdb->update(KintassaGalleryImage::table_name(), $dat, $where_dat, $fmt, $where_fmt);
 
 		return true;
 	}

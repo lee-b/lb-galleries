@@ -22,19 +22,26 @@ abstract class KGalleryImageForm extends KintassaForm {
 		);
 		$this->add_child($this->sort_pri_field);
 
+		$this->name_band = new KintassaFieldBand("nameband");
+
 		$this->name_field = new KintassaTextField(
 			"Name", $name="name",
 			$default_value = $def['name'], $required=true
 		);
-		$this->add_child($this->name_field);
+		$this->name_band->add_child($this->name_field);
+		$this->add_child($this->name_band);
 
+		$this->image_band = new KintassaFieldBand("imageband");
 		$this->image_field = new KintassaImageUploadField(
-			"Image", $name="filepath", $default_value = "", $required=true);
-		$this->add_child($this->image_field);
+			"Image", $name="filepath",
+			$default_value = $def['filepath'], $required=true
+		);
+		$this->image_band->add_child($this->image_field);
+		$this->add_child($this->image_band);
 
-		$this->gallery_id = new KintassaHiddenField(
+		$this->gallery_id_field = new KintassaHiddenField(
 			"Gallery ID", $name="gallery_id",
-			$default_value=$def['gallery_id'], $required=true
+			$default_value = $def['gallery_id'], $required=true
 		);
 
 		$button_bar = new KintassaFieldBand("button_bar");
@@ -47,10 +54,10 @@ abstract class KGalleryImageForm extends KintassaForm {
 
 	function data() {
 		$dat = array(
+			"sort_pri"				=> $this->sort_pri_field->value(),
+			"filepath"				=> $this->image_field->value(),
 			"name"					=> $this->name_field->value(),
-			"width"					=> $this->width_field->value(),
-			"height"				=> $this->height_field->value(),
-			"display_mode"			=> $this->display_mode_field->value(),
+			"gallery_id"			=> $this->gallery_id_field->value(),
 		);
 
 		return $dat;
@@ -59,9 +66,9 @@ abstract class KGalleryImageForm extends KintassaForm {
 	function data_format() {
 		$fmt = array(
 			"%s",
-			"%d",
-			"%d",
-			"%s"
+			"%s",
+			"%s",
+			"%d"
 		);
 		return $fmt;
 	}
