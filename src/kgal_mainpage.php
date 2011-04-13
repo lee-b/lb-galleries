@@ -19,7 +19,7 @@ require_once("kgal_galleryimage_editpage.php");
 class KGalleryMainPage extends KintassaPage {
 	function content() {
 		$recognised_modes = array(
-			"gallery_list"			=> array("KGalleryTablePage", __("Kintassa Galleries")),
+			"gallery_list"			=> array("KGalleryTablePage", null),
 			"gallery_add"			=> array("KGalleryAddPage", __("Add Gallery")),
 			"gallery_edit"			=> array("KGalleryEditPage", __("Edit Gallery")),
 			"galleryimage_add"		=> array("KGalleryImageAddPage", __("Add Image")),

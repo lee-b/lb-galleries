@@ -12,8 +12,9 @@ abstract class KintassaPage {
 	}
 
 	function begin_page() {
-		echo("<div id=\"icon-tools\" class=\"icon32\"><br></div>");
-		echo("<h2 class=\"title\">" . __($this->title) . "</h2>");
+		if ($this->title) {
+			echo("<h2 class=\"title\">" . $this->title . "</h2>");
+		}
 	}
 
 	function end_page() {
