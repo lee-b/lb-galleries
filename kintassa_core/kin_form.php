@@ -3,7 +3,7 @@
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
 Copyright: Copyright (c) 2011 Kintassa.
-License: All rights reserved.  Contact Kintassa should you wish to use this product.
+License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
 require_once("kin_platform.php");
@@ -516,7 +516,7 @@ class KintassaImageUploadField extends KintassaFileField {
 		$fname = urlencode($fname);
 		$width = 80;
 		$height = 80;
-		$url = WP_PLUGIN_URL . "/" . basename(dirname(__file__)) . "/content/thumb.php";
+		$url = WP_PLUGIN_URL . "/" . basename(dirname(dirname(__file__))) . "/content/thumb.php";
 		$url .= "?fname={$fname}&width={$width}&height={$height}";
 
 		$img_path = KGAL_UPLOAD_PATH . DIRECTORY_SEPARATOR . $fname;

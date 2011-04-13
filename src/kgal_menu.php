@@ -3,18 +3,20 @@
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
 Copyright: Copyright (c) 2011 Kintassa.
-License: All rights reserved.  Contact Kintassa should you wish to use this product.
+License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
+require_once("kgal_config.php");
 require_once("kgal_gallery_tablepage.php");
 require_once("kgal_galleryimage_tablepage.php");
 require_once("kgal_gallery_addform.php");
 require_once("kgal_gallery_editform.php");
 require_once("kgal_galleryimage_addform.php");
 require_once("kgal_galleryimage_editform.php");
+require_once("kgal_gallery.php");
 require_once("kgal_image.php");
 require_once("kgal_about_page.php");
-require_once("kin_utils.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
 
 class KGalleryMenu {
 	function __construct() {
@@ -95,8 +97,6 @@ class KGalleryMenu {
 	}
 
 	function handle_gallery_list() {
-		require_once("kgal_gallery.php");
-
 		$pg = new KGalleryTablePage("kgallery_table", $this->menu_title);
 		$pg->execute();
 	}

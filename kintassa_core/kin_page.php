@@ -3,7 +3,7 @@
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
 Copyright: Copyright (c) 2011 Kintassa.
-License: All rights reserved.  Contact Kintassa should you wish to use this product.
+License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
 abstract class KintassaPage {
@@ -12,7 +12,7 @@ abstract class KintassaPage {
 	}
 
 	function begin_page() {
-		screen_icon();
+		echo("<div id=\"icon-tools\" class=\"icon32\"><br></div>");
 		echo("<h2 class=\"title\">" . __($this->title) . "</h2>");
 	}
 

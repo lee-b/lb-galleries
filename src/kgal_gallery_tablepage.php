@@ -3,13 +3,14 @@
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
 Copyright: Copyright (c) 2011 Kintassa.
-License: All rights reserved.  Contact Kintassa should you wish to use this product.
+License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kin_form.php");
+require_once("kgal_config.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_form.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_tableform.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
 require_once("kgal_gallery.php");
-require_once("kin_tableform.php");
-require_once("kin_utils.php");
 
 class KGalleryTableForm extends KintassaOptionsTableForm {
 	function process_actions() {

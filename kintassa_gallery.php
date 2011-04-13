@@ -10,18 +10,19 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa for licensing.
 */
 
-require_once("kgal_config.php");
-require_once("kin_wp_plugin.php");
-require_once("kgal_db.php");
+require_once("kintassa_core/kin_wp_plugin.php");
+require_once("src/kgal_config.php");
+require_once("src/kgal_db.php");
+require_once("src/kgal_menu.php");
+require_once("src/kgal_shortcode.php");
+require_once("src/kgal_db.php");
+require_once("src/kgal_tags.php");
 
 class KintassaGalleryPlugin extends KintassaWPPlugin {
 	function __construct() {
 		parent::__construct(__FILE__);
 
-		require_once("kgal_menu.php");
 		$kgallery_menu = new KGalleryMenu();
-
-		require_once("kgal_shortcode.php");
 		$kgallery_shortcode = new KGalleryShortcode();
 
 		add_action('init', array($this, 'install_scripts'));
@@ -54,7 +55,6 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 	}
 
 	function install() {
-		require_once("kgal_db.php");
 		kgallery_setup_db();
 	}
 
@@ -63,8 +63,5 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 
 // instanciate the plugin
 $kGalleryPlugin = new KintassaGalleryPlugin();
-
-// register template tags into the global namespace
-require_once("kgal_tags.php");
 
 ?>

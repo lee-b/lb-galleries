@@ -3,12 +3,12 @@
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
 Copyright: Copyright (c) 2011 Kintassa.
-License: All rights reserved.  Contact Kintassa should you wish to use this product.
+License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
 require_once('kgal_config.php');
-require_once('kin_micro_orm.php');
-require_once('kin_applet.php');
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . 'kintassa_core/kin_micro_orm.php');
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . 'kintassa_core/kin_applet.php');
 require_once('kgal_image.php');
 require_once('kgal_image_finder.php');
 
@@ -255,8 +255,6 @@ class KintassaGallery extends KintassaMicroORMObject {
 
 	function images() {
 		global $wpdb;
-
-		require_once("kgal_image.php");
 
 		$table_name = KintassaGalleryImage::table_name();
 		$rows = $wpdb->get_results("SELECT id,sort_pri FROM `{$table_name}` WHERE gallery_id={$this->id} ORDER BY sort_pri,name");

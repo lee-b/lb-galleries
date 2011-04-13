@@ -3,14 +3,15 @@
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
 Copyright: Copyright (c) 2011 Kintassa.
-License: All rights reserved.  Contact Kintassa should you wish to use this product.
+License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kin_form.php");
+require_once("kgal_config.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_form.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_tableform.php");
+require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
 require_once("kgal_gallery.php");
 require_once("kgal_image.php");
-require_once("kin_tableform.php");
-require_once("kin_utils.php");
 
 class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	function process_actions() {
@@ -62,7 +63,7 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 			$width = 80;
 			$height = 80;
 			$basename = urlencode(basename($fname));
-			$lnk = WP_PLUGIN_URL . "/" . basename(dirname(__file__)) . "/content/thumb.php?";
+			$lnk = WP_PLUGIN_URL . "/" . basename(dirname(dirname(__file__))) . "/content/thumb.php?";
 			$lnk .= "fname=$basename&width=${width}&height=${height}";
 			echo "<img src=\"$lnk\">";
 		} else {
@@ -251,7 +252,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$gallery_id = $this->gallery_id;
 
 		$start_item = $page_size * $page_num;
-		$qry = "SELECT id,sort_pri,filepath,name,description FROM {$this->table_name} WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` DESC, `name` ASC LIMIT {$start_item},{$page_size}";
+		$qry = "SELECT id,sort_pri,filepath,name,description FROM `{$this->table_name}` WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` DESC, `name` ASC LIMIT {$start_item},{$page_size}";
 
 		return $qry;
 	}
