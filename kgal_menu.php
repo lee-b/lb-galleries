@@ -78,12 +78,11 @@ class KGalleryMenu {
 		$form_name = "kgallery_images";
 
 		$col_map = array(
-			"id",
-			"sort_pri",
-			"Image" => "filepath",
-			"Name",
-			"Description",
-			// gallery_id hidden
+			"id"			=> null,
+			"sort_pri"		=> "Sort Order",
+			"filepath"		=> "Image",
+			"name"			=> "Name",
+			"description"	=> "Description"
 		);
 
 		$table_name = KintassaGalleryImage::table_name();

@@ -232,11 +232,11 @@ class KGalleryTablePage extends KintassaPage {
 		$form_name = $name;
 
 		$col_map = array(
-			"id",
-			"Name",
-			"Width",
-			"Height",
-			"Display Mode",
+			"id"				=> null,
+			"name"				=> "Name",
+			"width"				=> "Width",
+			"height"			=> "Height",
+			"display_mode"		=> "Display Mode"
 		);
 
 		$table_name = KintassaGallery::table_name();

@@ -55,6 +55,18 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 		parent::end_table();
 		$this->pager->render_page_nav();
 	}
+
+	function begin_col($col) {
+		if ($col == "filepath") {
+			KintassaTableForm::begin_col($col);
+			$fname = urlencode("sunset.jpg");
+			$width = 80;
+			$height = 80;
+			echo "<img src=\"https://wpscratch.kintassa.com/wp-content/plugins/kintassa_gallery/content/thumb.php?fname={$fname}&width={$width}&height={$height}\" width=\"${width}\" height=\"{$height}\">";
+		} else {
+			parent::begin_col($col);
+		}
+	}
 }
 
 class KGalleryImageRowOptionsForm extends KintassaRowForm {
@@ -225,7 +237,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$gallery_id = $this->gallery_id;
 
 		$start_item = $page_size * $page_num;
-		$qry = "SELECT * FROM {$this->table_name} WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` DESC, `name` ASC LIMIT {$start_item},{$page_size}";
+		$qry = "SELECT id,sort_pri,filepath,name,description FROM {$this->table_name} WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` DESC, `name` ASC LIMIT {$start_item},{$page_size}";
 
 		return $qry;
 	}
@@ -242,39 +254,6 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		}
 
 		return $this->results;
-	}
-}
-
-class KGalleryImageTablePage extends KintassaPage {
-	function __construct($name, $title) {
-		parent::__construct($title);
-
-		$form_name = $name;
-
-		$col_map = array(
-			"id",
-			"Name",
-			"Width",
-			"Height",
-			"Display Mode",
-		);
-
-		$table_name = KintassaGalleryImage::table_name();
-		$pager = new KintassaGalleryImageDBResultsPager($table_name);
-
-		$row_opts = KGalleryImageRowOptionsForm::Edit | KGalleryRowOptionsForm::Delete;
-		$row_form_fac = new KGalleryImageRowOptionsFactory($row_opts);
-		$this->table_form = new KGalleryImageTableForm($form_name, $col_map, $pager, $row_form_fac);
-	}
-
-	function content() {
-		$this->table_form->execute();
-
-		$page_args = array(
-			"mode" => "galleryimage_add",
-		);
-		$page_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $page_args);
-		echo("<a href=\"{$page_uri}\" class=\"button\">Add Image</a>");
 	}
 }
 

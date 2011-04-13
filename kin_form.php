@@ -509,7 +509,10 @@ class KintassaFileField extends KintassaField {
 
 class KintassaImageUploadField extends KintassaFileField {
 	function render($as_sub_el = false) {
-		echo "(Image upload field here )";
+		$fname = urlencode("sunset.jpg");
+		$width = 80;
+		$height = 80;
+		echo "<img src=\"https://wpscratch.kintassa.com/wp-content/plugins/kintassa_gallery/content/thumb.php?fname={$fname}&width={$width}&height={$height}\" width=\"${width}\" height=\"{$height}\">";
 	}
 }
 

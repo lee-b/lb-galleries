@@ -48,6 +48,10 @@ abstract class KintassaTableForm extends KintassaForm {
 	function __construct($form_name, $col_map, $pager, $title = null) {
 		parent::__construct($form_name);
 
+		foreach ($col_map as $col_key=>$col_val) {
+			assert(!KintassaUtils::isInteger($col_key));
+		}
+
 		$this->col_map = $col_map;
 		$this->pager = $pager;
 
@@ -73,9 +77,9 @@ abstract class KintassaTableForm extends KintassaForm {
 
 		foreach ($this->visible_rows() as $row) {
 			$this->begin_row($row);
-			foreach ($this->col_map as $col) {
-				$this->begin_col($col);
-				$this->end_col($col);
+			foreach ($this->col_map as $col_key => $col_name) {
+				$this->begin_col($col_key);
+				$this->end_col($col_key);
 			}
 			$this->end_row($row);
 		}
@@ -102,11 +106,34 @@ abstract class KintassaTableForm extends KintassaForm {
 		echo("</table>");
 	}
 
+	function show_col($col_name) {
+		return array_key_exists($col_name, $this->col_map);
+	}
+
+	function pretty_col_name($col_name) {
+		$v = $this->col_map[$col_name];
+		if ($v != null) {
+			return $v;
+		} else {
+			return $col_name;
+		}
+	}
+
 	function begin_header() {
 		echo("<thead>");
-		echo("<tr>");
-		foreach ($this->col_map as $k) {
-			echo("<th>{$k}</th>");
+		foreach ($this->col_map as $col_key => $col_name) {
+			echo("<th>");
+
+			if (!$this->show_col($col_key)) {
+				echo("no_show: $col_key");
+				print_r($this->col_map);
+				continue;
+			}
+
+			$pretty_name = $this->pretty_col_name($col_key);
+			echo("{$pretty_name}");
+
+			echo("</th>");
 		}
 		echo("</tr>");
 	}
@@ -118,8 +145,10 @@ abstract class KintassaTableForm extends KintassaForm {
 	function begin_footer() {
 		echo("<tfoot>");
 		echo("<tr>");
-		foreach ($this->col_map as $k) {
-			echo("<th>{$k}</th>");
+		foreach ($this->col_map as $col_name) {
+			if (!$this->show_col($col_name)) continue;
+			$pretty_name = $this->col_name($col_name);
+			echo("<th>{$pretty_name}</th>");
 		}
 		echo("</tr>");
 	}
@@ -167,7 +196,7 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 		$this->row_form_factory = $row_form_factory;
 
 		// add options column for edit/delete/sort/clone buttons
-		$this->col_map[] = "Options";
+		$this->col_map["options"] = "Options";
 
 		$this->process_actions();
 
@@ -201,20 +230,19 @@ abstract class KintassaOptionsTableForm extends KintassaTableForm {
 
 	function begin_col($col) {
 		parent::begin_col($col);
+		if (!$this->show_col($col)) return;
 
-		if ($col == 'Options') {
+		if ($col == 'options') {
 			$o = $this->row_forms[$this->row->id];
 			$as_subform = false; // naming for clarity
 			$o->render($as_subform);
 		} else {
-			$field_name = str_replace(" ", "_", strtolower($col));
-			if (isset($this->col_map[$field_name])) {
-				$mapped_name = $this->col_map[$field_name];
-			} else {
-				$mapped_name = $field_name;
-			}
-			echo($this->row->$mapped_name);
+			echo($this->row->$col);
 		}
+	}
+
+	function end_col($col) {
+		if (!$this->show_col($col)) return;
 	}
 
 	/***
