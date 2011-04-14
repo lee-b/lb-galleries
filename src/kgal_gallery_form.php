@@ -10,6 +10,7 @@ require_once("kgal_config.php");
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_form.php");
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
 require_once("kgal_gallery.php");
+require_once("kgal_gallery_applet.php");
 
 abstract class KGalleryForm extends KintassaForm {
 	function __construct($name, $default_vals) {
@@ -30,11 +31,14 @@ abstract class KGalleryForm extends KintassaForm {
 
 		$this->display_mode_field = new KintassaRadioGroup("Display method", $name="display_mode", $default_value=$def['display_mode']);
 
-		$sshow_opts = $this->slideshow_options();
-		foreach (array_keys($sshow_opts) as $sshow_opt_name) {
-			$sshow_opt_label = $sshow_opts[$sshow_opt_name];
-			$opt_el = new KintassaRadioButton($sshow_opt_label, $name=$sshow_opt_name);
-			$this->display_mode_field->add_child($opt_el);
+		$gallery_applets = KintassaGalleryApplet::available_applets();
+		foreach ($gallery_applets as $applet_name) {
+			$applet_info = KintassaGalleryApplet::applet_info($applet_name);
+			$applet_pretty_name = $applet_info['pretty_name'];
+			if ($applet_pretty_name != null) {
+				$opt_el = new KintassaRadioButton($applet_pretty_name, $name=$applet_name);
+				$this->display_mode_field->add_child($opt_el);
+			}
 		}
 		$this->add_child($this->display_mode_field);
 
