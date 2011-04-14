@@ -17,6 +17,20 @@ div.kintassa-page {
 	margin-bottom: 50px;
 }
 
+.kintassa-page table.about-page {
+	width: 600px;
+}
+
+.kintassa-page table.about-page th {
+	vertical-align: top;
+	padding-right: 10px;
+	text-align: left;
+}
+	
+.kintassa-page table.about-page td {
+	background-color: white;
+}
+
 fieldset.kintassa-radiogroup-heading {
 	margin-top: 15px;
 	margin-bottom: 5px;
