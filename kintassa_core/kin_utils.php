@@ -80,8 +80,8 @@ class KintassaUtils {
 		imagedestroy($process);
 
 		$new_img = array();
-		$new_img['width'] = $new_w;
-		$new_img['height'] = $new_h;
+		$new_img['width'] = $thumbnail_width;
+		$new_img['height'] = $thumbnail_height;
 		$new_img['image'] = $thumb;
 		$new_img['mimetype'] = $orig_img['mimetype'];
 
