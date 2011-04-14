@@ -31,7 +31,6 @@ class KGalleryImageEditForm extends KGalleryImageForm {
 	}
 
 	function render_success() {
-		echo("<h2>" . __("Image Updated") . "</h2>");
 		echo("<p>" . __("Your gallery image changes have been saved.  Thank you.") . "</p>");
 
 		$this->gallery_return_link();

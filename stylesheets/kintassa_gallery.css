@@ -13,6 +13,20 @@ div.kintassa-gallery-app {
 	margin-right: auto;
 }
 
+div.kintassa-page {
+	margin-bottom: 50px;
+}
+
+fieldset.kintassa-radiogroup-heading {
+	margin-top: 15px;
+	margin-bottom: 5px;
+}
+
+fieldset.kintassa-radiogroup-heading legend {
+	font-weight: bold;
+	padding-bottom: 7px;
+}
+
 div.kintassa-gallery-app ul.slideshow-image-list li {
 	visibility: hidden;
 }
@@ -25,6 +39,11 @@ div.kintassa-gallery-app ul.slideshow-image-list li {
 	list-style-type: none;
 }
 
+div.kintassa-fieldband .button-primary {
+	margin-top: 10px;
+	margin-bottom: 20px;
+}
+
 div.kintassa-gallery-app ul.slideshow-image-list,
 div.kintassa-gallery-app ul.slideshow-image-list li {
 	margin: 0;
@@ -32,4 +51,48 @@ div.kintassa-gallery-app ul.slideshow-image-list li {
 
 div.uploaded-thumbnail {
 	float: left;
+}
+
+div.kintassa-form-el,
+div.kintassa-page-nav {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.kintassa-form-el label {
+	display: inline-block;
+	min-width: 100px;
+}
+
+.kintassa-form-el input {
+	min-width: 300px;
+}
+
+.kintassa-form-el input.button-primary,
+.kintassa-form-el input.button-secondary {
+	min-width: 0;
+}
+
+.KintassaRadioButton input {
+	display: inline-block;
+	min-width: 10px;
+}
+
+.kintassa-form-el label {
+	font-weight: bold;
+}
+
+.kintassa-form-el .image-thumbnail {
+	margin-top: 15px;
+	margin-bottom: 15px;
+}
+
+.kintassa-form-el .image-thumbnail table th {
+	text-align: left;
+	min-width: 100px;
+}
+
+.kintassa-form-el .image-thumbnail img {
+	float: left;
+	margin-right: 20px;
 }

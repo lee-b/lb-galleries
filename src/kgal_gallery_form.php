@@ -22,12 +22,15 @@ abstract class KGalleryForm extends KintassaForm {
 		$this->name_field = new KintassaTextField("Name", $name="name", $default_value = $def['name'], $required=true);
 		$this->add_child($this->name_field);
 
-		$dimensions_band = new KintassaFieldBand("dimensions_band");
+		$width_band = new KintassaFieldBand("width_band");
 		$this->width_field = new KintassaIntegerField("Width", $name="width", $default_value = $def['width'], $required=true);
-		$dimensions_band->add_child($this->width_field);
+		$width_band->add_child($this->width_field);
+		$this->add_child($width_band);
+
+		$height_band = new KintassaFieldBand("height_band");
 		$this->height_field = new KintassaIntegerField("Height", $name="height", $default_value = $def['height'], $required=true);
-		$dimensions_band->add_child($this->height_field);
-		$this->add_child($dimensions_band);
+		$height_band->add_child($this->height_field);
+		$this->add_child($height_band);
 
 		$this->display_mode_field = new KintassaRadioGroup("Display method", $name="display_mode", $default_value=$def['display_mode']);
 

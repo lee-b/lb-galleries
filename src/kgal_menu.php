@@ -50,7 +50,8 @@ class KGalleryMenu {
 	}
 
 	function mainpage() {
-		$main_page = new KGalleryMainPage(__("Kintassa Galleries"));
+		$title = null; // mainpage is just a dispatcher, so no title
+		$main_page = new KGalleryMainPage($title);
 		$main_page->execute();
 	}
 

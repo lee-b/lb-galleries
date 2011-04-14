@@ -24,7 +24,6 @@ abstract class KGalleryImageForm extends KintassaForm {
 		$this->add_child($this->sort_pri_field);
 
 		$this->name_band = new KintassaFieldBand("nameband");
-
 		$this->name_field = new KintassaTextField(
 			"Name", $name="name",
 			$default_value = $def['name'], $required=true

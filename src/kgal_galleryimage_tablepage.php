@@ -254,7 +254,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 
 		$current_page = $this->current_page();
 
-		echo("<div class=\"page-nav\">{$num_records} entries found; {$pages} pages, {$this->page_size} entries per page. Go to page: ");
+		echo("<div class=\"kintassa-page-nav\">{$num_records} entries found; {$pages} pages, {$this->page_size} entries per page. Go to page: ");
 
 		foreach (range(1, $pages, 1) as $pg) {
 			$page_link = $this->page_link($pg);

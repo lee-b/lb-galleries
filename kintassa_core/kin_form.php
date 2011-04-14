@@ -59,7 +59,7 @@ abstract class KintassaPageElement {
 	}
 
 	function classes() {
-		$cl = array_merge(array("kintassa_form_el"), $this->extra_classes);
+		$cl = array_merge(array("kintassa-form-el"), $this->extra_classes);
 		return $cl;
 	}
 
@@ -309,12 +309,19 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 		$ch->_set_parent($this);
 	}
 
+	function render_above_children() {}
+	function render_below_children() {}
+
 	function begin_render($as_sub_el = false) {
 		parent::begin_render($as_sub_el);
+
+		$this->render_above_children();
 
 		foreach ($this->children as $ch) {
 			$ch->render(true);
 		}
+
+		$this->render_below_children();
 	}
 
 	function validate_posted_data() {
@@ -333,6 +340,12 @@ abstract class KintassaFieldContainer extends KintassaNamedFormElement {
 class KintassaFieldBand extends KintassaFieldContainer {
 	function block_layout() {
 		return true;
+	}
+
+	function classes() {
+		$cl = parent::classes();
+		$cl[] = "kintassa-fieldband";
+		return $cl;
 	}
 }
 
@@ -589,6 +602,14 @@ class KintassaRadioGroup extends KintassaFieldContainer {
 	function __construct($label, $name = null, $default_value = null) {
 		parent::__construct($label, $name=$name);
 		$this->default_value = $default_value;
+	}
+
+	function render_above_children() {
+		echo("<fieldset class=\"kintassa-radiogroup-heading\"><legend>{$this->label}</legend>");
+	}
+
+	function render_below_children() {
+		echo("</fieldset>");
 	}
 
 	function default_value() {
