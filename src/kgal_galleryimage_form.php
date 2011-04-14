@@ -45,6 +45,14 @@ abstract class KGalleryImageForm extends KintassaForm {
 			$default_value = $def['gallery_id'], $required=true
 		);
 
+		$this->desc_band = new KintassaFieldBand("descriptionband");
+		$this->description_field = new KintassaTextField(
+			"Description", $name="description",
+			$default_value = $def['description'], $required = false
+		);
+		$this->desc_band->add_child($this->description_field);
+		$this->add_child($this->desc_band);
+
 		$button_bar = new KintassaFieldBand("button_bar");
 		$confirm_button = new KintassaButton(
 			"Confirm", $name="confirm", $primary = true
@@ -65,6 +73,7 @@ abstract class KGalleryImageForm extends KintassaForm {
 			"filepath"				=> $this->image_field->value(),
 			"name"					=> $this->name_field->value(),
 			"gallery_id"			=> $this->gallery_id_field->value(),
+			"description"			=> $this->description_field->value(),
 		);
 
 		return $dat;
@@ -75,7 +84,8 @@ abstract class KGalleryImageForm extends KintassaForm {
 			"%s",
 			"%s",
 			"%s",
-			"%d"
+			"%d",
+			"%s"
 		);
 		return $fmt;
 	}

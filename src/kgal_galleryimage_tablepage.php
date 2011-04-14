@@ -154,22 +154,52 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$this->modify_sort($row_id, -1);
 	}
 
-	private function get_filename_for_row($row_id) {
+	private function get_filenames_for_row($row_id) {
 		global $wpdb;
+		$fnames = array();
+
+		// original upload's filename
 		$table_name = KintassaGalleryImage::table_name();
 		$qry = "SELECT `filepath` FROM `{$table_name}` WHERE id={$row_id}";
 		$fname = $wpdb->get_var($qry);
-		return $fname;
+		$fnames[] = $fname;
+
+		// determine prefix that all associated cache files will have
+		$partparts = pathinfo($fname);
+		$fullname = $pathinfo['basename'];
+		$exten = $pathinfo['exten'];
+		$basename = substr($fullname, 0, strlen($fullname) - strlen($exten));
+		$prefix = $basename . "__flt_";
+
+		// cached version filenames
+		$cache_dir_handle = opendir(KGAL_CACHE_PATH);
+		while ($fname = readdir($cache_dir_handle)) {
+			if (substr($fname, 0, strlen($prefix)) == $prefix) {
+				$fnames[] = $fname;
+			}
+		}
+
+		return $fnames;
 	}
 
 	function delete($row_id) {
 		global $wpdb;
-		$fname = $this->get_filename_for_row($row_id);
+
+		// get list of files to remove
+		$fnames = $this->get_filenames_for_row($row_id);
+
+		// remove from db
 		$qry = "DELETE FROM `{$this->table_name}` WHERE id={$row_id}";
-		if (file_exists($fname)) {
-			unlink($fname);
+		$res = $wpdb->query($qry);
+
+		// remove files
+		foreach($fnames as $fname) {
+			if (file_exists($fname)) {
+				@unlink($fname);
+			}
 		}
-		return ($wpdb->query($qry) != false);
+
+		return ($res != false);
 	}
 
 	function num_results() {
@@ -211,7 +241,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 	}
 
 	function page_link($page_num) {
-		$page_args = array("mode" => "gallery_list", "pagenum" => $page_num);
+		$page_args = array("mode" => "gallery_edit", "pagenum" => $page_num, "id" => $this->gallery_id);
 		$page_uri = KintassaUtils::admin_path("KGalleryMenu", "mainpage", $page_args);
 		return $page_uri;
 	}
