@@ -33,6 +33,9 @@ class KGalleryImageTableForm extends KintassaOptionsTableForm {
 	}
 
 	function do_row_action_del($row_id) {
+		if (!$this->pager->row_exists($row_id)) {
+			exit ("<div class=\"notice\">Row $row_id already deleted.</div>");
+		}
 		if ($this->pager->delete($row_id)) {
 			echo ("<div class=\"notice\">Gallery image #{$row_id} deleted.</div>");
 		}
@@ -152,6 +155,14 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		return true;
 	}
 
+	function row_exists($row_id) {
+		global $wpdb;
+		$table_name = KintassaGalleryImage::table_name();
+		$qry = "SELECT id from {$table_name} WHERE id={$row_id}";
+		$res = $wpdb->get_results($qry);
+		return ($res != false);
+	}
+
 	function sort_up($row_id) {
 		assert($this->modify_sort($row_id, -KintassaGalleryImageDBResultsPager::RowJump) != false);
 	}
@@ -198,18 +209,23 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$fname = $wpdb->get_var($qry);
 		$fnames[] = $fname;
 
-		// determine prefix that all associated cache files will have
-		$partparts = pathinfo($fname);
-		$fullname = $pathinfo['basename'];
-		$exten = $pathinfo['exten'];
-		$basename = substr($fullname, 0, strlen($fullname) - strlen($exten));
-		$prefix = $basename . "__flt_";
+		if (file_exists($fname)) {
+			$path_parts = pathinfo($fname);
+			$fullname = $path_parts['basename'];
+			if (isset($path_parts['extension'])) {
+				$exten = $path_parts['extension'];
+			} else {
+				$exten = "";
+			}
+			$basename = substr($fullname, 0, strlen($fullname) - strlen($exten));
+			$prefix = $basename . "__flt_";
 
-		// cached version filenames
-		$cache_dir_handle = opendir(KGAL_CACHE_PATH);
-		while ($fname = readdir($cache_dir_handle)) {
-			if (substr($fname, 0, strlen($prefix)) == $prefix) {
-				$fnames[] = $fname;
+			// cached version filenames
+			$cache_dir_handle = opendir(KGAL_CACHE_PATH);
+			while ($fname = readdir($cache_dir_handle)) {
+				if (substr($fname, 0, strlen($prefix)) == $prefix) {
+					$fnames[] = $fname;
+				}
 			}
 		}
 
