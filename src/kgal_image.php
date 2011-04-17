@@ -51,9 +51,11 @@ class KintassaGalleryImage extends KintassaMicroORMObject {
 		$where_fmt = array("%d");
 
 		$res = $wpdb->update($table_name, $data, $where, $data_fmt, $where_fmt);
-		print_r($res);
+		if ($res != 1) {
+			return false;
+		}
 
-		return false;
+		return true;
 	}
 
 	function load() {

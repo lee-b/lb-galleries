@@ -121,6 +121,9 @@ class KGalleryImageRowOptionsFactory extends KintassaRowFormFactory {
 }
 
 class KintassaGalleryImageDBResultsPager extends KintassaPager {
+	const RowSpace = 2;
+	const RowJump = 3;
+
 	function __construct($table_name, $page_size = 10, $gallery_id = null) {
 		parent::__construct();
 
@@ -143,15 +146,46 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		}
 		$gal->sort_pri += $sort_delta;
 		$gal->save();
-		return false;
+
+		$this->reorder();
+
+		return true;
 	}
 
 	function sort_up($row_id) {
-		$this->modify_sort($row_id, 1);
+		assert($this->modify_sort($row_id, -KintassaGalleryImageDBResultsPager::RowJump) != false);
 	}
 
 	function sort_down($row_id) {
-		$this->modify_sort($row_id, -1);
+		assert($this->modify_sort($row_id, KintassaGalleryImageDBResultsPager::RowJump) != false);
+	}
+
+	private function reorder() {
+		global $wpdb;
+
+		$table_name = KintassaGalleryImage::table_name();
+		$gallery_id = $this->gallery_id;
+
+		@mysql_query("BEGIN", $wpdb->dbh);
+
+		$qry = "SELECT id FROM wp_kintassa_gal_img WHERE gallery_id={$this->gallery_id} ORDER BY sort_pri ASC,name ASC";
+		$rows = $wpdb->get_results($qry);
+		if (!$rows) {
+			echo("error running query");
+		}
+
+		$pri = 0;
+		foreach ($rows as $row) {
+			$update_qry = "UPDATE `{$table_name}` SET `sort_pri`={$pri} WHERE `id`={$row->id}";
+			$res = mysql_query($update_qry, $wpdb->dbh);
+			if (!$res) {
+				$wpdb->print_error();
+			}
+
+			$pri += KintassaGalleryImageDBResultsPager::RowSpace;
+		}
+
+		@mysql_query("COMMIT", $wpdb->dbh);
 	}
 
 	private function get_filenames_for_row($row_id) {
@@ -282,7 +316,7 @@ class KintassaGalleryImageDBResultsPager extends KintassaPager {
 		$gallery_id = $this->gallery_id;
 
 		$start_item = $page_size * $page_num;
-		$qry = "SELECT id,sort_pri,filepath,name,description FROM `{$this->table_name}` WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` DESC, `name` ASC LIMIT {$start_item},{$page_size}";
+		$qry = "SELECT id,sort_pri,filepath,name,description FROM `{$this->table_name}` WHERE `gallery_id`={$gallery_id} ORDER BY `sort_pri` ASC, `name` ASC LIMIT {$start_item},{$page_size}";
 
 		return $qry;
 	}

@@ -88,7 +88,7 @@ class KintassaGallery extends KintassaMicroORMObject {
 		global $wpdb;
 
 		$table_name = KintassaGalleryImage::table_name();
-		$rows = $wpdb->get_results("SELECT id,sort_pri FROM `{$table_name}` WHERE gallery_id={$this->id} ORDER BY sort_pri,name");
+		$rows = $wpdb->get_results("SELECT id,sort_pri FROM `{$table_name}` WHERE gallery_id={$this->id} ORDER BY sort_pri ASC,name ASC");
 
 		$images = array();
 		foreach ($rows as $row) {
