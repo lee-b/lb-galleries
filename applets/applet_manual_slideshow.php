@@ -23,6 +23,8 @@ class KintassaManualSlideshowApplet extends KintassaGalleryApplet {
 	}
 
 	function render() {
+		$applet = $this;
+
 		$gallery = $this->gallery;
 		$unique_id = $this->unique_id();
 		$cls = $this->classes_attrib_str();

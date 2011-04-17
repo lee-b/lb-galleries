@@ -29,19 +29,14 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 				>
 		<?php } ?>
 	</div>
-	<div class="gallery-app-nav">
-		<a href="#"><span id="<?php echo $unique_id; ?>-prev">Prev</span></a>
-		<a href="#"><span id="<?php echo $unique_id; ?>-next">Next</span></a>
-	</div>
 </div>
 <script type="text/javascript">
 	jQuery(function() {
-	    jQuery('#<?php echo $unique_id; ?>').cycle({
-	        fx:      'scrollHorz',
-	        timeout:  0,
-	        speed:	 300,
-	        prev:    '#<?php echo $unique_id; ?>-prev',
-	        next:    '#<?php echo $unique_id; ?>-next'
+	    jQuery('#<?php echo $unique_id; ?>').before('<div id="<?php echo $unique_id; ?>-pager" class="gallery-app-pager"></div>').cycle({
+	        fx:			'scrollHorz',
+	        timeout:	0,
+	        speed:		300,
+	        pager:		'#<?php echo $unique_id; ?>-pager',
 		});
 	});
 </script>

@@ -6,9 +6,6 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 */
 
 div.kintassa-gallery-app {
-	background-color: cornflowerblue;
-	width: 300px;
-	height: 200px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -109,4 +106,14 @@ div.kintassa-page-nav {
 .kintassa-form-el .image-thumbnail img {
 	float: left;
 	margin-right: 20px;
+}
+
+.gallery-app-pager,
+.gallery-app-nav {
+	text-align: center;
+}
+
+.gallery-app-pager a {
+	margin-left: 3px;
+	margin-right: 3px;
 }

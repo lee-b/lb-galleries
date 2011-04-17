@@ -37,9 +37,11 @@ abstract class KintassaGalleryApplet extends KintassaApplet {
 		return $_registered_kintassa_gallery_applets[$applet_name];
 	}
 
-	function __construct($gallery) {
+	function __construct($gallery, $width=null, $height=null) {
 		parent::__construct();
 		$this->gallery = $gallery;
+		$this->width = $width;
+		$this->height = $height;
 		$this->finder = new KGalImageFinder(KGAL_CACHE_PATH);
 	}
 
@@ -59,10 +61,29 @@ abstract class KintassaGalleryApplet extends KintassaApplet {
 		return "class=\"" . implode(" ", $this->classes()) . "\"";
 	}
 
+	function width() {
+		if ($this->width != null) {
+			$w = $this->width;
+		} else {
+			$w = $this->gallery->width;
+		}
+		return $w;
+	}
+
+	function height() {
+		if ($this->height != null) {
+			$h = $this->height;
+		} else {
+			$h = $this->gallery->height;
+		}
+
+		return $h;
+	}
+
 	function styles() {
 		$sty = array();
-		$sty['width'] = $this->gallery->width;
-		$sty['height'] = $this->gallery->height;
+		$sty['width'] = $this->width() . "px";
+		$sty['height'] = $this->height() . "px";
 		return $sty;
 	}
 

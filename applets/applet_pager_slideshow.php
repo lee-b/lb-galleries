@@ -7,20 +7,18 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 */
 
 $_PLUGIN_ROOT = dirname(dirname(__file__));
+require_once($_PLUGIN_ROOT . DIRECTORY_SEPARATOR . 'kintassa_core/kin_micro_orm.php');
+require_once($_PLUGIN_ROOT . DIRECTORY_SEPARATOR . 'src/kgal_image.php');
 require_once($_PLUGIN_ROOT . DIRECTORY_SEPARATOR . "src/kgal_gallery_applet.php");
 
-/***
- * Dummy renderer used for error messages when the requested renderer
- * doesn't exist
- */
-class KintassaInvalidGalleryApplet extends KintassaGalleryApplet {
+class KintassaPagerSlideshowApplet extends KintassaGalleryApplet {
 	static function register() {
-		KintassaGalleryApplet::register('KintassaInvalidGalleryApplet', 'invalid', null);
+		KintassaGalleryApplet::register('KintassaPagerSlideshowApplet', 'pager_slideshow', "Pager Slideshow");
 	}
 
 	function classes() {
 		$cls = parent::classes();
-		$cls[] = "kintassa-applet-invalid";
+		$cls[] = "kintassa-pager-slideshow-applet";
 		return $cls;
 	}
 
@@ -28,19 +26,15 @@ class KintassaInvalidGalleryApplet extends KintassaGalleryApplet {
 		$applet = $this;
 
 		$gallery = $this->gallery;
-
 		$unique_id = $this->unique_id();
-
 		$cls = $this->classes_attrib_str();
 		$sty = $this->styles_attrib_str();
 
-		$not_avail_msg = __("This gallery's renderer app is not available. Please (re)install the necessary sub-features, or change the gallery's Display Mode.");
-
-		$template = $this->template_path("invalid", "render");
+		$template = $this->template_path("pager_slideshow", "render");
 		require($template);
 	}
 }
 
-KintassaInvalidGalleryApplet::register();
+KintassaPagerSlideshowApplet::register();
 
 ?>

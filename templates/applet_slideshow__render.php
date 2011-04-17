@@ -19,8 +19,8 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 			}
 			?>
 			<img <?php echo $cls; ?>
-				width="<?php echo $gallery->width; ?>"
-				height="<?php echo $gallery->height; ?>"
+				width="<?php echo $applet->width(); ?>"
+				height="<?php echo $applet->height(); ?>"
 				src="<?php echo $this->image_uri($img); ?>"
 				title="<?php echo $img->name; ?>"
 			>

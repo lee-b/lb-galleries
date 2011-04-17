@@ -80,7 +80,7 @@ class KintassaGallery extends KintassaMicroORMObject {
 		$applet_info = KintassaGalleryApplet::applet_info($this->display_mode);
 		$applet_class = $applet_info['class'];
 
-		$applet = new $applet_class($this);
+		$applet = new $applet_class($this, $width=$width, $height=$height);
 		$applet->render();
 	}
 

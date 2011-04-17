@@ -51,13 +51,6 @@ abstract class KGalleryForm extends KintassaForm {
 		$this->add_child($button_bar);
 	}
 
-	function slideshow_options() {
-		return array(
-			"slideshow"				=> "Slideshow",
-			"manual_slideshow"		=> "Manual Slideshow"
-		);
-	}
-
 	function data() {
 		$dat = array(
 			"name"					=> $this->name_field->value(),
@@ -66,9 +59,12 @@ abstract class KGalleryForm extends KintassaForm {
 			"display_mode"			=> $this->display_mode_field->value(),
 		);
 
-		// TODO: temporary validation check.  Should be removed, or modified
-		//       to use options registered as KintassaGalleryApp classes.
-		assert (in_array($dat['display_mode'], array('slideshow', 'manual_slideshow')));
+		$gallery_applets = KintassaGalleryApplet::available_applets();
+
+		$display_mode_ok = in_array($dat['display_mode'], $gallery_applets);
+		if (!$display_mode_ok) {
+			$dat['display_mode'] = 'invalid';
+		}
 
 		return $dat;
 	}
@@ -88,6 +84,9 @@ abstract class KGalleryForm extends KintassaForm {
 
 	function is_valid() {
 		if (!parent::is_valid()) return false;
+
+		$gallery_applets = KintassaGalleryApplet::available_applets();
+
 		return $this->buttons_submitted(array('confirm')) != null;
 	}
 
