@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Kintassa Gallery
-Plugin URI: http://www.kintassa.com/projects/kintassa_gallery/
-Description: A flexible image gallery
+Plugin Name: Kintassa Galleries
+Plugin URI: http://www.kintassa.com/projects/kintassa_galleries/
+Description: A flexible image gallery system
 Version: 1.0
 Author: Lee Braiden
 Author URI: http://www.kintassa.com
