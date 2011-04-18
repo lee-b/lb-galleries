@@ -83,13 +83,13 @@
 		</dl>
 
 
-		<h3>Editing a gallery, and finding the table of gallery images</h3>
+		<h4>Editing a gallery, and finding the table of gallery images</h4>
 
 		<p>Locate the Gallery Table again (see above).  Find the gallery you want to edit in the listings. Choose edit on the row of the gallery you wish to change.</p>
 
 		<p>From here the options are the same as when adding a new gallery, except that you will also see a table of images within the gallery.  To change gallery options such as the width and height, simply modify the settings here, and choose Confirm.</p>
 
-		<h3>Adding images</h3>
+		<h4>Adding images</h4>
 
 		<p>To add a new image to a gallery, edit the gallery (choose edit in the main galleries table), then choose Add Image.  Options presented when adding a new image are as follows:</p>
 
@@ -107,9 +107,24 @@
 			<dd>This is provided for flexibility, in case you would like to add long descriptions to your galleries' images and display them via GalleryApplets (plugins), however the default display methods do not currently display this field.</dd>
 
 
-		<h3>Sorting images</h3>
+		<h4>Sorting images</h4>
 
 		<p>The image display order within a gallery initially defaults to being alphabetical.  Sort buttons (up and down arrows) are provided in the gallery image table.  Simply click the up arrow to move an image higher, and the down arrow to move an image lower within the list.  The first image in the list will be displayed initially (and when no javascript is available), with the others following in sequence.  Note this this can vary depending on the gallery display mode chosen, however: some plugins allow users to browse images any order.</p>
+
+		<h3>Inserting galleries into Pages, Posts, and Templates</h3>
+
+		<p><em>Kintassa</em> galleries are very simple to insert once setup in the admin area.  Just make note of the gallery ID from the main Kintassa Galleries table in the wordpress admin area.  Then, in posts or pages, you can simply enter a shortcode to add the gallery using that ID number, like so:</p>
+
+		<blockquote><code>[kintassa_gallery id="3"]</code></blockquote>
+
+		In PHP template files (when creating Wordpress themes), you can use the <code>kintassa_gallery($id)</code> template tag (function) instead.  For example:
+
+		<blockquote><code>&lt;?php kintassa_gallery(3) ?&gt;</code</blockquote>
+
+		<p>Would insert the Kintassa Gallery which has id number 3.</p>
+
+		<p>Your gallery will be inserted according to the settings in the admin area.  To adjust the width, height, or display method after adding a gallery to a page, just change the settings in the admin area.  The page will update automatically.</p>
+
 
 		<h2>Contacting Kintassa</h2>
 
