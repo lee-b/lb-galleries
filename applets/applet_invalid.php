@@ -34,7 +34,7 @@ class KintassaInvalidGalleryApplet extends KintassaGalleryApplet {
 		$cls = $this->classes_attrib_str();
 		$sty = $this->styles_attrib_str();
 
-		$not_avail_msg = __("This gallery's renderer app is not available. Please (re)install the necessary sub-features, or change the gallery's Display Mode.");
+		$not_avail_msg = __("This gallery cannot be displayed. Please check the gallery ID exists, (re)install the necessary GalleryApplets for its display method, or change the display method to one that's currently available.");
 
 		$template = $this->template_path("invalid", "render");
 		require($template);
