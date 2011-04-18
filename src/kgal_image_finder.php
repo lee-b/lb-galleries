@@ -13,7 +13,7 @@ require_once("kgal_gallery.php");
 
 class KGalImageFinder extends KintassaMappedImageFinder {
 	function uri_from_id($id) {
-		return WP_PLUGIN_URL . "/kintassa_gallery/content/image.php?id={$id}";
+		return WP_PLUGIN_URL . "/" . basename(dirname(dirname(__file__))) . "/content/image.php?id={$id}";
 	}
 
 	function image_path_from_id($id) {
@@ -57,7 +57,7 @@ class KintassaThumbnailFinder extends KintassaImageFinder {
 
 	function uri_from_fname($fname) {
 		$encoded_path = escapeuri($fname);
-		return WP_PLUGIN_URL . "/kintassa_gallery/content/thumb.php?width={$this->width}&height={$this->height}&fname={$encoded_fname}";
+		return WP_PLUGIN_URL . "/" . basename(dirname(dirname(__file__))) . "/content/thumb.php?width={$this->width}&height={$this->height}&fname={$encoded_fname}";
 	}
 
 	function resized_path_to($full_path) {
