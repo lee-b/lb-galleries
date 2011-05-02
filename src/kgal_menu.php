@@ -6,14 +6,14 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kgal_config.php");
-require_once("kgal_mainpage.php");
-require_once("kgal_gallery_addform.php");
-require_once("kgal_gallery_editform.php");
-require_once("kgal_gallery.php");
-require_once("kgal_image.php");
-require_once("kgal_about_page.php");
-require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core" . DIRECTORY_SEPARATOR . "kin_utils.php");
+require_once(kintassa_core('kin_utils.php'));
+require_once('kgal_config.php');
+require_once('kgal_mainpage.php');
+require_once('kgal_gallery_addform.php');
+require_once('kgal_gallery_editform.php');
+require_once('kgal_gallery.php');
+require_once('kgal_image.php');
+require_once('kgal_about_page.php');
 
 class KGalleryMenu {
 	function __construct() {

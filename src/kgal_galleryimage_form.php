@@ -6,9 +6,9 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kgal_config.php");
-require_once("kgal_gallery.php");
-require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_form.php");
+require_once(kintassa_core('kin_form.php'));
+require_once('kgal_config.php');
+require_once('kgal_gallery.php');
 
 abstract class KGalleryImageForm extends KintassaForm {
 	function __construct($name, $default_vals) {

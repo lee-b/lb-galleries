@@ -6,7 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kgal_galleryimage_addform.php");
+require_once('kgal_galleryimage_addform.php');
 
 class KGalleryImageAddPage extends KintassaPage {
 	function __construct($title) {

@@ -6,8 +6,8 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kgal_gallery_form.php");
-require_once("kgal_gallery.php");
+require_once('kgal_gallery_form.php');
+require_once('kgal_gallery.php');
 
 class KGalleryEditForm extends KGalleryForm {
 	function __construct($name, $gallery_id) {

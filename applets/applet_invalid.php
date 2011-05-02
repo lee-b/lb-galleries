@@ -6,8 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-$_PLUGIN_ROOT = dirname(dirname(__file__));
-require_once($_PLUGIN_ROOT . DIRECTORY_SEPARATOR . "src/kgal_gallery_applet.php");
+require_once(kin_gal_inc('kgal_gallery_applet.php'));
 
 /***
  * Dummy renderer used for error messages when the requested renderer

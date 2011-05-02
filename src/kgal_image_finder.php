@@ -6,10 +6,10 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 
-require_once("kgal_config.php");
-require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . 'kintassa_core/kin_image_filter.php');
-require_once("kgal_image.php");
-require_once("kgal_gallery.php");
+require_once(kintassa_core('kin_image_filter.php'));
+require_once('kgal_config.php');
+require_once('kgal_image.php');
+require_once('kgal_gallery.php');
 
 class KGalImageFinder extends KintassaMappedImageFinder {
 	function uri_from_id($id) {
