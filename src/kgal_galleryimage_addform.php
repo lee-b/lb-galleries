@@ -9,14 +9,17 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 require_once("kgal_galleryimage_form.php");
 
 class KGalleryImageAddForm extends KGalleryImageForm {
-	function KGalleryAddForm($name) {
-		$default_vals = array(
-			"name"			=> "",
-			"width"			=> 320,
-			"height"		=> 200,
-			"display_mode"	=> "slideshow",
-		);
-		parent::__construct($name, $default_vals);
+	function __construct($name, $default_vals) {
+		$internal_defaults = array();
+
+		$internal_defaults["name"] = $name;
+		$internal_defaults["width"] = 320;
+		$internal_defaults["height"] = 200;
+		$internal_defaults["display_mode"] = "slideshow";
+
+		$new_defaults = array_merge($internal_defaults, $default_vals);
+
+		parent::__construct($name, $new_defaults);
 	}
 
 	function render_success() {

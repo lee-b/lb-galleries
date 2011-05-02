@@ -11,17 +11,27 @@ License: All rights reserved.  Contact Kintassa should you wish to use this prod
 error_reporting(E_ALL);
 
 function find_parent_file($fn) {
-	$current_dir = dirname(__file__);
+	$current_dir = dirname($_SERVER['SCRIPT_FILENAME']);
+	$last_dir = null;
 
-	while (realpath($current_dir) != "/") {
-		$current_dir = $current_dir . "/..";
-		$fn_path = $current_dir . "/" . $fn;
-		if (file_exists($fn_path)) {
-			return realpath($fn_path);
+	while (true) {
+		$file_path = $current_dir . DIRECTORY_SEPARATOR . $fn;
+		if (file_exists($file_path)) {
+			return $file_path;
 		}
-	}
 
-	return null;
+		$real_dir = realpath($current_dir);
+		if ($real_dir == $last_dir) {
+			/*	we're not ascending any more, so we
+			 * 	must be at the root dir, with nothing
+			 *	yet found
+			*/
+			return null;
+		}
+
+		$current_dir = dirname($current_dir);
+		$last_dir = $real_dir;
+	}
 }
 
 $wp_load = find_parent_file("wp-load.php");
@@ -32,7 +42,7 @@ require_once($wp_load);
 
 // real code starts here /////////////////////////////////////////////////////
 
-require_once("../src/kgal_config.php");
+require_once(".." . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "kgal_config.php");
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "src/kgal_image_finder.php");
 

@@ -9,7 +9,7 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 require_once("kgal_gallery_form.php");
 
 class KGalleryAddForm extends KGalleryForm {
-	function KGalleryAddForm($name) {
+	function __construct($name) {
 		$default_vals = array(
 			"name"			=> "",
 			"width"			=> 320,
