@@ -58,10 +58,12 @@ class KintassaGalleryPlugin extends KintassaWPPlugin {
 		kgallery_setup_db();
 	}
 
-	function remove() {}
+	function remove() {
+	}
 }
 
 // instanciate the plugin
 $kGalleryPlugin = new KintassaGalleryPlugin();
+$kGalleryPlugin->install();
 
 ?>

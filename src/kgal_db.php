@@ -58,8 +58,13 @@ SQL;
 }
 
 function kgallery_setup_db() {
-	add_option("kintassa_gallery_dbver", "1.0");
-	kgallery_create_tables();
+	$dbver = get_option("kintassa_gallery_dbver", null);
+	if ($dbver == null) {
+		kgallery_create_tables();
+		add_option("kintassa_gallery_dbver", "1.0");
+	} else {
+		// already installed, no upgrades needed (as non exist yet)
+	}
 }
 
 ?>
