@@ -123,3 +123,10 @@ table.kintassa-form-el {
 	margin-bottom: 5px;
 }
 
+.kintassa-gallery-app img {
+	display: none;
+}
+
+.kintassa-gallery-app img.first-item {
+	display: inline;
+}
