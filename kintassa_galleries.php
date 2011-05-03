@@ -22,7 +22,7 @@ if (!function_exists('kintassa_core')) {
 		}
 		return dirname(__file__) . DIRECTORY_SEPARATOR . $real_subpath;
 	}
-	
+
 	require_once(kintassa_core('kin_wp_plugin.php'));
 	require_once(kin_gal_inc('kgal_config.php'));
 	require_once(kin_gal_inc('kgal_db.php'));
@@ -76,10 +76,10 @@ if (!function_exists('kintassa_core')) {
 
 	function remove() {
 	}
-}
 
-// instanciate the plugin
-$kGalleryPlugin = new KintassaGalleryPlugin();
-$kGalleryPlugin->install();
+	// instanciate the plugin
+	$kGalleryPlugin = new KintassaGalleryPlugin();
+	$kGalleryPlugin->install();
+}
 
 ?>
