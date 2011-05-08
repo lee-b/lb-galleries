@@ -30,7 +30,13 @@ class KintassaPagerSlideshowApplet extends KintassaGalleryApplet {
 		$sty = $this->styles_attrib_str();
 
 		$template = $this->template_path("pager_slideshow", "render");
+
+		ob_start();
 		require($template);
+		$template_html = ob_get_contents();
+		ob_end_clean();
+
+		return $template_html;
 	}
 }
 
