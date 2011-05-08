@@ -13,7 +13,8 @@ require_once('kgal_gallery.php');
  */
 function kintassa_gallery($gallery_id, $width=null, $height=null) {
 	$gal = new KintassaGallery($gallery_id);
-	$rendered_gallery = $gal->render($width, $height);
+	$rendered_html = $gal->render($width, $height);
+	return($rendered_html);
 }
 
 ?>

@@ -19,17 +19,13 @@ class KGalleryShortcode {
 	function render_shortcode($atts) {
 		$known_attribs = array(
 			"id" => null,
-			"width" => null,
-			"height" => null,
 		);
 		$parsed_atts = shortcode_atts(&$known_attribs, $atts);
 
 		$id = $parsed_atts['id'];
-		$width = $parsed_atts['width'];
-		$height = $parsed_atts['height'];
 
 		$gal = new KintassaGallery($id);
-		$rendered_gallery = $gal->render($width, $height);
+		$rendered_gallery = $gal->render();
 
 		return $rendered_gallery;
 	}

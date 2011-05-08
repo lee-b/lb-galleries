@@ -43,7 +43,7 @@ require_once($wp_load);
 // real code starts here /////////////////////////////////////////////////////
 
 require_once(".." . DIRECTORY_SEPARATOR . "src" . DIRECTORY_SEPARATOR . "kgal_config.php");
-require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "kintassa_core/kin_utils.php");
+require_once(kintassa_core('kin_utils.php'));
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "src/kgal_image_finder.php");
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "src/kgal_image.php");
 require_once(KGAL_ROOT_DIR . DIRECTORY_SEPARATOR . "src/kgal_gallery.php");

@@ -40,7 +40,7 @@ abstract class KintassaGalleryApplet extends KintassaApplet {
 		return $GLOBALS['registered_kintassa_gallery_applets'][$applet_name];
 	}
 
-	function __construct($gallery, $width=null, $height=null) {
+	function __construct($gallery, $width, $height) {
 		parent::__construct();
 		$this->gallery = $gallery;
 		$this->width = $width;

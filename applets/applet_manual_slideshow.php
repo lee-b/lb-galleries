@@ -22,6 +22,8 @@ class KintassaManualSlideshowApplet extends KintassaGalleryApplet {
 	}
 
 	function render() {
+		kin_dbg("KintassaManualSlideshowApplet::render() called");
+
 		$applet = $this;
 
 		$gallery = $this->gallery;
