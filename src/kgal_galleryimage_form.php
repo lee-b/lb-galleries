@@ -31,10 +31,14 @@ abstract class KGalleryImageForm extends KintassaForm {
 		$this->name_band->add_child($this->name_field);
 		$this->add_child($this->name_band);
 
+		$upload_path = KGAL_UPLOAD_PATH;
+		$thumb_url = WP_PLUGIN_URL . "/" . basename(dirname(dirname(__file__))) . "/content/thumb.php";
+
 		$this->image_band = new KintassaFieldBand("imageband");
 		$this->image_field = new KintassaImageUploadField(
 			"Image", $name="filepath",
-			$default_value = $def['filepath'], $required=true
+			$default_value = $def['filepath'], $required=true,
+			$upload_path, $thumb_url
 		);
 		$this->image_band->add_child($this->image_field);
 		$this->add_child($this->image_band);
