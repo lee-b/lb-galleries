@@ -21,6 +21,13 @@ abstract class KintassaGalleryApplet extends KintassaApplet {
 		);
 	}
 
+	function template_path($applet_name, $template_name) {
+		$template_dir = dirname(dirname(__file__)) . DIRECTORY_SEPARATOR . "templates";
+		$fname = basename("applet_" . $applet_name . "__" . $template_name . ".php");
+		$template = $template_dir . DIRECTORY_SEPARATOR . $fname;
+		return $template;
+	}
+
 	static function available_applets() {
 		return array_keys($GLOBALS['registered_kintassa_gallery_applets']);
 	}
