@@ -49,7 +49,7 @@ abstract class KGalleryImageForm extends KintassaForm {
 		);
 
 		$this->desc_band = new KintassaFieldBand("descriptionband");
-		$this->description_field = new KintassaTextField(
+		$this->description_field = new KintassaTextAreaField(
 			"Description", $name="description",
 			$default_value = $def['description'], $required = false
 		);
@@ -71,12 +71,13 @@ abstract class KGalleryImageForm extends KintassaForm {
 	}
 
 	function data() {
+		$desc = $this->description_field->value();
 		$dat = array(
 			"sort_pri"				=> $this->sort_pri_field->value(),
 			"filepath"				=> $this->image_field->value(),
 			"name"					=> $this->name_field->value(),
 			"gallery_id"			=> $this->gallery_id_field->value(),
-			"description"			=> $this->description_field->value(),
+			"description"			=> $desc,
 		);
 
 		return $dat;

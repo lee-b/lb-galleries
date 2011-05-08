@@ -56,8 +56,16 @@ abstract class KintassaGalleryApplet extends KintassaApplet {
 		return $this->finder->uri_from_id($img->id);
 	}
 
-	function classes() {
-		return array("kintassa-gallery-app");
+	function classes($suffix=null) {
+		return array("kintassa-gallery-app$suffix");
+	}
+
+	function wrapper_classes() {
+		return $this->classes("-wrapper");
+	}
+
+	function wrapper_classes_attrib_str() {
+		return "class=\"" . implode(" ", $this->wrapper_classes()) . "\"";
 	}
 
 	function classes_attrib_str() {
@@ -90,14 +98,28 @@ abstract class KintassaGalleryApplet extends KintassaApplet {
 		return $sty;
 	}
 
-	function styles_attrib_str() {
+	function companion_styles() {
+		$sty = array();
+		$sty['width'] = $this->width() . "px";
+		return $sty;
+	}
+
+	function _style_list_as_attrib_str($sty_list) {
 		$style_str = "style=\"";
-		$styles = $this->styles();
-		foreach($styles as $k => $v) {
+		foreach($sty_list as $k => $v) {
 			$style_str .= "{$k}: {$v};";
 		}
+
 		$style_str .= "\"";
 		return $style_str;
+	}
+
+	function styles_attrib_str() {
+		return $this->_style_list_as_attrib_str($this->styles());
+	}
+
+	function companion_styles_attrib_str() {
+		return $this->_style_list_as_attrib_str($this->companion_styles());
 	}
 }
 

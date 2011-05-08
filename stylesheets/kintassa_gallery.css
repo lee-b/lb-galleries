@@ -5,9 +5,62 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to use this product.
 */
 
-div.kintassa-gallery-app {
+div.kintassa-gallery-app,
+div.kintassa-gallery-app-wrapper,
+div.kintassa-gallery-app-wrapper .caption {
 	margin-left: auto;
 	margin-right: auto;
+}
+
+div.kintassa-gallery-app-wrapper {
+	position: relative;
+	width: 100%;
+}
+
+.kintassa-gallery-app-wrapper .caption {
+	text-align: center;
+	font-size: 14px;
+	font-family: "Gill Sans", "Arial", sans-serif;
+	line-height: 15px;
+}
+
+.kintassa-applet-slideshow-wrapper .caption,
+.kintassa-applet-pager-slideshow-wrapper .caption,
+.kintassa-applet-manual-slideshow-wrapper .caption {
+	color: white;
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+	background-color: black;
+	opacity: 0.5;
+	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";
+	filter: alpha(opacity=50);
+	z-index: 100;
+}
+
+.kintassa-gallery-app-wrapper,
+.kintassa-gallery-app-wrapper a:link,
+.kintassa-gallery-app-wrapper a:visited,
+.kintassa-gallery-app-wrapper a:hover {
+	color: white;
+	text-decoration: none;
+}
+
+.kintassa-gallery-app-wrapper .gallery-app-pager a.activeSlide {
+	color: grey;
+}
+
+.kintassa-applet-slideshow-capund-wrapper,
+.kintassa-applet-slideshow-capund-wrapper a:link,
+.kintassa-applet-slideshow-capund-wrapper a:visited,
+.kintassa-applet-slideshow-capund-wrapper a:hover {
+	color: black;
+	text-decoration: none;
+}
+
+.kintassa-gallery-app-wrapper .caption-inner {
+	display: block;
+	padding: 5px 3px;
 }
 
 div.kintassa-page {
@@ -108,9 +161,35 @@ div.kintassa-page-nav {
 	margin-right: 20px;
 }
 
+.gallery-app-pager {
+	width: 100%;
+}
+
 .gallery-app-pager,
 .gallery-app-nav {
 	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.gallery-app-nav-prev,
+.gallery-app-nav-next {
+	display: block;
+	width: 50%;
+	padding: 0.5em 0px;
+}
+
+.gallery-app-pager a {
+	display: inline-block;
+	padding: 10px 5px;
+}
+
+.gallery-app-nav-prev {
+	float: left;
+}
+
+.gallery-app-nav-next {
+	float: right;
 }
 
 .gallery-app-pager a {

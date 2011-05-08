@@ -17,9 +17,9 @@ class KintassaInvalidGalleryApplet extends KintassaGalleryApplet {
 		KintassaGalleryApplet::register('KintassaInvalidGalleryApplet', 'invalid', null);
 	}
 
-	function classes() {
-		$cls = parent::classes();
-		$cls[] = "kintassa-applet-invalid";
+	function classes($suffix=null) {
+		$cls = parent::classes($suffix);
+		$cls[] = "kintassa-applet-invalid$suffix";
 		return $cls;
 	}
 
@@ -31,7 +31,9 @@ class KintassaInvalidGalleryApplet extends KintassaGalleryApplet {
 		$unique_id = $this->unique_id();
 
 		$cls = $this->classes_attrib_str();
+		$outer_cls = $this->wrapper_classes_attrib_str();
 		$sty = $this->styles_attrib_str();
+		$companion_sty = $this->companion_styles_attrib_str();
 
 		$not_avail_msg = __("This gallery cannot be displayed. Please check the gallery ID exists, (re)install the necessary GalleryApplets for its display method, or change the display method to one that's currently available.");
 

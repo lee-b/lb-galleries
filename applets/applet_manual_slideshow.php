@@ -15,9 +15,9 @@ class KintassaManualSlideshowApplet extends KintassaGalleryApplet {
 		KintassaGalleryApplet::register('KintassaManualSlideshowApplet', 'manual_slideshow', "Manual Slideshow");
 	}
 
-	function classes() {
-		$cls = parent::classes();
-		$cls[] = "kintassa-manual-slideshow-applet";
+	function classes($suffix=null) {
+		$cls = parent::classes($suffix);
+		$cls[] = "kintassa-manual-slideshow-applet$suffix";
 		return $cls;
 	}
 
@@ -27,7 +27,9 @@ class KintassaManualSlideshowApplet extends KintassaGalleryApplet {
 		$gallery = $this->gallery;
 		$unique_id = $this->unique_id();
 		$cls = $this->classes_attrib_str();
+		$wrapper_cls = $this->wrapper_classes_attrib_str();
 		$sty = $this->styles_attrib_str();
+		$companion_sty = $this->companion_styles_attrib_str();
 
 		$template = $this->template_path("manual_slideshow", "render");
 

@@ -10,14 +10,17 @@ require_once(kintassa_core('kin_micro_orm.php'));
 require_once(kin_gal_inc('kgal_image.php'));
 require_once(kin_gal_inc('kgal_gallery_applet.php'));
 
-class KintassaPagerSlideshowApplet extends KintassaGalleryApplet {
+/***
+ * Gallery display applet using jQuery + Gallerific
+ */
+class KintassaSlideshowCaptionsUnderApplet extends KintassaGalleryApplet {
 	static function register() {
-		KintassaGalleryApplet::register('KintassaPagerSlideshowApplet', 'pager_slideshow', "Pager Slideshow");
+		KintassaGalleryApplet::register('KintassaSlideshowCaptionsUnderApplet', 'slideshow_capund', "Slideshow - captions below");
 	}
 
 	function classes($suffix=null) {
 		$cls = parent::classes($suffix);
-		$cls[] = "kintassa-pager-slideshow-applet$suffix";
+		$cls[] = "kintassa-applet-slideshow-capund$suffix";
 		return $cls;
 	}
 
@@ -31,7 +34,7 @@ class KintassaPagerSlideshowApplet extends KintassaGalleryApplet {
 		$sty = $this->styles_attrib_str();
 		$companion_sty = $this->companion_styles_attrib_str();
 
-		$template = $this->template_path("pager_slideshow", "render");
+		$template = $this->template_path("slideshow_capund", "render");
 
 		ob_start();
 		require($template);
@@ -42,6 +45,6 @@ class KintassaPagerSlideshowApplet extends KintassaGalleryApplet {
 	}
 }
 
-KintassaPagerSlideshowApplet::register();
+KintassaSlideshowCaptionsUnderApplet::register();
 
 ?>

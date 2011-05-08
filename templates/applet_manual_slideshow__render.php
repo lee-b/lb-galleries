@@ -6,7 +6,7 @@ Copyright: Copyright (c) 2011 Kintassa.
 License: All rights reserved.  Contact Kintassa should you wish to license this product.
 */
 ?>
-<div id="<?php echo $unique_id; ?>-wrapper" <?php echo $cls ?>>
+<div id="<?php echo $unique_id; ?>-wrapper" <?php echo $wrapper_cls . " " . $companion_sty; ?>>
 	<div id="<?php echo $unique_id; ?>" <?php echo $cls ?> <?php echo $sty; ?>>
 		<?php
 			$images = $gallery->images();
@@ -29,9 +29,9 @@ License: All rights reserved.  Contact Kintassa should you wish to license this 
 				>
 		<?php } ?>
 	</div>
-	<div class="gallery-app-nav">
-		<a href="#"><span id="<?php echo $unique_id; ?>-prev">Prev</span></a>
-		<a href="#"><span id="<?php echo $unique_id; ?>-next">Next</span></a>
+	<div class="gallery-app-nav" <?php echo $companion_sty; ?>>
+		<a href="#" class="gallery-app-nav-prev"><span id="<?php echo $unique_id; ?>-prev">&lt; Prev</span></a>
+		<a href="#" class="gallery-app-nav-next"><span id="<?php echo $unique_id; ?>-next">Next &gt;</span></a>
 	</div>
 </div>
 <script type="text/javascript">
