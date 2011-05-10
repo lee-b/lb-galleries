@@ -11,35 +11,45 @@
 
 		<h2>Introduction</h2>
 
-		<p>This plugin provides an easy, intuitive interface for creating image galleries/slideshows.  Features include:</p>
+		<p>This plugin provides an easy, intuitive interface for creating
+		image galleries/slideshows.  Features include:</p>
 
 		<ul>
 			<li>Multiple galleries</li>
 			<li>Multiple images per gallery</li>
 			<li>Titles and other metadata for images</li>
-			<li>Gallery size specification at the gallery level -- images are automatically resized if necessary</li>
-			<li>Choose how to present your gallery from various built-in GalleryApplets, including:
+			<li>Gallery size specification at the gallery level -- images
+			are automatically resized if necessary</li>
+			<li>Choose how to present your gallery from various built-in
+			GalleryApplets, including:
+
 				<ul>
 					<li>Automated slideshows</li>
 					<li>Manual slideshows with prev/next buttons</li>
 					<li>Manual slideshows with image numbers.</li>
 				</ul>
 			</li>
-			<li>GalleryApplets are HTML/PHP template-based, allowing easy modification of generated galleries by web designers</li>
-			<li>Plugins supported, for custom GalleryApplets to meet future or unforeseen needs</li>
+			<li>GalleryApplets are HTML/PHP template-based, allowing easy
+			modification of generated galleries by web designers</li>
+
+			<li>Plugins supported, for custom GalleryApplets to meet future
+			or unforeseen needs</li>
 		</ul>
 
 
 		<h2>Installation</h2>
 
-		<p>Installation is straightforward: unpack the archive to your wp-plugins folder, and make sure <i>your webserver</i> can write to the following subdirectories:</p>
+		<p>Installation is straightforward: unpack the archive to your
+		wp-plugins folder, and make sure <i>your webserver</i> can write to
+		the following subdirectories:</p>
 
 		<ul>
 			<li><code>uploads</code></li>
 			<li><code>cache</code></li>
 		</ul>
 
-		<p>Then, simply enable the "Kintassa Galleries" plugin within Wordpress's admin area.</p>
+		<p>Then, simply enable the "Kintassa Galleries" plugin within
+		Wordpress's admin area.</p>
 
 
 		<h2>Usage</h2>
@@ -48,36 +58,58 @@
 
 		<h4>The Kintassa Galleries Table</h4>
 
-		<p><em>First of all, make sure the plugin is installed and activated.  To do this, see the Installation section, above.</em></p>
+		<p><em>First of all, make sure the plugin is installed and activated.
+		To do this, see the Installation section, above.</em></p>
 
 		<ul>
 			<li>Log into your wordpress site's admin area</li>
-			<li>You should see a "Galleries" option in the menu.  Click this option.  An initially empty table of galleries will be displayed, with an Add Gallery button underneath.</li>
-			<li>Click the Add Gallery button.  This will take you to the Add Gallery form.</li>
+			<li>You should see a "Galleries" option in the menu. Click this
+			option. An initially empty table of galleries will be displayed,
+			with an Add Gallery button underneath.</li>
+			<li>Click the Add Gallery button. This will take you to the Add
+			Gallery form.</li>
 		</ul>
 
 		<h4>The Add Gallery form</h4>
 
-		<p>Simply fill in some basic details about the gallery you'd like to setup, and choose the Confirm button.  Once you do this, you will be able to add images in a separate step.  Add Gallery options are as follows:</p>
+		<p>Simply fill in some basic details about the gallery you'd like to
+		setup, and choose the Confirm button. Once you do this, you will be
+		able to add images in a separate step.  Add Gallery options are as
+		follows:</p>
 
 		<dl>
 			<dt>Name</dt>
-			<dd>Simply the name of the gallery.  This should be lowercase, and all one word, as it's used within the generated webpages of your site, to allow individually styling the gallery.</dd>
+
+			<dd>Simply the name of the gallery.  This should be lowercase, and
+			all one word, as it's used within the generated webpages of your
+			site, to allow individually styling the gallery.</dd>
 
 			<dt>Width and Height</dt>
-			<dd>These are simply the size of the gallery, in pixels.  Images uploaded to the gallery will be shown with the dimensions you use here.  Note that it is fine to change these options <em>after</em> uploading images -- Kintassa Galleries will adjust image dimensions whenever needed.</dd>
+			
+			<dd>These are simply the size of the gallery, in pixels.  Images
+			uploaded to the gallery will be shown with the dimensions you use
+			here.  Note that it is fine to change these options <em>after</em>
+			uploading images -- Kintassa Galleries will adjust image
+			dimensions whenever needed.</dd>
 
 			<dt>Display method</dt>
 			<dd>
 				<dl>
 					<dt>Manual slideshow</dt>
-					<dd>Displays a gallery with prev and next buttons, allowing the user to manually browse through a gallery in a pre-determined order.  Images are scrolled from one to the next when changing.</dd>
+					<dd>Displays a gallery with prev and next buttons,
+					allowing the user to manually browse through a gallery in
+					a pre-determined order.  Images are scrolled from one to
+					the next when changing.</dd>
 
 					<dt>Pager slideshow</dt>
-					<dd>Displays a gallery with image numbers, allowing the user to browse in any order they prefer.  Images are scrolled from one to the next when changing.</dd>
+					<dd>Displays a gallery with image numbers, allowing the
+					user to browse in any order they prefer.  Images are
+					scrolled from one to the next when changing.</dd>
 
 					<dt>Slideshow</dt>
-					<dd>A fully-automated slideshow which presents new images after a short delay.  Images are faded between one and the next</dd>
+					<dd>A fully-automated slideshow which presents new images
+					after a short delay.  Images are faded between one and the
+					next</dd>
 				</dl>
 			</dd>
 		</dl>
@@ -85,53 +117,97 @@
 
 		<h4>Editing a gallery, and finding the table of gallery images</h4>
 
-		<p>Locate the Gallery Table again (see above).  Find the gallery you want to edit in the listings. Choose edit on the row of the gallery you wish to change.</p>
+		<p>Locate the Gallery Table again (see above).  Find the gallery you
+		want to edit in the listings. Choose edit on the row of the gallery
+		you wish to change.</p>
 
-		<p>From here the options are the same as when adding a new gallery, except that you will also see a table of images within the gallery.  To change gallery options such as the width and height, simply modify the settings here, and choose Confirm.</p>
+		<p>From here the options are the same as when adding a new gallery,
+		except that you will also see a table of images within the gallery.
+		To change gallery options such as the width and height, simply modify
+		the settings here, and choose Confirm.</p>
 
 		<h4>Adding images</h4>
 
-		<p>To add a new image to a gallery, edit the gallery (choose edit in the main galleries table), then choose Add Image.  Options presented when adding a new image are as follows:</p>
+		<p>To add a new image to a gallery, edit the gallery (choose edit in
+		the main galleries table), then choose Add Image. Options presented
+		when adding a new image are as follows:</p>
 
 		<dl>
 			<dt>Sort Priority</dt>
-			<dd>Provides a quick way of moving an image to a new position.  To use it, check the current Sort Orders on the Edit Gallery page, and note the number needed to place your image in the correct position.  Sort orders begin at 1 (the first image) and ascend to the last image, so generally, entering 0 will move the image to the top, whilst entering 1000 will move the image to the bottom.  <em><strong>NOTE:</strong> For most purposes, it is safe to ignore this option.</em></dd>
+			<dd>Provides a quick way of moving an image to a new position.  To
+			use it, check the current Sort Orders on the Edit Gallery page,
+			and note the number needed to place your image in the correct
+			position.  Sort orders begin at 1 (the first image) and ascend to
+			the last image, so generally, entering 0 will move the image to
+			the top, whilst entering 1000 will move the image to the bottom.
+			<em><strong>NOTE:</strong> For most purposes, it is safe to ignore
+			this option.</em></dd>
 
 			<dt>Title</dt>
 			<dd>Name of the image</dd>
 
 			<dt>Image</dt>
-			<dd>Choose the image file you want to upload.  It is safe to ignore this option if only editing other options when you've already uploaded an image.</dd>
+			<dd>Choose the image file you want to upload.  It is safe to
+			ignore this option if only editing other options when you've
+			already uploaded an image.</dd>
 
 			<dt>Description</dt>
-			<dd>This is provided for flexibility, in case you would like to add long descriptions to your galleries' images and display them via GalleryApplets (plugins), however the default display methods do not currently display this field.</dd>
+			<dd>This is provided for flexibility, in case you would like to
+			add long descriptions to your galleries' images and display them
+			via GalleryApplets (plugins), however the default display methods
+			do not currently display this field.</dd>
 		</dl>
 
 		<h4>Sorting images</h4>
 
-		<p>The image display order within a gallery initially defaults to being alphabetical.  Sort buttons (up and down arrows) are provided in the gallery image table.  Simply click the up arrow to move an image higher, and the down arrow to move an image lower within the list.  The first image in the list will be displayed initially (and when no javascript is available), with the others following in sequence.  Note this this can vary depending on the gallery display mode chosen, however: some plugins allow users to browse images any order.</p>
+		<p>The image display order within a gallery initially defaults to
+		being alphabetical.  Sort buttons (up and down arrows) are provided in
+		the gallery image table.  Simply click the up arrow to move an image
+		higher, and the down arrow to move an image lower within the list.
+		The first image in the list will be displayed initially (and when no
+		javascript is available), with the others following in sequence.  Note
+		this this can vary depending on the gallery display mode chosen,
+		however: some plugins allow users to browse images any order.</p>
 
 		<h3>Inserting galleries into Pages, Posts, and Templates</h3>
 
-		<p><em>Kintassa</em> galleries are very simple to insert once setup in the admin area.  Just make note of the gallery ID from the main Kintassa Galleries table in the wordpress admin area.  Then, in posts or pages, you can simply enter a shortcode to add the gallery using that ID number, like so:</p>
+		<p><em>Kintassa</em> galleries are very simple to insert once setup in
+		the admin area.  Just make note of the gallery ID from the main
+		Kintassa Galleries table in the wordpress admin area.  Then, in posts
+		or pages, you can simply enter a shortcode to add the gallery using
+		that ID number, like so:</p>
 
 		<blockquote><code>[kintassa_gallery id="3"]</code></blockquote>
 
-		<p>In PHP template files (when creating Wordpress themes), you can use the <code>kintassa_gallery($id)</code> template tag (function) instead.  For example:</p>
+		<p>In PHP template files (when creating Wordpress themes), you can use
+		the <code>kintassa_gallery($id)</code> template tag (function) instead.
+		For example:</p>
 
 		<blockquote><code>&lt;?php kintassa_gallery(3) ?&gt;</code></blockquote>
 
 		<p>Would insert the Kintassa Gallery which has id number 3.</p>
 
-		<p>Your gallery will be inserted according to the settings in the admin area.  To adjust the width, height, or display method after adding a gallery to a page, just change the settings in the admin area.  The page will update automatically.</p>
+		<p>Your gallery will be inserted according to the settings in the
+		admin area.  To adjust the width, height, or display method after
+		adding a gallery to a page, just change the settings in the admin
+		area.  The page will update automatically.</p>
 
 
 		<h2>Contacting Kintassa</h2>
 
-		<p>If you have any questions about this plugin, please contact Kintassa:</p>
+		<p>If you have any questions about this plugin, please contact
+		Kintassa:</p>
 
-		<p>Support: <a href="mailto:support@kintassa.com?subject=Kintassa+Galleries+Plugin">support@kintassa.com</a></p>
-		<p>Sales: <a href="mailto:sales@kintassa.com?subject=Kintassa+Galleries+Plugin">sales@kintassa.com</a></p>
+		<p>Support:
+			<a href="mailto:support@kintassa.com?subject=Kintassa+Galleries+Plugin">
+				support@kintassa.com
+			</a>
+		</p>
+		<p>Sales:
+			<a href="mailto:sales@kintassa.com?subject=Kintassa+Galleries+Plugin">
+				sales@kintassa.com
+			</a>
+		</p>
 
 		<p>We hope you enjoy Kintassa Galleries!</p>
 	</body>
